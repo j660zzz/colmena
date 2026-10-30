@@ -2,6 +2,17 @@
 
 Tres mockups independientes para elegir dirección visual. No son implementación de la app.
 
+## Segunda exploración: Bloques
+
+Tras elegir Bloques como base, `ronda-2.html` lo compara **sin modificarlo** con dos evoluciones:
+
+- **Bloques · Vínculo:** identidad al comienzo de la tarjeta, cabecera corta y una invitación explícita a publicar. Recomendación para priorizar reconocimiento entre compañeros.
+- **Bloques · Directo:** cabecera compacta, primer bloque en Tinta y firma junto a la respuesta. Más contenido en el primer vistazo; simplifica la firma a nombre y marca.
+
+Ambas reutilizan el mismo snapshot, orden y textos completos. Conservan etiquetas Ejemplo, fuentes, símbolo, cinco destinos y restricciones de color. No se implementa el rediseño de la app hasta elegir la definitiva. `variantes.css` contiene solo las reglas de estas dos nuevas propuestas.
+
+`ronda-2-comparacion.png` muestra la vista inicial lado a lado. Los archivos `ronda-2-vinculo.png` y `ronda-2-directo.png` conservan las capturas de cada propuesta a 390 × 844.
+
 - **Entre pares:** personas primero, tarjetas claras y navegación flotante.
 - **Bloques:** mensajes grandes como afiches, superficies Niebla/Tinta.
 - **Pulso:** apertura editorial y lectura continua.

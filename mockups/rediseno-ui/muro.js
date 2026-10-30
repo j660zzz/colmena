@@ -3,6 +3,7 @@ const data = await fetch('./data.json').then(r => r.json());
 const style = new URLSearchParams(location.search).get('estilo') || 'pares';
 const root = document.querySelector('#screen');
 root.classList.add(style);
+if (['vinculo','directo'].includes(style)) root.classList.add('bloques-evolucion');
 const esc = s => String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const initials = p => p.nombre.split(' ').map(s => s[0]).slice(0, 2).join('');
 const avatar = (p, cls = '') => `<span class="avatar ${cls}" aria-hidden="true">${initials(p)}</span>`;
@@ -26,7 +27,7 @@ const people = `<div class="people-strip"><div class="avatar-stack">${data.profi
 const nav = `<nav class="bottom-nav" aria-label="Navegación principal">${[['wall','Muro'],['users','Miembros'],['cal','Encuentro'],['tools','Herramientas'],['card','Carnet']].map(([name,label],i)=>`<button type="button" ${i===0?'aria-current="page"':''} data-nav="${label}">${icon(name)}<span>${label}</span></button>`).join('')}</nav>`;
 const top = `<header class="topbar">${brand}<button type="button" class="enter" data-nav="Carnet">Entrar ${icon('right')}</button></header>`;
 const dates = post => new Intl.DateTimeFormat('es-CO',{day:'numeric',month:'short',timeZone:'America/Bogota'}).format(new Date(post.created_at));
-const author = (p) => `<div class="author">${avatar(p)}<div><div class="author-name">${esc(p.nombre)} ${example}</div><div class="author-meta">${esc(p.marca)} · ${esc(p.rol)}</div></div></div>`;
+const author = (p, mode='') => `<div class="author">${mode?`<span class="avatar-edge">${avatar(p)}</span>`:avatar(p)}<div><div class="author-name">${esc(p.nombre)} ${example}</div><div class="author-meta">${esc(p.marca)}${mode==='compact'?'':` · ${esc(p.rol)}`}</div></div></div>`;
 function postHTML(post) {
   const p = data.profiles.find(p=>p.id===post.autor_id);
   const tag = `<span class="type ${post.tipo}">${post.tipo==='need'?'Necesito':'Ofrezco'}</span>`;
@@ -34,12 +35,18 @@ function postHTML(post) {
   const body = `<p class="post-text">${esc(post.texto)}</p>`;
   const cats = `<span class="post-cats">${post.categorias.map(esc).join(' · ')}</span>`;
   const action = `<button type="button" class="respond" data-response="${esc(p.nombre)}">${icon(post.tipo==='need'?'hand':'right')}<span>${post.tipo==='need'?'Puedo ayudar':'Me interesa'}</span>${style==='bloques'?icon('right'):''}</button>`;
+  if(style==='vinculo') return `<article class="post ${post.tipo}" data-type="${post.tipo}">${author(p,'framed')}${details}${body}<div class="post-foot">${cats}${action}</div></article>`;
+  if(style==='directo') return `<article class="post ${post.tipo}" data-type="${post.tipo}">${details}${body}<div class="directo-signature">${author(p,'compact')}${action}</div><div class="directo-cats">${cats}</div></article>`;
   if(style==='bloques') return `<article class="post ${post.tipo}" data-type="${post.tipo}">${details}${body}${author(p)}<div class="post-foot">${cats}${action}</div></article>`;
   if(style==='pulso') return `<article class="post ${post.tipo}" data-type="${post.tipo}">${details}${body}${author(p)}<div class="post-foot">${cats}${action}</div></article>`;
   return `<article class="post ${post.tipo}" data-type="${post.tipo}">${author(p)}${details}${body}<div class="post-foot">${cats}${action}</div></article>`;
 }
 let intro;
-if(style==='bloques') {
+if(style==='vinculo') {
+  intro = `<div class="intro"><span class="eyebrow">MURO · DCV JAVERIANA</span><h1>Entre todos.</h1><button type="button" class="primary publish compose">¿Qué necesitas o qué ofreces? ${icon('plus')}</button></div>${filters}`;
+} else if(style==='directo') {
+  intro = `<div class="intro"><div class="directo-title"><div><span class="eyebrow">DCV · JAVERIANA CALI</span><h1>El Muro.</h1></div>${publish}</div><p class="intro-copy">Ideas, manos y lo que hace falta.</p></div>${filters}`;
+} else if(style==='bloques') {
   intro = `<div class="intro"><span class="eyebrow">EL MURO · DCV JAVERIANA</span><h1>Lo que haces.<br>Lo que falta.</h1><div class="intro-foot"><p>Conecta las dos cosas.</p>${publish}</div></div>${filters}`;
 } else if(style==='pulso') {
   intro = `<div class="intro"><div class="intro-kicker"><span class="eyebrow">MURO DE LA COMUNIDAD</span><span class="edition">DCV / CALI</span></div><h1>Aquí nadie<br>arranca <mark>solo.</mark></h1><div class="intro-foot"><div class="avatar-stack">${data.profiles.slice(0,3).map(p=>avatar(p)).join('')}<span class="stack-label">Perfiles<br>de ejemplo</span></div>${publish}</div></div><div class="feed-head"><h2>Entre nosotros</h2><span>Necesito / ofrezco</span></div>${filters}`;
