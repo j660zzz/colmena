@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { Icon, Hex, Ejemplo, Header, Empty, useToast } from '../components/ui'
@@ -7,6 +7,7 @@ export default function Miembros({ nav, pedirPerfil, headerRight }) {
   const c = useColmena()
   const toast = useToast()
   const [q, setQ] = useState('')
+  const buscador = useRef(null)
   const [cats, setCats] = useState([])
 
   // Reales primero (más nuevos arriba), ejemplos al final
@@ -34,10 +35,11 @@ export default function Miembros({ nav, pedirPerfil, headerRight }) {
     <>
       <Header title="Miembros" sub="Encuentra a alguien por lo que sabe hacer" right={headerRight} />
       <div className="body">
-        <label className="search">
+        <div className="search">
           <Icon n="search" s={19} />
-          <input type="search" placeholder="Buscar por nombre o habilidad" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar miembros" />
-        </label>
+          <input ref={buscador} type="search" placeholder="Buscar por nombre o habilidad" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar miembros" />
+          {q && <button type="button" className="iconbtn" aria-label="Limpiar búsqueda" onClick={() => { setQ(''); buscador.current?.focus() }}><Icon n="x" s={18} /></button>}
+        </div>
         <div className="gap-12" />
         <div className="chips" role="group" aria-label="Filtrar por categoría">
           {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={cats.includes(x)} onClick={() => toggle(x)}>{x}</button>)}

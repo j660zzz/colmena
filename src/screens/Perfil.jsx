@@ -42,7 +42,7 @@ export default function Perfil({ modo = 'crear', motivo, onBack, onListo }) {
       <SubHeader title={modo === 'editar' ? 'Editar carnet' : 'Tu carnet'} onBack={onBack} />
       <form className="body fade" onSubmit={enviar}>
         {modo === 'crear' && (
-          <p style={{ margin: '0 0 18px', fontSize: 15, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+          <p style={{ margin: '0 8px 24px', fontSize: 16, lineHeight: 1.5 }}>
             {motivo || 'Sin contraseñas ni correos.'} Cuéntale a la colmena quién eres y qué haces; toma menos de un minuto.
           </p>
         )}
@@ -60,7 +60,7 @@ export default function Perfil({ modo = 'crear', motivo, onBack, onListo }) {
             <div className="inp"><input id="p-rol" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div>
           </div>
           <div className="field">
-            <span className="lbl">Categorías <span style={{ color: 'var(--ink-4)', fontWeight: 500 }}>(hasta 3)</span></span>
+            <span className="lbl">Categorías <span>(hasta 3)</span></span>
             <div className="chips wrap">
               {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}
             </div>

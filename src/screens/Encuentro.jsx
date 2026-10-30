@@ -1,6 +1,6 @@
 import { useColmena } from '../lib/store'
 import { fechaLarga, firstName } from '../lib/format'
-import { Icon, Hex, Header, Empty, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, Header, Empty, useToast } from '../components/ui'
 
 export default function Encuentro({ pedirPerfil, headerRight }) {
   const c = useColmena()
@@ -43,8 +43,7 @@ export default function Encuentro({ pedirPerfil, headerRight }) {
             <p>
               <b>{asistentes.length} {verbo}</b><br />
               {asistentes.length === 0 ? 'Sé el primero en apuntarte'
-                : asistentes.length <= 2 ? asistentes.map((p) => firstName(p.nombre)).join(' y ')
-                : `${asistentes.slice(0, 2).map((p) => firstName(p.nombre)).join(', ')} y ${asistentes.length - 2} más`}
+                : <span className="attendee-names">{asistentes.slice(0, 2).map((p, i) => <span key={p.id}>{i > 0 && ', '}{firstName(p.nombre)}<Ejemplo p={p} /></span>)}{asistentes.length > 2 && ` y ${asistentes.length - 2} más`}</span>}
             </p>
           </div>
           <div className="gap-16" />

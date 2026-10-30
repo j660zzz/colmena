@@ -87,10 +87,6 @@ export default function Carnet({ id, onBack, nav, pedirPerfil, editar, headerRig
               <span className="carnet-lbl">N.º DE CARNET</span>
               <span className="carnet-val mono">{carnetId(m.carnet)}</span>
             </div>
-            <div className="carnet-col">
-              <span className="carnet-lbl">NODO</span>
-              <span className="carnet-val">DCV · JAVERIANA</span>
-            </div>
             <div className="carnet-col right">
               <span className="carnet-lbl">ESTADO</span>
               <span className="carnet-status">

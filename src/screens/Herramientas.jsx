@@ -44,7 +44,7 @@ export function Ficha({ id, onBack }) {
     <>
       <SubHeader title={t.k} onBack={onBack} />
       <div className="body ficha fade">
-        <h2 style={{ margin: '4px 0 0', fontFamily: 'var(--disp)', fontSize: 26, letterSpacing: '-.03em', lineHeight: 1.15 }}>{t.n}</h2>
+        <h2>{t.n}</h2>
         <p className="lead">{t.lead}</p>
         {t.secciones.map((s) => (
           <section key={s.h}>
@@ -104,7 +104,7 @@ export function Calculadora({ onBack }) {
           <div className="line"><span>Materiales e insumos</span><b>{cop(v.mat)}</b></div>
           <div className="line"><span>Tu trabajo · {v.hrs} h</span><b>{cop(mano)}</b></div>
           <div className="line"><span>Gastos fijos asignados</span><b>{cop(fijo)}</b></div>
-          <div className="line" style={{ background: 'var(--surface-2)' }}><span style={{ fontWeight: 650, color: 'var(--ink)' }}>Costo total</span><b>{cop(costo)}</b></div>
+          <div className="line" style={{ background: 'var(--app-bg)' }}><span style={{ fontWeight: 600 }}>Costo total</span><b>{cop(costo)}</b></div>
         </div>
         <div className="sec-h"><h3>Tus cifras</h3><span className="meta">Pesos colombianos</span></div>
         <div className="calc">
