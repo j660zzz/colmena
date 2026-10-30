@@ -46,7 +46,9 @@ h1, h2, h3, h4 { font-family: var(--disp); font-weight: 700; }
 .btn.primary { background: var(--polen); color: var(--ink); }
 .btn.ghost { border: 1px solid var(--ink); background: var(--surface); color: var(--ink); }
 .btn.dark { background: var(--ink); color: var(--surface); }
-.btn.done { background: var(--green); color: var(--surface); }
+.btn.done { background: var(--green-soft); color: var(--green); }
+.meet .btn.done { background: none; color: var(--surface); box-shadow: inset 0 0 0 1.5px var(--green); }
+.meet .btn.done svg { color: var(--green); }
 .btn.full { width: 100%; }
 .btn.sm { min-height: 44px; padding: 10px 14px; font-size: 14px; }
 .btn:disabled { background: var(--app-bg); color: var(--ink); border: 1px dashed var(--ink); }
@@ -88,7 +90,11 @@ h1, h2, h3, h4 { font-family: var(--disp); font-weight: 700; }
 .who > span { display: block; font-size: 12px; line-height: 1.35; margin-top: 4px; overflow-wrap: anywhere; }
 .post-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .when { font-size: 11px; white-space: nowrap; }
-.post > p { font: 700 23px/1.16 var(--disp); letter-spacing: -.035em; white-space: pre-wrap; overflow-wrap: anywhere; }
+.post-text { display: flex; flex-direction: column; gap: 8px; }
+.post-lead { font: 700 22px/1.16 var(--disp); letter-spacing: -.035em; white-space: pre-wrap; overflow-wrap: anywhere; }
+.post-body { font: 400 16px/1.45 var(--ui); white-space: pre-wrap; overflow-wrap: anywhere; opacity: .82; }
+.post-body.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.post .more { align-self: flex-start; min-height: 44px; padding: 10px 0; font: 600 14px/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; color: inherit; }
 .post-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .post-cats { display: flex; flex-wrap: wrap; gap: 4px 8px; flex: 1; }
 .post-cats .tag { font-size: 12px; padding: 0; border: 0; border-radius: 0; background: none; }
@@ -96,11 +102,14 @@ h1, h2, h3, h4 { font-family: var(--disp); font-weight: 700; }
 .helpbtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 999px; min-height: 48px; background: var(--ink); color: var(--surface); font-size: 14px; font-weight: 600; max-width: 100%; line-height: 1.35; }
 .helpbtn svg { flex: none; }
 .helpbtn:disabled { border: 1px dashed currentColor; background: none; color: inherit; }
-.helpbtn[aria-pressed="true"] { background: var(--green); color: var(--surface); }
+.helpbtn[aria-pressed="true"] { background: var(--green-soft); color: var(--green); }
+.muro-posts > div:nth-child(even) .helpbtn[aria-pressed="true"] { background: none; color: var(--surface); box-shadow: inset 0 0 0 1.5px var(--green); }
+.muro-posts > div:nth-child(even) .helpbtn[aria-pressed="true"] svg { color: var(--green); }
 .muro-posts > div:nth-child(even) .post { background: var(--ink); color: var(--surface); }
 .muro-posts > div:nth-child(even) .helpbtn:not([aria-pressed="true"]):not(:disabled) { background: var(--surface); color: var(--ink); }
-.contact { display: flex; align-items: center; gap: 8px; min-height: 48px; background: var(--green); color: var(--surface); border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; }
+.contact { display: flex; align-items: center; gap: 8px; min-height: 48px; background: var(--ink); color: var(--surface); border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; }
 .contact span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.muro-posts > div:nth-child(even) .contact { background: var(--surface); color: var(--ink); }
 .pulse { margin: 16px 8px 0; display: flex; gap: 12px; align-items: center; font-size: 13px; }
 .pulse p { line-height: 1.4; }
 .stack { display: flex; flex: none; }
@@ -227,7 +236,7 @@ input::placeholder, textarea::placeholder { color: var(--ink); opacity: 1; }
 .loading .hexav { width: 48px; height: 56px; background: var(--ink); animation: breathe 1.2s ease-in-out infinite; }
 @keyframes breathe { 50% { transform: scale(.9); } }
 @media (min-width: 640px) { .app { height: min(calc(100dvh - 48px), 920px); margin-block: 24px; border: 1px solid var(--ink); border-radius: 32px; } .sheet { bottom: 24px; border-radius: 24px; } }
-@media (max-width: 359px) { .brandhead { padding-inline: 16px; } .muro-intro { padding-inline: 0; } .muro-intro h1 { font-size: 40px; } .muro-filters { padding-inline: 0; gap: 4px; } .muro-filters .segbar { gap: 4px; } .muro-filters .segbar button { padding-inline: 6px; font-size: 12px; } .category-filter summary { min-width: 52px; font-size: 12px; } .post { padding: 16px; } .post > p { font-size: 22px; } .tabbar { left: 8px; right: 8px; padding: 6px; } .tab span { font-size: 9px; } .tools { gap: 8px; } .tool { padding: 16px 12px; } .tool b { font-size: 19px; } .welcome-title h1 { font-size: 42px; } }
+@media (max-width: 359px) { .brandhead { padding-inline: 16px; } .muro-intro { padding-inline: 0; } .muro-intro h1 { font-size: 40px; } .muro-filters { padding-inline: 0; gap: 4px; } .muro-filters .segbar { gap: 4px; } .muro-filters .segbar button { padding-inline: 6px; font-size: 12px; } .category-filter summary { min-width: 52px; font-size: 12px; } .post { padding: 16px; } .post-lead { font-size: 20px; } .tabbar { left: 8px; right: 8px; padding: 6px; } .tab span { font-size: 9px; } .tools { gap: 8px; } .tool { padding: 16px 12px; } .tool b { font-size: 19px; } .welcome-title h1 { font-size: 42px; } }
 
 @media (hover: hover) {
   .btn, .composer, .helpbtn, .tool, .feature, .mrow, .iconbtn, .tab {

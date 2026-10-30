@@ -1,0 +1,22 @@
+{
+  "brand": "Colmena",
+  "version": "2.0",
+  "color": {
+    "polen":  { "hex": "#FFF200", "rgb": [255, 242, 0],   "role": "primary" },
+    "tinta":  { "hex": "#0F0F0D", "rgb": [15, 15, 13],    "role": "text, dark surfaces" },
+    "blanco": { "hex": "#FFFFFF", "rgb": [255, 255, 255], "role": "surface" },
+    "niebla": { "hex": "#F2F2EE", "rgb": [242, 242, 238], "role": "ui background" },
+    "verde":  { "hex": "#0F7A66", "rgb": [15, 122, 102],  "role": "semantic only" }
+  },
+  "usage": { "polen": 0.35, "tinta": 0.30, "blanco": 0.20, "niebla": 0.14, "verde": 0.01 },
+  "font": {
+    "display": { "family": "Space Grotesk", "weights": [600, 700], "tracking": "-0.04em" },
+    "text":    { "family": "Hanken Grotesk", "weights": [400, 600] },
+    "data":    { "family": "JetBrains Mono", "weights": [500] }
+  },
+  "shape": { "hexagon": "pointy-top", "appIconRadius": "23%", "cardRadius": "16-20px", "chipRadius": "999px" },
+  "rules": {
+    "textOnPolen": "tinta",
+    "forbidden": ["polen on blanco", "polen on niebla", "gradients", "bees", "verde as decoration"]
+  }
+}

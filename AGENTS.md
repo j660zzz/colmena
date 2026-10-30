@@ -22,14 +22,27 @@ Promesa: "Donde el que empieza deja de estar solo." Remate: "Solos, celdas suelt
 
 Si un cambio visual necesita un dato nuevo, **no inventes columnas ni llamadas**: déjalo anotado en `TODO-AGENTES.md` y sigue con lo visual.
 
-## Sistema de marca (bloqueado)
-- **Colores**: solo los de `tokens.css`. Tinta `#17140F`, crema `#F7F3EB`, blanco.
-- **Ámbar `#F5A623`** se usa SOLO en: botón primario, pill NECESITO, insignia ganada, indicador de pestaña activa. No lo uses de fondo ni de decoración.
-- **Verde `#0F7A66`** es SOLO semántico: OFREZCO y estados confirmados.
-- **Tipografía por rol**: Space Grotesk (logotipo, títulos, cifras) · Hanken Grotesk (toda la interfaz) · JetBrains Mono (solo número de carnet y cifras de la calculadora). No agregar otras fuentes.
-- **Hexágono estructural, no decorativo**: avatares, insignias, marca de agua del carnet. Nada de abejas literales, caricaturas ni fondos de panal saturados.
-- Personalidad: **colectivo, útil, caluroso**. Referentes de solidez: Google, Uber, Pinterest. Nada de gradientes "startup" ni look de fundación o entidad pública.
-- Retícula de 8 pt. Objetivos táctiles de 44 px mínimo. Respetar `prefers-reduced-motion`.
+## Sistema de marca v2.0 (bloqueado)
+**Fuente de verdad:** `docs/marca/colmena-brand-spec.md` y `docs/marca/colmena-tokens.json`. Si algo de este archivo choca con el spec, manda el spec. Brand board de referencia: `docs/marca/brand-board-v2.png`.
+
+- **Solo 5 colores, todos planos (cero degradados):**
+  - Polen `#FFF200`: color principal. En la interfaz, solo en botón o acción principal, indicador activo, resaltados, insignias ganadas y piezas de marca (carnet).
+  - Tinta `#0F0F0D`: texto, logotipo, superficies oscuras.
+  - Blanco `#FFFFFF`: superficies y tarjetas.
+  - Niebla `#F2F2EE`: fondo de interfaz.
+  - Verde `#0F7A66`: SOLO semántico. "Ofrezco" = píldora Verde con texto Blanco; "confirmado" = fondo Verde al 12 % con texto Verde. Nunca decorativo.
+- **Texto sobre Polen siempre en Tinta.** Polen nunca como texto ni logotipo sobre Blanco o Niebla (1,17:1, ilegible).
+- **Tipografía:** Space Grotesk 700/600 (logotipo, títulos, cifras y el titular de cada publicación) · Hanken Grotesk 400/600 (interfaz y texto corrido, incluido el cuerpo de las publicaciones) · JetBrains Mono 500 (solo número de carnet y cifras de la calculadora).
+- **Símbolo:** la celda abierta, copiada literal del SVG del spec (`CeldaAbierta` en `src/components/ui.jsx`). No se redibuja, rota ni deforma.
+- **Avatares:** hexágono de punta arriba, fondo Tinta, iniciales en Polen.
+- Prohibido: abejas o mascotas, panal cubriendo todo un fondo, estética institucional (sellos, escudos, azul), lorem ipsum.
+- Personalidad: **colectivo, útil, caluroso**. Retícula de 8 pt, objetivos táctiles de 44 px mínimo, respetar `prefers-reduced-motion`.
+
+## Interfaz actual: Bloques · Vínculo
+Marca arriba, tarjetas del Muro alternando Blanco y Tinta, barra para publicar en Polen y navegación flotante en Tinta. Decisiones y verificación en `design-qa.md`; exploraciones en `mockups/rediseno-ui/`.
+
+## Imágenes de terceros
+El repo es público. No subas referencias, capturas ni recursos de otros diseñadores o marcas: describe en texto lo que se toma de cada referencia.
 
 ## Reglas de contenido
 - **Cero datos inventados presentados como reales.** Los perfiles y publicaciones de muestra tienen `es_ejemplo = true` y se muestran con la etiqueta "Ejemplo". No quites esa etiqueta.
@@ -37,7 +50,7 @@ Si un cambio visual necesita un dato nuevo, **no inventes columnas ni llamadas**
 - Español de Colombia, tono cercano y directo, tuteo.
 
 ## Datos (Supabase)
-- Lectura pública con la llave publicable; **toda escritura pasa por funciones RPC** que validan la clave del dispositivo (`supabase/schema.sql`).
+- Lectura pública con la llave publicable; **toda escritura pasa por funciones RPC** que validan la clave del dispositivo (ver `supabase/README.md`).
 - No hay cuentas: al crear el carnet el servidor devuelve `{id, clave}` y se guarda en `localStorage` (`src/lib/session.js`).
 - No cambies el esquema desde el cliente ni agregues políticas de escritura directa.
 

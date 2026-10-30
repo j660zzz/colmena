@@ -7,7 +7,7 @@ Fecha: 30 de octubre de 2026. Rama: `diseno/rediseno-ui`. Base de implementació
 ## Fuente y captura
 
 - Diseño elegido: `mockups/rediseno-ui/ronda-2.html`, variante `vinculo`. Fuente visual reproducible: `muro.html?estilo=vinculo` y `variantes.css`.
-- Marca: archivos del usuario `D:/colmena-brand-spec.md` y `D:/colmena-tokens.json` v2.0.
+- Marca: `docs/marca/colmena-brand-spec.md` y `docs/marca/colmena-tokens.json` v2.0.
 - Referencia capturada: `docs/qa/bloques-vinculo/referencia-390.png`.
 - Implementación de producción capturada: `docs/qa/bloques-vinculo/produccion-390.png`.
 - Comparación completa: `docs/qa/bloques-vinculo/comparacion-final.png` (referencia izquierda, app derecha).
