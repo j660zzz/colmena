@@ -8,7 +8,7 @@
 
 **Tech Stack:** Existing Vite, React, Supabase and Fontsource. No new dependencies.
 
-**Spec:** `mockups/rediseno-ui/ronda-2.html`, `ronda-2-vinculo.png`, `variantes.css`; user-provided `D:/colmena-brand-spec.md` and `D:/colmena-tokens.json` v2.0 take precedence over the obsolete brand section of AGENTS.md.
+**Spec:** `mockups/rediseno-ui/ronda-2.html`, `ronda-2-vinculo.png`, `variantes.css`; `docs/marca/colmena-brand-spec.md` and `docs/marca/colmena-tokens.json` v2.0 take precedence over the obsolete brand section of AGENTS.md.
 
 ## Global Constraints
 

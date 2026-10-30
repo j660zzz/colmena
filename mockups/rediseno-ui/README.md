@@ -27,10 +27,10 @@ También se puede servir esta carpeta con cualquier servidor estático: no depen
 
 ## Fuentes
 
-- Marca: `D:/colmena-brand-spec.md` y `D:/colmena-tokens.json`, versión 2.0, leídos el 30 de octubre de 2026. Prevalecen sobre la sección antigua de AGENTS.md y los neutros adicionales de tokens.css.
+- Marca: `docs/marca/colmena-brand-spec.md` y `docs/marca/colmena-tokens.json`, versión 2.0.
 - Símbolo: SVG copiado literalmente del spec, sin reinterpretación.
 - Contenido: lectura de Supabase público el 30 de octubre de 2026. Solo se conserva el contenido de los seis perfiles con `es_ejemplo = true` y sus seis publicaciones. `data.json` incluye IDs y fechas para rastrear el origen; no contiene claves ni sesiones.
-- Referencias: seis imágenes aportadas por Jhon, copiadas a `assets/ref-*` para que el análisis siga siendo consultable.
+- Referencias: cinco imágenes de terceros aportadas por Jhon. Se retiraron del repositorio porque es público y no son trabajo propio; el análisis escrito de cada una se conserva en `index.html`. El brand board propio está en `docs/marca/brand-board-v2.png`.
 - Fuentes: archivos WOFF2 de los paquetes @fontsource ya instalados. Solo Space Grotesk 700, Hanken Grotesk 400/600 y JetBrains Mono 500. Mono no se aplica al Muro, porque no muestra datos de carnet ni calculadora.
 - Íconos: trazados existentes de `src/components/ui.jsx`.
 

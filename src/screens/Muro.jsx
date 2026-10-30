@@ -130,7 +130,7 @@ function Post({ post, nav, pedirPerfil, onVerAyudantes }) {
       <span className={'pill ' + post.tipo}>{post.tipo === 'need' ? 'Necesito' : 'Ofrezco'}</span>
       <span className="when">{hace(post.created_at)}</span>
       </div>
-      <p>{post.texto}</p>
+      <TextoPost texto={post.texto} />
       <div className="post-foot">
         <div className="post-cats">{post.categorias.map((t) => <span key={t} className="tag">{t}</span>)}</div>
         {mio ? (
@@ -152,6 +152,34 @@ function Post({ post, nav, pedirPerfil, onVerAyudantes }) {
         </a>
       )}
     </article>
+  )
+}
+
+// La primera frase funciona como titular (Space Grotesk) y el resto como cuerpo (Hanken).
+// Los textos largos se cortan a pocas líneas con "Ver más" para que el muro se pueda recorrer.
+function dividirTexto(t) {
+  const limpio = t.trim()
+  const m = limpio.match(/^(.{8,140}?[.!?¿¡]?[.!?])(\s+)([\s\S]+)$/)
+  if (m) return [m[1], m[3].trim()]
+  if (limpio.length <= 140) return [limpio, '']
+  const corte = limpio.lastIndexOf(' ', 110)
+  return corte > 40 ? [limpio.slice(0, corte) + '…', '…' + limpio.slice(corte + 1)] : [limpio, '']
+}
+
+function TextoPost({ texto }) {
+  const [titular, cuerpo] = dividirTexto(texto)
+  const largo = cuerpo.length > 160
+  const [abierto, setAbierto] = useState(false)
+  return (
+    <div className="post-text">
+      <p className="post-lead">{titular}</p>
+      {cuerpo && <p className={'post-body' + (largo && !abierto ? ' clamp' : '')}>{cuerpo}</p>}
+      {largo && (
+        <button type="button" className="more" aria-expanded={abierto} onClick={() => setAbierto(!abierto)}>
+          {abierto ? 'Ver menos' : 'Ver más'}
+        </button>
+      )}
+    </div>
   )
 }
 
