@@ -1,0 +1,20 @@
+{
+  "source": "Supabase público de Colmena; lectura de perfiles.es_ejemplo = true y sus publicaciones",
+  "capturedAt": "2026-10-30",
+  "profiles": [
+    {"id":"7c0ba12d-6fa8-4541-a80c-3b7b18590300","nombre":"Sara Ospina","marca":"Cerro Studio","rol":"Diseño de marca","categorias":["Marca","Diseño"],"es_ejemplo":true},
+    {"id":"b5e9874f-4a59-4daf-903c-87d4f2eec95d","nombre":"Mateo Arboleda","marca":"Pega'o","rol":"Cocina y producto","categorias":["Marca"],"es_ejemplo":true},
+    {"id":"0ce59e37-abed-4dd5-802a-6b63224e9e6c","nombre":"Laura Mina","marca":"Casa Mora","rol":"Producto artesanal","categorias":["Producción"],"es_ejemplo":true},
+    {"id":"8251dfff-eb5f-4ffb-8bf4-afa07081feb6","nombre":"Valentina Ruiz","marca":"Tinta Viva","rol":"Ilustración","categorias":["Ilustración"],"es_ejemplo":true},
+    {"id":"fc5ecb81-681d-4a49-bf4a-16935b7ee027","nombre":"Andrés Zapata","marca":"Zeta Films","rol":"Dirección de video","categorias":["Video"],"es_ejemplo":true},
+    {"id":"7e0d0b83-01e7-4d79-8b21-0881ab7d554d","nombre":"Daniela Correa","marca":"Malva","rol":"Cerámica","categorias":["Producción"],"es_ejemplo":true}
+  ],
+  "posts": [
+    {"id":"3cdfe77c-cae0-4805-9ef2-5274f89c9ff4","autor_id":"7c0ba12d-6fa8-4541-a80c-3b7b18590300","tipo":"offer","texto":"Tengo cupo esta semana para dos identidades de marca completas. Si estás arrancando y necesitas logo, paleta y manual básico, escríbeme.","categorias":["Marca","Diseño"],"created_at":"2026-10-30T00:33:47.66226+00:00"},
+    {"id":"ea6b6288-0da0-4e3d-8fe1-1d1c2c77f165","autor_id":"b5e9874f-4a59-4daf-903c-87d4f2eec95d","tipo":"need","texto":"Busco a alguien que me ayude a grabar y editar tres reels para el lanzamiento del food truck. Presupuesto ajustado pero real.","categorias":["Video"],"created_at":"2026-10-29T22:33:47.66226+00:00"},
+    {"id":"80900543-abe2-4dd2-be42-8dd791328d1f","autor_id":"0ce59e37-abed-4dd5-802a-6b63224e9e6c","tipo":"need","texto":"¿Alguien ha impreso etiquetas en vinilo en Cali? Necesito una imprenta que haga tirajes cortos sin cobrar un ojo.","categorias":["Producción"],"created_at":"2026-10-29T18:33:47.66226+00:00"},
+    {"id":"3c11c758-60de-426b-8359-b877fe14f917","autor_id":"8251dfff-eb5f-4ffb-8bf4-afa07081feb6","tipo":"offer","texto":"Hago ilustración editorial y patrones para textil. Puedo cambiarlo por fotografía de producto si a alguien le sirve.","categorias":["Ilustración","Diseño"],"created_at":"2026-10-29T03:33:47.66226+00:00"},
+    {"id":"723df7a9-de3c-4e9e-98d0-9f2cdb619b59","autor_id":"fc5ecb81-681d-4a49-bf4a-16935b7ee027","tipo":"offer","texto":"Presto luces y trípode los fines de semana a miembros de la colmena. Solo cuiden el equipo y devuélvanlo el lunes.","categorias":["Video","Producción"],"created_at":"2026-10-28T23:33:47.66226+00:00"},
+    {"id":"8aa4ecd0-f6ad-47b5-8d9a-9ce02e6d8a09","autor_id":"7e0d0b83-01e7-4d79-8b21-0881ab7d554d","tipo":"need","texto":"Necesito calcular bien el precio de mis piezas en cerámica. Vendo, pero siento que estoy perdiendo plata en cada pieza.","categorias":["Producción"],"created_at":"2026-10-28T03:33:47.66226+00:00"}
+  ]
+}
