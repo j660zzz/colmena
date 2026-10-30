@@ -26,7 +26,7 @@ export default function Muro({ nav, pedirPerfil, headerRight }) {
 
   return (
     <>
-      <Header title="Muro" sub={`${reales.length} ${reales.length === 1 ? 'miembro' : 'miembros'} · DCV Javeriana`} right={headerRight} />
+      <Header title="Muro" sub={reales.length === 0 ? 'Sé el primero en entrar · DCV Javeriana' : `${reales.length} ${reales.length === 1 ? 'miembro' : 'miembros'} · DCV Javeriana`} right={headerRight} />
       <div className="body">
         <button type="button" className="composer" onClick={abrirComposer}>
           {c.yo ? <Hex p={c.yo} w={32} /> : <div className="hexav" style={{ width: 32, height: 36, background: 'var(--hairline)' }} />}
