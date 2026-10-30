@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { hace, firstName, igUrl } from '../lib/format'
-import { Icon, Hex, Ejemplo, Header, Sheet, Empty, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, BrandHeader, Sheet, Empty, useToast } from '../components/ui'
 
 export default function Muro({ nav, pedirPerfil, headerRight }) {
   const c = useColmena()
@@ -26,13 +26,16 @@ export default function Muro({ nav, pedirPerfil, headerRight }) {
 
   return (
     <>
-      <Header title="Muro" sub={reales.length === 0 ? 'Sé el primero en entrar · DCV Javeriana' : `${reales.length} ${reales.length === 1 ? 'miembro' : 'miembros'} · DCV Javeriana`} right={headerRight} />
-      <div className="body">
+      <BrandHeader right={headerRight} />
+      <div className="body muro-body">
+        <div className="muro-intro">
+          <p className="eyebrow">Muro · DCV Javeriana</p>
+          <h1>Entre todos.</h1>
         <button type="button" className="composer" onClick={abrirComposer}>
-          {c.yo ? <Hex p={c.yo} w={32} /> : <div className="hexav" style={{ width: 32, height: 36, background: 'var(--hairline)' }} />}
           <span>¿Qué necesitas o qué ofreces?</span>
           <span className="plus"><Icon n="plus" s={18} w={2.2} /></span>
         </button>
+        </div>
 
         {ultimos.length > 0 && (
           <div className="pulse">
@@ -44,18 +47,24 @@ export default function Muro({ nav, pedirPerfil, headerRight }) {
           </div>
         )}
 
-        <div className="gap-16" />
+        <div className="muro-filters">
         <div className="segbar" role="group" aria-label="Tipo de publicación">
           {[['todo', 'Todo'], ['need', 'Necesito'], ['offer', 'Ofrezco']].map(([k, t]) => (
             <button key={k} type="button" aria-pressed={tipo === k} onClick={() => setTipo(k)}>{t}</button>
           ))}
         </div>
-        <div className="gap-12" />
-        <div className="chips" role="group" aria-label="Categorías">
+        <details className="category-filter">
+          <summary>Filtrar{cats.length > 0 && <span className="filter-count">{cats.length}</span>}</summary>
+          <div className="category-options">
+          <p className="lbl">Por categoría</p>
+          <div className="chips wrap" role="group" aria-label="Categorías">
           {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={cats.includes(x)} onClick={() => toggleCat(x)}>{x}</button>)}
+          </div>
+          {cats.length > 0 && <button type="button" className="linkbtn" onClick={() => setCats([])}>Quitar categorías</button>}
+          </div>
+        </details>
         </div>
-
-        <div className="sec-h"><h3>Publicaciones</h3><span className="meta">{lista.length} de {c.publicaciones.length}</span></div>
+        <p className="sr" aria-live="polite">{lista.length} de {c.publicaciones.length} publicaciones</p>
 
         {lista.length === 0 ? (
           <Empty title="Nada por aquí todavía"
@@ -65,7 +74,7 @@ export default function Muro({ nav, pedirPerfil, headerRight }) {
             {(tipo !== 'todo' || cats.length > 0) ? 'Con estos filtros no hay publicaciones.' : 'Sé el primero en contar qué necesitas o qué ofreces.'}
           </Empty>
         ) : (
-          <div className="rowlist">
+          <div className="rowlist muro-posts">
             {lista.map((p, i) => (
               <div key={p.id}>
                 {i > 0 && <div className="divider" />}
@@ -109,31 +118,33 @@ function Post({ post, nav, pedirPerfil, onVerAyudantes }) {
   }
 
   return (
-    <article className="post fade">
+    <article className="post">
       <div className="post-top">
-        <button type="button" onClick={() => autor && nav({ t: 'carnet', id: autor.id })} aria-label={`Ver carnet de ${autor?.nombre}`}><Hex p={autor} w={38} /></button>
+        <button type="button" className="post-avatar" onClick={() => autor && nav({ t: 'carnet', id: autor.id })} aria-label={`Ver carnet de ${autor?.nombre}`}><span className="avatar-frame"><Hex p={autor} w={44} h={48} fs={16} /></span></button>
         <button type="button" className="who" onClick={() => autor && nav({ t: 'carnet', id: autor.id })}>
           <b>{autor?.nombre || 'Miembro'}<Ejemplo p={autor} /></b>
-          <span>{[autor?.rol, autor?.marca].filter(Boolean).join(' · ')}</span>
+          <span>{[autor?.marca, autor?.rol].filter(Boolean).join(' · ')}</span>
         </button>
-        <span className="when">{hace(post.created_at)}</span>
       </div>
+      <div className="post-meta">
       <span className={'pill ' + post.tipo}>{post.tipo === 'need' ? 'Necesito' : 'Ofrezco'}</span>
+      <span className="when">{hace(post.created_at)}</span>
+      </div>
       <p>{post.texto}</p>
       <div className="post-foot">
+        <div className="post-cats">{post.categorias.map((t) => <span key={t} className="tag">{t}</span>)}</div>
         {mio ? (
           <>
             <button type="button" className="helpbtn" onClick={onVerAyudantes} disabled={!n}>
               <Icon n="users" s={17} />{n ? `${n} ${n === 1 ? 'persona puede' : 'personas pueden'} ${post.tipo === 'need' ? 'ayudarte' : 'interesarse'}` : 'Aún sin respuestas'}
             </button>
-            <button type="button" className="iconbtn" onClick={borrar} aria-label="Borrar publicación" style={{ marginLeft: 'auto', width: 36, height: 36 }}><Icon n="trash" s={18} /></button>
+            <button type="button" className="iconbtn" onClick={borrar} aria-label="Borrar publicación"><Icon n="trash" s={18} /></button>
           </>
         ) : (
           <button type="button" className="helpbtn" aria-pressed={!!yaAyudo} onClick={ayudar}>
-            <Icon n={yaAyudo ? 'check' : 'hand'} s={17} w={yaAyudo ? 2.1 : 1.6} />{yaAyudo ? 'Listo' : cta}<span className="c">{n}</span>
+            <Icon n={yaAyudo ? 'check' : post.tipo === 'need' ? 'hand' : 'right'} s={17} w={yaAyudo ? 2.1 : 1.6} />{yaAyudo ? 'Listo' : cta}{n > 0 && <span className="c">{n}</span>}
           </button>
         )}
-        {post.categorias.map((t) => <span key={t} className="tag">{t}</span>)}
       </div>
       {yaAyudo && !mio && autor?.instagram && !autor.es_ejemplo && (
         <a className="contact" href={igUrl(autor.instagram)} target="_blank" rel="noopener noreferrer">
@@ -174,7 +185,7 @@ function Composer({ onDone }) {
       <textarea id="dx" maxLength={500} value={texto} onChange={(e) => setTexto(e.target.value)} ref={(el) => { if (el && !el.dataset.f) { el.dataset.f = 1; setTimeout(() => el.focus({ preventScroll: true }), 320) } }}
         placeholder={tipo === 'need' ? 'Sé concreto: qué, para cuándo y si hay presupuesto.' : 'Di qué haces, para quién y en qué condiciones.'} />
       <div className="counter">{texto.length}/500</div>
-      <span className="lbl">Categoría <span style={{ color: 'var(--ink-4)', fontWeight: 500 }}>(hasta 3)</span></span>
+      <span className="lbl">Categoría <span>(hasta 3)</span></span>
       <div className="gap-8" />
       <div className="chips wrap">
         {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={cats.includes(x)} onClick={() => toggle(x)}>{x}</button>)}
@@ -200,7 +211,7 @@ function Ayudantes({ postId, nav }) {
             {i > 0 && <div className="divider" />}
             <button type="button" className="mrow" onClick={() => nav({ t: 'carnet', id: p.id })}>
               <Hex p={p} w={40} />
-              <div className="info"><b>{p.nombre}</b><span>{[p.rol, p.marca].filter(Boolean).join(' · ')}</span></div>
+                  <div className="info"><b>{p.nombre}<Ejemplo p={p} /></b><span>{[p.rol, p.marca].filter(Boolean).join(' · ')}</span></div>
               <Icon n="right" s={18} />
             </button>
           </div>

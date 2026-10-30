@@ -92,12 +92,23 @@ export function Comb({ className, viewBox, r, w, h, x0, y0, stroke, sw = 1, inse
 }
 
 /* ---------- Cabeceras ---------- */
-export function Header({ title, sub, right }) {
+export function BrandHeader({ right }) {
   return (
-    <header className="apphead">
-      <div className="hgroup"><h2>{title}</h2>{sub && <p className="sub">{sub}</p>}</div>
+    <header className="brandhead">
+      <div className="brand-lockup"><CeldaAbierta s={25} /><span>Colmena</span></div>
       <div className="hactions">{right}</div>
     </header>
+  )
+}
+
+export function Header({ title, sub, right }) {
+  return (
+    <>
+      <BrandHeader right={right} />
+      <header className="apphead">
+        <div className="hgroup"><h1>{title}</h1>{sub && <p className="sub">{sub}</p>}</div>
+      </header>
+    </>
   )
 }
 
@@ -113,20 +124,22 @@ export function SubHeader({ title, onBack, right }) {
 
 /* ---------- Bottom sheet ---------- */
 export function Sheet({ open, onClose, label, children }) {
+  const dialog = useRef(null)
   useEffect(() => {
-    if (!open) return
-    const k = (e) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', k)
-    return () => window.removeEventListener('keydown', k)
-  }, [open, onClose])
+    const el = dialog.current
+    if (open && !el.open) el.showModal()
+    else if (!open && el.open) el.close()
+  }, [open])
   return (
-    <>
-      <div className={'scrim' + (open ? ' on' : '')} onClick={onClose} />
-      <div className={'sheet' + (open ? ' on' : '')} role="dialog" aria-modal="true" aria-label={label} aria-hidden={!open}>
-        <div className="grab" />
+    <dialog ref={dialog} className="sheet" aria-label={label}
+      onCancel={(e) => { e.preventDefault(); onClose() }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="sheet-content">
+        <div className="grab" aria-hidden="true" />
+        <button type="button" className="iconbtn sheet-close" onClick={onClose} aria-label="Cerrar"><Icon n="x" s={20} /></button>
         {open && children}
       </div>
-    </>
+    </dialog>
   )
 }
 
@@ -156,7 +169,7 @@ export function ToastProvider({ children }) {
 export function Empty({ icon = 'search', title, children, action }) {
   return (
     <div className="empty">
-      <div className="hexav" style={{ width: 52, height: 58, background: 'var(--hairline)', color: 'var(--ink-4)' }}><Icon n={icon} s={22} /></div>
+      <div className="empty-icon"><Icon n={icon} s={28} /></div>
       <b>{title}</b>
       {children && <p>{children}</p>}
       {action}

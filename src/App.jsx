@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useColmena } from './lib/store'
 import { yaVioBienvenida, marcarBienvenida } from './lib/session'
-import { Icon, Hex, ToastProvider, Comb } from './components/ui'
+import { Icon, Hex, ToastProvider } from './components/ui'
 import Bienvenida from './screens/Bienvenida'
 import Muro from './screens/Muro'
 import Miembros from './screens/Miembros'
@@ -26,9 +26,6 @@ function subInicial() {
 export default function App() {
   return (
     <>
-      <div className="comb-bg" aria-hidden="true">
-        <Comb viewBox="0 0 1600 1200" r={46} w={1640} h={1240} x0={-40} y0={-50} stroke="var(--comb)" sw={1.4} inset={3} />
-      </div>
       <main className="app">
         <ToastProvider><Shell /></ToastProvider>
       </main>
@@ -64,7 +61,7 @@ function Shell() {
 
   const headerRight = c.yo
     ? <button type="button" className="iconbtn avbtn" onClick={() => irTab('carnet')} aria-label="Mi carnet"><Hex p={c.yo} w={34} h={38} fs={12} /></button>
-    : <button type="button" className="btn primary sm" onClick={() => pedirPerfil(null, () => {})}>Entrar</button>
+    : <button type="button" className="enter" onClick={() => pedirPerfil(null, () => {})}>Entrar<Icon n="right" s={16} /></button>
 
   const comun = { nav, pedirPerfil, headerRight }
   const sub = pila[pila.length - 1]
@@ -85,7 +82,7 @@ function Shell() {
   return (
     <>
       {c.errorRed && (
-        <button type="button" onClick={c.recargar} style={{ flex: 'none', background: 'var(--amber-soft)', color: 'var(--amber-ink)', fontSize: 13, fontWeight: 600, padding: 'calc(env(safe-area-inset-top,0px) + 10px) 16px 10px' }}>
+        <button type="button" className="network-banner" onClick={c.recargar}>
           {c.errorRed} Toca para reintentar.
         </button>
       )}
