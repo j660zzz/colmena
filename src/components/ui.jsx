@@ -40,12 +40,22 @@ export function Icon({ n, s = 20, w = 1.6 }) {
   )
 }
 
-/* ---------- Avatar hexagonal ---------- */
+/* ---------- Símbolo oficial v2.0 (La celda abierta) ---------- */
+export function CeldaAbierta({ s = 24, color = 'var(--ink)' }) {
+  return (
+    <svg width={s} height={Math.round(s * 1.12)} viewBox="8 3 84 94" fill="none" aria-hidden="true" style={{ flex: 'none' }}>
+      <path d="M84.64 38 L84.64 30 L50 10 L15.36 30 L15.36 70 L50 90 L84.64 70 L84.64 62" stroke={color} strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+      <polygon points="50,36 62.12,43 62.12,57 50,64 37.88,57 37.88,43" fill={color} />
+    </svg>
+  )
+}
+
+/* ---------- Avatar hexagonal (v2.0: fondo Tinta #0F0F0D, iniciales Polen #FFF200) ---------- */
 export function Hex({ p, w = 40, h, fs, style }) {
   const hh = h || Math.round(w * 1.1)
   return (
     <div className="hexav" aria-hidden="true"
-      style={{ width: w, height: hh, background: p?.color || 'var(--hairline)', fontSize: fs || Math.round(w * 0.36), ...style }}>
+      style={{ width: w, height: hh, fontSize: fs || Math.round(w * 0.36), ...style }}>
       {p ? initials(p.nombre) : ''}
     </div>
   )

@@ -1,7 +1,7 @@
 import { useColmena } from '../lib/store'
 import { BADGES } from '../data/contenido'
 import { carnetId, firstName, igUrl, mesDesde } from '../lib/format'
-import { Icon, Hex, Comb, Header, SubHeader, Empty, useToast } from '../components/ui'
+import { Icon, Hex, Comb, Header, SubHeader, Empty, useToast, CeldaAbierta } from '../components/ui'
 
 export function statsDe(c, id) {
   const p = c.perfil(id)
@@ -65,21 +65,40 @@ export default function Carnet({ id, onBack, nav, pedirPerfil, editar, headerRig
         ? <Header title="Mi carnet" sub={`Miembro desde ${mesDesde(m.created_at)}`} right={headerRight} />
         : <SubHeader title="Carnet de miembro" onBack={onBack} />}
       <div className="body fade">
+        {/* Carnet de miembro v2.0: fondo Polen, textos en Tinta */}
         <div className="carnet">
-          <div className="edge" />
-          <Comb className="combmark" viewBox="0 0 210 250" r={26} w={230} h={270} x0={-16} y0={-20} stroke="rgba(245,166,35,.34)" />
-          <div className="top">
-            <Hex p={m} w={62} h={70} fs={22} />
-            <div>
+          <Comb className="combmark" viewBox="0 0 210 250" r={26} w={230} h={270} x0={-16} y0={-20} stroke="rgba(15,15,13,.10)" />
+          <div className="carnet-head">
+            <div className="carnet-lockup">
+              <CeldaAbierta s={18} color="var(--ink)" />
+              <span className="carnet-brand">Colmena</span>
+            </div>
+            <span className="carnet-badge">MIEMBRO</span>
+          </div>
+          <div className="carnet-body">
+            <Hex p={m} w={56} h={64} fs={20} />
+            <div className="carnet-info">
               <h3>{m.nombre}</h3>
-              <p className="role">{[m.rol, m.marca].filter(Boolean).join(' · ') || 'Miembro'}</p>
+              <p className="role">{[m.marca, m.rol].filter(Boolean).join(' · ') || 'Miembro'}</p>
             </div>
           </div>
-          <dl className="id">
-            <div><dt>Miembro</dt><dd>{carnetId(m.carnet)}</dd></div>
-            <div><dt>Nodo</dt><dd>DCV · JAVERIANA</dd></div>
-            <div><dt>Estado</dt><dd>{m.es_ejemplo ? 'Ejemplo' : 'Activo'}</dd></div>
-          </dl>
+          <div className="carnet-foot">
+            <div className="carnet-col">
+              <span className="carnet-lbl">N.º DE CARNET</span>
+              <span className="carnet-val mono">{carnetId(m.carnet)}</span>
+            </div>
+            <div className="carnet-col">
+              <span className="carnet-lbl">NODO</span>
+              <span className="carnet-val">DCV · JAVERIANA</span>
+            </div>
+            <div className="carnet-col right">
+              <span className="carnet-lbl">ESTADO</span>
+              <span className="carnet-status">
+                <i className="status-hex" />
+                {m.es_ejemplo ? 'Ejemplo' : 'Activa · DCV'}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="stats">
@@ -103,7 +122,7 @@ export default function Carnet({ id, onBack, nav, pedirPerfil, editar, headerRig
             const on = b.ok(s)
             return (
               <div key={b.n} className={'badge ' + (on ? 'on' : 'off')}>
-                <div className="h"><Icon n={b.k} s={22} w={on ? 1.9 : 1.6} /></div>
+                <div className="h"><Icon n={b.k} s={22} w={on ? 2 : 1.6} /></div>
                 <small>{b.n}</small>
               </div>
             )

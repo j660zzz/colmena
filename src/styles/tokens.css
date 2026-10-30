@@ -1,57 +1,59 @@
 /* =====================================================================
-   COLMENA · TOKENS DE MARCA
-   Sistema bloqueado (ver AGENTS.md). Cambiar valores aquí cambia toda
-   la app. No agregar colores nuevos fuera de esta lista sin aprobación.
+   COLMENA · TOKENS DE MARCA — ESPECIFICACIÓN v2.0
+   Fuente de verdad: Brand Board v2.0 (30 de octubre de 2026)
+   Autor: Jhon Alexander Marín Rivera
    ===================================================================== */
 :root {
   color-scheme: light;
 
-  /* Tinta y superficies */
-  --ink: #17140F;
-  --ink-2: #5E564A;
-  --ink-3: #8C8375;
-  --ink-4: #B4AB9B;
-  --surface: #FFFFFF;
-  --surface-2: #FBF8F2;
-  --app-bg: #F7F3EB;      /* crema */
-  --hairline: #E7E0D2;
-  --hairline-2: #F0EADC;
+  /* 1. TINTA Y SUPERFICIES (Sección 3) */
+  --ink: #0F0F0D;         /* Tinta: Texto, logotipo, superficies oscuras (30%) */
+  --ink-2: #4D4D47;       /* Subtítulos y metadatos con contraste WCAG AA > 4.5:1 */
+  --ink-3: #75756E;       /* Texto secundario terciario */
+  --ink-4: #A8A8A0;       /* Bordes y deshabilitados */
+  --surface: #FFFFFF;     /* Blanco: Superficies y tarjetas (20%) */
+  --surface-2: #F7F7F4;   /* Superficie secundaria */
+  --app-bg: #F2F2EE;      /* Niebla: Fondo de interfaz (14%) */
+  --hairline: #DEDEDA;
+  --hairline-2: #E8E8E3;
 
-  /* Ámbar: SOLO CTA primario, pill NECESITO, insignia ganada, pestaña activa */
-  --amber: #F5A623;
-  --amber-hover: #E79812;
-  --amber-ink: #7A4E05;
-  --amber-soft: #FEF3E0;
-  --on-amber: #241704;
+  /* 2. POLEN: Color principal de marca (Sección 3) */
+  --polen: #FFF200;       /* Polen (35%): Botón principal, carnet, resaltados */
+  --polen-hover: #F2E600;
+  --amber: #FFF200;       /* Retrocompatibilidad con componentes existentes */
+  --amber-hover: #F2E600;
+  --amber-ink: #0F0F0D;   /* El texto sobre Polen SIEMPRE va en Tinta (16,4:1) */
+  --amber-soft: rgba(255, 242, 0, 0.25);
+  --on-amber: #0F0F0D;    /* Tinta sobre Polen */
 
-  /* Verde: SOLO semántico (OFREZCO, confirmado) */
-  --green: #0F7A66;
-  --green-soft: #E6F1ED;
+  /* 3. VERDE: Solo semántico (Sección 3) */
+  --green: #0F7A66;       /* Verde: Solo semántico (OFREZCO, confirmado, éxito) (≤ 1%) */
+  --green-soft: rgba(15, 122, 102, 0.12);
 
-  /* Fondo exterior (escritorio) */
-  --canvas: #E9E3D7;
-  --comb: #D3C9B4;
+  /* 4. FONDO EXTERIOR (Escritorio) */
+  --canvas: #E6E6E0;
+  --comb: #D0D0C8;
 
-  /* Sombras */
-  --shadow-1: 0 1px 2px rgba(23,20,15,.05), 0 1px 1px rgba(23,20,15,.03);
-  --shadow-2: 0 4px 16px rgba(23,20,15,.07), 0 1px 3px rgba(23,20,15,.05);
-  --shadow-3: 0 18px 48px rgba(23,20,15,.16), 0 4px 12px rgba(23,20,15,.08);
+  /* 5. SOMBRAS PLANAS Y SUTILES (Flat 2.0, sin degradados) */
+  --shadow-1: 0 1px 3px rgba(15, 15, 13, 0.05), 0 1px 2px rgba(15, 15, 13, 0.03);
+  --shadow-2: 0 4px 16px rgba(15, 15, 13, 0.06), 0 1px 3px rgba(15, 15, 13, 0.04);
+  --shadow-3: 0 16px 40px rgba(15, 15, 13, 0.12), 0 4px 12px rgba(15, 15, 13, 0.06);
 
-  /* Radios (retícula 8 pt) */
+  /* 6. RADIOS (Sección 10 JSON) */
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 20px;
-  --r-xl: 28px;
+  --r-lg: 18px;
+  --r-xl: 26px;
 
-  /* Tipografía por rol */
-  --disp: "Space Grotesk", "Trebuchet MS", sans-serif;   /* logotipo, títulos, cifras */
-  --ui: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif; /* toda la interfaz */
-  --mono: "JetBrains Mono", "Courier New", monospace;    /* carnet y calculadora */
+  /* 7. TIPOGRAFÍA POR ROL (Sección 4) */
+  --disp: "Space Grotesk", "Trebuchet MS", sans-serif;   /* Logotipo, títulos, cifras (700, 600) */
+  --ui: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif; /* Interfaz y texto corrido (400, 600) */
+  --mono: "JetBrains Mono", "Courier New", monospace;    /* Solo carnet y calculadora (500) */
 
-  /* Forma estructural */
+  /* 8. FORMA ESTRUCTURAL */
   --hex: polygon(50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%);
 
-  /* Paleta de avatares (hexágonos de miembros) */
-  --av-1: #17140F; --av-2: #0F7A66; --av-3: #C4761A; --av-4: #3D5A4C;
-  --av-5: #8A5A07; --av-6: #2E3A4A; --av-7: #7A3E52; --av-8: #4A5D23;
+  /* 9. AVATAR (Sección 6: fondo Tinta #0F0F0D, iniciales en Polen #FFF200) */
+  --av-bg: #0F0F0D;
+  --av-fg: #FFF200;
 }
