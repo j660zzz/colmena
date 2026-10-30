@@ -157,17 +157,18 @@ function Post({ post, nav, pedirPerfil, onVerAyudantes }) {
 
 function Composer({ onDone }) {
   const c = useColmena()
-  const toast = useToast()
   const [tipo, setTipo] = useState('need')
   const [texto, setTexto] = useState('')
   const [cats, setCats] = useState([])
   const [enviando, setEnviando] = useState(false)
+  const [errorPublicar, setErrorPublicar] = useState('')
   const toggle = (x) => setCats((l) => l.includes(x) ? l.filter((y) => y !== x) : l.length < 3 ? [...l, x] : l)
 
   const publicar = async () => {
+    setErrorPublicar('')
     setEnviando(true)
     try { await c.publicar(tipo, texto.trim(), cats); onDone('Publicado. La colmena ya lo está viendo.') }
-    catch (e) { toast(e.message, true) }
+    catch (e) { setErrorPublicar(e.message) }
     finally { setEnviando(false) }
   }
 
@@ -191,6 +192,7 @@ function Composer({ onDone }) {
         {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={cats.includes(x)} onClick={() => toggle(x)}>{x}</button>)}
       </div>
       <div className="gap-24" />
+      {errorPublicar && <p className="err" role="alert">{errorPublicar}</p>}
       <button type="button" className="btn primary full" disabled={texto.trim().length < 5 || enviando} onClick={publicar}>
         {enviando ? 'Publicando…' : 'Publicar'}
       </button>

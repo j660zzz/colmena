@@ -1,0 +1,55 @@
+
+> colmena@0.3.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 93 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/registerSW.js                                                 0.13 kB
+dist/manifest.webmanifest                                          0.52 kB
+dist/index.html                                                    1.24 kB │ gzip:   0.58 kB
+dist/assets/space-grotesk-vietnamese-700-normal-DMty7AZE.woff2     4.20 kB
+dist/assets/jetbrains-mono-greek-500-normal-JpySY46c.woff2         4.28 kB
+dist/assets/space-grotesk-vietnamese-600-normal-DUi7WF5p.woff2     4.31 kB
+dist/assets/hanken-grotesk-vietnamese-400-normal-BLrFBAHj.woff2    4.65 kB
+dist/assets/hanken-grotesk-vietnamese-600-normal-Cp8QQjQf.woff2    4.74 kB
+dist/assets/jetbrains-mono-cyrillic-500-normal-DmUKJPL_.woff2      5.36 kB
+dist/assets/jetbrains-mono-vietnamese-500-normal-DNRqzVM1.woff     5.48 kB
+dist/assets/space-grotesk-vietnamese-700-normal-Duxec5Rn.woff      5.59 kB
+dist/assets/space-grotesk-vietnamese-600-normal-D6zpsUhD.woff      5.70 kB
+dist/assets/jetbrains-mono-greek-500-normal-D7SFKleX.woff          5.72 kB
+dist/assets/hanken-grotesk-vietnamese-400-normal-C-iWyKLC.woff     6.50 kB
+dist/assets/hanken-grotesk-vietnamese-600-normal-DHaFH8q1.woff     6.51 kB
+dist/assets/jetbrains-mono-cyrillic-500-normal-DJqRU3vO.woff       7.02 kB
+dist/assets/jetbrains-mono-latin-ext-500-normal-Cut-4mMH.woff2     7.53 kB
+dist/assets/hanken-grotesk-latin-ext-400-normal-DR7lHpW4.woff2     9.05 kB
+dist/assets/hanken-grotesk-latin-ext-600-normal-FY8kSObK.woff2     9.23 kB
+dist/assets/jetbrains-mono-latin-ext-500-normal-ckzbgY84.woff     10.34 kB
+dist/assets/space-grotesk-latin-ext-700-normal-BQnZhY3m.woff2     11.99 kB
+dist/assets/space-grotesk-latin-ext-600-normal-DxxdqCpr.woff2     12.29 kB
+dist/assets/hanken-grotesk-latin-ext-600-normal-DHIm05DD.woff     12.50 kB
+dist/assets/hanken-grotesk-latin-ext-400-normal-DI-aIsWt.woff     12.55 kB
+dist/assets/space-grotesk-latin-700-normal-RjhwGPKo.woff2         12.84 kB
+dist/assets/space-grotesk-latin-600-normal-DjKNqYRj.woff2         13.28 kB
+dist/assets/hanken-grotesk-latin-400-normal-BG6hkEXj.woff2        13.46 kB
+dist/assets/hanken-grotesk-latin-600-normal-CIXX6EOa.woff2        13.78 kB
+dist/assets/space-grotesk-latin-700-normal-CwsQ-cCU.woff          16.42 kB
+dist/assets/space-grotesk-latin-ext-700-normal-HVCqSBdx.woff      16.46 kB
+dist/assets/space-grotesk-latin-ext-600-normal-VcznFIpX.woff      16.73 kB
+dist/assets/space-grotesk-latin-600-normal-BflQw4A9.woff          16.88 kB
+dist/assets/hanken-grotesk-latin-400-normal-CjyVwvJV.woff         17.24 kB
+dist/assets/hanken-grotesk-latin-600-normal-NEn2C4Q3.woff         17.51 kB
+dist/assets/jetbrains-mono-latin-500-normal-BWZEU5yA.woff2        21.83 kB
+dist/assets/jetbrains-mono-latin-500-normal-CJOVTJB7.woff         28.21 kB
+dist/assets/index-DcIBmiKd.css                                    46.22 kB │ gzip:  17.91 kB
+dist/assets/index-BGb3VGBC.js                                    420.60 kB │ gzip: 121.27 kB
+✓ built in 1.40s
+
+PWA v0.21.2
+mode      generateSW
+precache  32 entries (640.28 KiB)
+files generated
+  dist/sw.js
+  dist/workbox-9c191d2f.js

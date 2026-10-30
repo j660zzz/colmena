@@ -24,5 +24,11 @@ npm run dev
 ```
 Reglas para agentes y colaboradores: ver [AGENTS.md](AGENTS.md).
 
+## Interfaz Bloques · Vínculo
+
+Diseño elegido por Jhon e implementado sobre la marca v2.0: autor al frente de las publicaciones, tarjetas en contraste, navegación flotante y componentes compartidos para el resto de la app. Se mantienen las lecturas públicas, sesiones de dispositivo y escrituras por RPC existentes.
+
+La revisión visual, capturas y comprobaciones están en [design-qa.md](design-qa.md). Las propuestas anteriores se conservan en `mockups/rediseno-ui/` como documentación; la app usa datos de Supabase, no el snapshot de los mockups.
+
 ## Administración rápida
 Los datos viven en Supabase (proyecto `colmena`). Para cambiar la fecha o el lugar del encuentro, edita la fila de la tabla `encuentros` desde el Table Editor de Supabase.
