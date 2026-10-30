@@ -15,6 +15,7 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [ ] Panel de métricas para la validación (OE3): publicaciones, respuestas, conexiones y asistencias por día.
 - [ ] Recuperar el carnet en otro dispositivo (código de recuperación).
 - [ ] Moderación: botón "reportar" en publicaciones.
+- [ ] (Propuesta, no implementada) Sesión demo para revisar el carnet como dueño sin tocar producción: hoy se puede ver cualquier perfil `es_ejemplo` en modo visitante (Miembros → tocar el nombre, o `/?carnet=<id>`), pero no hay forma de ver los botones Editar/Compartir/Borrar porque `clave_hash` nunca sale del servidor (correcto, no tocar). Si se necesita probar esa vista, la alternativa segura sería una sesión simulada solo en `src/lib/store.jsx`, activa únicamente con `import.meta.env.DEV` (se elimina del build de producción), que nunca llama a Supabase y queda marcada como "Ejemplo". Requiere aprobación antes de tocar `store.jsx`/`session.js`.
 
 ## Decisiones de Jhon
 - [ ] Fecha y lugar reales del Encuentro 01 (hoy dice "por confirmar").

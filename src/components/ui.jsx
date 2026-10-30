@@ -24,6 +24,8 @@ const I = {
   hand: 'M8 12.5V6.8a1.4 1.4 0 0 1 2.8 0v5 M10.8 11V5.4a1.4 1.4 0 0 1 2.8 0V11 M13.6 11.4V7a1.4 1.4 0 0 1 2.8 0v6.5c0 3.6-2.4 6.5-6 6.5s-6-2.9-6-6.5v-1.6a1.4 1.4 0 0 1 2.8 0',
   bulb: 'M9 17.5h6 M10 21h4 M12 3a6 6 0 0 0-3.5 10.9V17.5h7V13.9A6 6 0 0 0 12 3Z',
   copy: 'M8.5 8.5h11v11h-11z M15.5 8.5V4.5h-11v11h4',
+  image: 'M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13Z M8.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z M4.5 16l4-4 3 3 2-2 6 6',
+  folder: 'M3.5 7A1.5 1.5 0 0 1 5 5.5h5l2 2h7A1.5 1.5 0 0 1 20.5 9v9A1.5 1.5 0 0 1 19 19.5H5A1.5 1.5 0 0 1 3.5 18V7Z',
   ig: 'M7.5 3.5h9a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-9a4 4 0 0 1-4-4v-9a4 4 0 0 1 4-4Z M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z M17 6.8h.01',
   trash: 'M4.5 7h15 M9.5 7V4.5h5V7 M6.5 7l1 13h9l1-13',
   edit: 'M4.5 19.5h4l10-10-4-4-10 10v4Z M13 7l4 4',
@@ -31,7 +33,7 @@ const I = {
   x: 'M6 6l12 12 M18 6 6 18'
 }
 
-export function Icon({ n, s = 20, w = 1.6 }) {
+export function Icon({ n, s = 20, w = 1.75 }) {
   const parts = (I[n] || '').split(' M')
   return (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
