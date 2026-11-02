@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
-import { hace, firstName, initials, igUrl } from '../lib/format'
-import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, tendencias, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
+import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
+import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, useToast } from '../components/ui'
 
 export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer }) {
@@ -14,7 +14,11 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
   const lista = activas.filter((p) => (tipo === 'todo' || p.tipo === tipo) && (!cat || p.categorias.includes(cat)))
   const cuenta = (t) => activas.filter((p) => t === 'todo' || p.tipo === t).length
   const teNecesitan = c.yo ? quienesTeNecesitan(c, c.yo) : []
-  const top = tendencias(c)
+  const irLista = () => setTimeout(() => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
+  const porCat = CATS.map((x) => [x, activas.filter((p) => p.categorias.includes(x)).length])
+  const pedido = CATS.map((x) => [x, activas.filter((p) => p.tipo === 'need' && p.categorias.includes(x)).length])
+    .filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).slice(0, 4)
+  const elegir = (x, t = tipo) => { setTipo(t); setCat(cat === x && t === tipo ? null : x); irLista() }
 
   return (
     <>
@@ -24,7 +28,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         {teNecesitan.length > 0 ? (
           <>
             <h1 className="headline"><Mark>{teNecesitan.length} {teNecesitan.length === 1 ? 'persona necesita' : 'personas necesitan'}</Mark> lo que sabes hacer.</h1>
-            <button type="button" className="linkbtn" onClick={() => { setTipo('need'); setCat(null); document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth' }) }}>Ver quiénes →</button>
+            <button type="button" className="linkbtn" onClick={() => { setTipo('need'); setCat(null); irLista() }}>Ver quiénes →</button>
           </>
         ) : (
           <h1 className="headline">Aquí nadie arranca <Mark>solo.</Mark></h1>
@@ -37,23 +41,35 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
           <span className="plus"><Icon n="plus" s={18} w={2.4} /></span>
         </button>
 
-        <PanalMini onVer={() => irTab('encuentro')} />
-        <RetoCard nav={nav} irTab={irTab} pedirPerfil={pedirPerfil} />
+        <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} />
 
-        <div className="segbar" role="group" aria-label="Tipo de publicación" id="lista">
+        {pedido.length > 0 && (
+          <section className="pedido" aria-label="Lo más pedido">
+            <div className="sec-h"><h3><Icon n="trend" s={18} /> Lo más pedido</h3><span className="meta">Necesitos activos</span></div>
+            <div className="tiles">
+              {pedido.map(([x, n], i) => (
+                <button key={x} type="button" className="tile" aria-pressed={cat === x && tipo === 'need'} onClick={() => elegir(x, 'need')}>
+                  <span className="tile-n">{String(i + 1).padStart(2, '0')}</span>
+                  <b>{x}</b>
+                  <small>{n} {n === 1 ? 'pide ayuda' : 'piden ayuda'}</small>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="sec-h" id="lista"><h3>El muro</h3><span className="meta">{lista.length} {lista.length === 1 ? 'publicación' : 'publicaciones'}</span></div>
+        <div className="segbar" role="group" aria-label="Tipo de publicación">
           {[['todo', 'Todo'], ['need', 'Necesito'], ['offer', 'Ofrezco']].map(([k, t]) => (
             <button key={k} type="button" aria-pressed={tipo === k} onClick={() => setTipo(k)}>{t} <small>{cuenta(k)}</small></button>
           ))}
         </div>
-        {top.length > 0 && (
-          <div className="trend">
-            <span className="trend-l"><Icon n="trend" s={16} />Lo más pedido</span>
-            <div className="chips">
-              {top.map(([x, n]) => <button key={x} type="button" className="chip sm" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>{x} · {n}</button>)}
-            </div>
-          </div>
-        )}
-        {cat && !top.some(([x]) => x === cat) && <button type="button" className="linkbtn" onClick={() => setCat(null)}>Quitar filtro: {cat}</button>}
+        <div className="filtros" role="group" aria-label="Filtrar por categoría">
+          <button type="button" className="filtro" aria-pressed={!cat} onClick={() => setCat(null)}>Todas</button>
+          {porCat.filter(([, n]) => n > 0).map(([x, n]) => (
+            <button key={x} type="button" className="filtro" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>{x}<small>{n}</small></button>
+          ))}
+        </div>
 
         {lista.length === 0 ? (
           <Empty title="Nada por aquí todavía"
@@ -61,13 +77,101 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
             Sé el primero en contar qué necesitas o qué ofreces.
           </Empty>
         ) : (
-          <div className="posts">
+          <div className="posts" key={tipo + (cat || '')}>
             {lista.map((p) => <Post key={p.id} post={p} nav={nav} pedirPerfil={pedirPerfil} />)}
           </div>
         )}
         <p className="fine">Las publicaciones vencen solas para que el muro siempre esté fresco.</p>
       </div>
     </>
+  )
+}
+
+// "Lo que se mueve": lo vivo de la colmena en un carrusel (reto, panal, encuentro, herramienta)
+function Movimiento({ irTab, nav, pedirPerfil }) {
+  const c = useColmena()
+  const toast = useToast()
+  const pista = useRef(null)
+  const [i, setI] = useState(0)
+  const r = c.reto
+  const e = c.encuentro
+  const { llenas, ejemplos, manos } = panalSemana(c)
+  const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
+
+  const gente = r ? c.participantes.filter((x) => x.reto_id === r.id) : []
+  const yoEnReto = c.yo && gente.some((x) => x.perfil_id === c.yo.id)
+  const retoAbierto = r && new Date(r.cierra_en).getTime() > Date.now()
+  const ejReto = cuantosEjemplo(c, gente.map((x) => x.perfil_id))
+  const medirse = () => pedirPerfil('Para medírtele al reto necesitas tu carnet.', async () => {
+    try { await c.unirseReto(r.id); toast('¡Te le mediste! Sube tu propuesta en Encuentro.'); irTab('encuentro') } catch (x) { toast(x.message, true) }
+  })
+
+  const van = e ? c.asistencias.filter((a) => a.encuentro_id === e.id).map((a) => c.perfil(a.perfil_id)).filter(Boolean) : []
+  const ejVan = van.filter((p) => p.es_ejemplo).length
+
+  const slides = [
+    r && (
+      <article key="reto" className="mov polen">
+        <div className="mov-top"><span className="k">Reto de la semana</span><span className="cd">{cierraEn(r.cierra_en)}</span></div>
+        <h3>{r.titulo}</h3>
+        <div className="mov-foot">
+          <span className="mov-who">
+            {gente.length > 0 && <span className="stack">{gente.slice(0, 3).map((x) => <Hex key={x.perfil_id} p={c.perfil(x.perfil_id)} w={22} fs={8} />)}</span>}
+            <span>{gente.length === 0 ? 'Sé el primero' : `${gente.length} ${gente.length === 1 ? 'se le midió' : 'se le midieron'}`}{ejReto > 0 && <em><br />{ejReto} de ejemplo</em>}</span>
+          </span>
+          {!retoAbierto ? <button type="button" className="btn ink sm" onClick={() => irTab('encuentro')}>Ver</button>
+            : yoEnReto ? <button type="button" className="btn ink sm" onClick={() => irTab('encuentro')}>Subir propuesta</button>
+            : <button type="button" className="btn ink sm" onClick={medirse}>Me le mido</button>}
+        </div>
+      </article>
+    ),
+    <article key="panal" className="mov ink">
+      <div className="mov-split">
+        <div>
+          <span className="k">El panal de esta semana</span>
+          <b className="mov-big"><em>{llenas}</em>/{PANAL}</b>
+          <p>{llenas === 0 ? 'Cada mano confirmada llena una celda.' : `manos dadas · faltan ${Math.max(PANAL - llenas, 0)}`}</p>
+          {ejemplos > 0 && <span className="ej-note">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
+        </div>
+        <Panal celdas={celdas} size={14} />
+      </div>
+      <button type="button" className="go" onClick={() => irTab('encuentro')}>Ver el panal <Icon n="right" s={15} w={2.2} /></button>
+    </article>,
+    e && (
+      <article key="encuentro" className="mov white">
+        <div className="mov-top"><span className="k">Encuentro {String(e.numero).padStart(2, '0')} · cierre del mes</span></div>
+        <h3>{e.titulo}</h3>
+        <p className="mov-facts"><Icon n="cal" s={15} />{fechaLarga(e.fecha) || 'Fecha por confirmar'}{e.lugar ? ` · ${e.lugar}` : ''}</p>
+        <div className="mov-foot">
+          <span className="mov-who">
+            {van.length > 0 && <span className="stack">{van.slice(0, 3).map((p) => <Hex key={p.id} p={p} w={22} fs={8} />)}</span>}
+            <span>{van.length === 0 ? 'Nadie se ha apuntado aún' : `${van.length} ${van.length === 1 ? 'quiere ir' : 'quieren ir'}`}{ejVan > 0 && <em><br />{ejVan} de ejemplo</em>}</span>
+          </span>
+          <button type="button" className="btn primary sm" onClick={() => irTab('encuentro')}>Quiero ir</button>
+        </div>
+      </article>
+    ),
+    <article key="calc" className="mov white">
+      <div className="mov-top"><span className="k">Herramienta</span></div>
+      <h3>¿Cuánto deberías cobrar por lo que haces?</h3>
+      <p className="mov-facts">Materiales, horas y gastos fijos: la calculadora te da un precio en un minuto.</p>
+      <div className="mov-foot"><span /><button type="button" className="btn ink sm" onClick={() => nav({ t: 'calc' })}>Calcular</button></div>
+    </article>
+  ].filter(Boolean)
+
+  const alMover = () => {
+    const el = pista.current
+    if (!el || !el.firstElementChild) return
+    const paso = el.firstElementChild.getBoundingClientRect().width + 12
+    setI(Math.min(slides.length - 1, Math.round(el.scrollLeft / paso)))
+  }
+
+  return (
+    <section className="movimiento" aria-label="Lo que se mueve">
+      <div className="sec-h"><h3>Lo que se mueve</h3><span className="meta mono">{i + 1}/{slides.length}</span></div>
+      <div className="mov-pista" ref={pista} onScroll={alMover}>{slides}</div>
+      <div className="mov-dots" aria-hidden="true">{slides.map((_, k) => <i key={k} className={k === i ? 'on' : ''} />)}</div>
+    </section>
   )
 }
 
@@ -82,25 +186,6 @@ function AvisoPrueba() {
       <p>Lo que lleva la etiqueta <b>Ejemplo</b> es contenido de muestra para que veas cómo funciona Colmena: no son personas ni publicaciones reales. Todo lo demás es de la comunidad.</p>
       <button type="button" className="linkbtn" onClick={cerrar}>Entendido</button>
     </aside>
-  )
-}
-
-function PanalMini({ onVer }) {
-  const c = useColmena()
-  const { manos, llenas, ejemplos } = panalSemana(c)
-  const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
-  const faltan = PANAL - llenas
-  return (
-    <section className="panal-card">
-      <div className="panal-txt">
-        <span className="k">El panal de esta semana</span>
-        <b className="big"><em>{llenas}</em>/{PANAL}</b>
-        <p>{llenas === 0 ? 'Cada mano que se confirma llena una celda.' : `manos dadas · ${faltan > 0 ? `faltan ${faltan} para llenarlo` : '¡lo llenamos!'}`}</p>
-        {ejemplos > 0 && <span className="ej-note">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
-        <button type="button" className="go" onClick={onVer}>Ver el panal <Icon n="right" s={15} w={2.2} /></button>
-      </div>
-      <Panal celdas={celdas} size={17} />
-    </section>
   )
 }
 
