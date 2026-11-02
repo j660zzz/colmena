@@ -217,7 +217,7 @@ p.fine { display: block; }
 .success { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; padding: 8px 0; }
 .success h2 { font-size: 26px; line-height: 1.1; }
 .okhex { width: 56px; height: 62px; clip-path: var(--hex); background: var(--ink); display: grid; place-items: center; }
-.mini-post { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.mini-post { padding: 14px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .mini-post p { font: 600 16px/1.35 var(--ui); }
 .mini-post small { color: var(--muted); }
 
@@ -317,7 +317,7 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .consent input { width: 22px; height: 22px; margin: 2px 0 0; flex: none; accent-color: var(--ink); }
 .consent span { font-size: 13px; line-height: 1.5; color: var(--muted); }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.listo { position: relative; flex: 1; overflow-y: auto; background: var(--polen); }
+.listo { position: relative; flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--polen); }
 .listo-comb { position: absolute; top: -20px; right: -40px; width: 220px; height: 220px; pointer-events: none; }
 .listo-in { position: relative; display: flex; flex-direction: column; gap: 16px; padding: calc(40px + env(safe-area-inset-top, 0px)) 20px calc(28px + env(safe-area-inset-bottom, 0px)); }
 .listo h1 { font-size: 48px; line-height: .98; letter-spacing: -.05em; }

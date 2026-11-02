@@ -22,7 +22,7 @@ export function CarnetCard({ p, numero, nota }) {
         <Hex p={p.nombre ? p : null} w={56} h={64} fs={20} />
         <div className="carnet-info">
           <h3>{p.nombre || 'Tu nombre'}</h3>
-          <p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || 'Tu marca · Lo que haces'}</p>
+          <p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || (nota ? 'Tu marca · Lo que haces' : 'Miembro de la colmena')}</p>
         </div>
       </div>
       <div className="carnet-foot">

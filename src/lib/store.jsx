@@ -67,6 +67,9 @@ export function ColmenaProvider({ children }) {
 
   useEffect(() => { cargarTodo() }, [cargarTodo])
 
+  // Si llega actividad de alguien que aún no está en la lista, se recargan los perfiles
+  const asegurar = (id) => { if (id && !perfilesRef.current.some((x) => x.id === id)) cargar.perfiles() }
+
   // Tiempo real: lo que publica uno lo ven todos sin recargar
   useEffect(() => {
     const ch = supabase.channel('colmena')
@@ -75,9 +78,9 @@ export function ColmenaProvider({ children }) {
         const autor = p.new?.autor_id
         if (autor && !perfilesRef.current.some((x) => x.id === autor)) cargar.perfiles()
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'ayudas' }, () => { cargar.ayudas(); cargarPendientes() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ayudas' }, (p) => { cargar.ayudas(); cargarPendientes(); asegurar(p.new?.perfil_id) })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'me_sirve' }, () => cargar.meSirve())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_participantes' }, () => cargar.participantes())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_participantes' }, (p) => { cargar.participantes(); asegurar(p.new?.perfil_id) })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_votos' }, () => cargar.votos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'asistencias' }, () => cargar.asistencias())
       .subscribe()
@@ -107,7 +110,11 @@ export function ColmenaProvider({ children }) {
     const s = sesionRef.current
     if (!s) { setPendientes({ confirmar: [], calificar: [] }); return }
     const { data, error } = await supabase.rpc('mis_pendientes', { p_id: s.id, p_clave: s.clave })
-    if (!error && data) setPendientes(data)
+    if (!error && data) {
+      setPendientes(data)
+      const ids = [...data.confirmar.map((x) => x.perfil_id), ...data.calificar.map((x) => x.otro)]
+      if (ids.some((id) => !perfilesRef.current.some((p) => p.id === id))) cargar.perfiles()
+    }
   }
   useEffect(() => { cargarPendientes() }, [sesion]) // eslint-disable-line react-hooks/exhaustive-deps
 

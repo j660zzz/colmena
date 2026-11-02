@@ -64,7 +64,7 @@ export function quienesTeNecesitan(c, yo) {
   if (!yo?.categorias?.length) return []
   const autores = new Set()
   c.publicaciones.forEach((p) => {
-    if (p.tipo !== 'need' || p.autor_id === yo.id || !activa(p)) return
+    if (p.tipo !== 'need' || p.es_ejemplo || p.autor_id === yo.id || !activa(p)) return
     if (p.categorias.some((x) => yo.categorias.includes(x))) autores.add(p.autor_id)
   })
   return [...autores]
