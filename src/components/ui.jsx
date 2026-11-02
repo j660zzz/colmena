@@ -28,7 +28,16 @@ const I = {
   trash: 'M4.5 7h15 M9.5 7V4.5h5V7 M6.5 7l1 13h9l1-13',
   edit: 'M4.5 19.5h4l10-10-4-4-10 10v4Z M13 7l4 4',
   alert: 'M12 4 2.8 20h18.4L12 4Z M12 10v4.5 M12 17.5h.01',
-  x: 'M6 6l12 12 M18 6 6 18'
+  x: 'M6 6l12 12 M18 6 6 18',
+  wa: 'M4.5 19.5l1.2-3.6A8 8 0 1 1 8.6 18.6L4.5 19.5Z M9.2 8.6c.2-.4.5-.5.8-.5h.5l.9 2.1-.6.8c.5 1 1.3 1.8 2.3 2.3l.8-.6 2.1.9v.5c0 .4-.2.7-.5.8-.7.4-1.6.4-2.6-.1a8 8 0 0 1-3.6-3.6c-.5-1-.5-1.9-.1-2.6Z',
+  lock: 'M6.5 10.5h11v9.5h-11z M8.8 10.5V8a3.2 3.2 0 0 1 6.4 0v2.5',
+  hour: 'M7 3.5h10 M7 20.5h10 M8 3.5c0 4.5 8 4.5 8 8.5s-8 4-8 8.5 M16 3.5c0 4.5-8 4.5-8 8.5s8 4 8 8.5',
+  trend: 'M3.5 17 9.5 11l4 4L20.5 8 M15 8h5.5v5.5',
+  spark: 'M12 3.5l1.9 5.6 5.6 1.9-5.6 1.9L12 18.5l-1.9-5.6-5.6-1.9 5.6-1.9L12 3.5Z M19 16v4 M17 18h4',
+  thumb: 'M7.5 10.5v9h-3v-9h3Z M7.5 10.5 11 4c1.6 0 2.5 1 2.2 2.6l-.5 2.9h5.2a1.8 1.8 0 0 1 1.8 2.1l-1.1 6.6a1.8 1.8 0 0 1-1.8 1.5H7.5',
+  route: 'M6 18.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z M18 9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z M8 16.5h6.5a3 3 0 0 0 0-6h-5a3 3 0 0 1 0-6H16',
+  ext: 'M13.5 4.5h6v6 M19.5 4.5 11 13 M17.5 14v5.5h-13v-13H10',
+  bag: 'M5 8h14l-1.2 12.5H6.2L5 8Z M9 8V6.5a3 3 0 0 1 6 0V8'
 }
 
 export function Icon({ n, s = 20, w = 1.6 }) {
@@ -175,4 +184,59 @@ export function Empty({ icon = 'search', title, children, action }) {
       {action}
     </div>
   )
+}
+
+/* ---------- Panal de 19 celdas (1 + 6 + 12), hexágonos de punta arriba ---------- */
+const PANAL_POS = (() => {
+  const pos = []
+  for (let q = -2; q <= 2; q++) for (let r = -2; r <= 2; r++) {
+    const ring = Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r))
+    if (ring > 2) continue
+    const x = q + r / 2, y = 0.866 * r
+    pos.push({ q, r, ring, ang: (Math.atan2(y, x) + 2.5 * Math.PI) % (2 * Math.PI) })
+  }
+  return pos.sort((a, b) => a.ring - b.ring || a.ang - b.ang).map((p) => [p.q, p.r])
+})()
+
+export function Panal({ celdas = [], total = 19, size = 26, dark = true }) {
+  const w = Math.sqrt(3) * size, h = 2 * size
+  const pts = PANAL_POS.slice(0, total).map(([q, r]) => [w * (q + r / 2), 0.75 * h * r])
+  const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1])
+  const minX = Math.min(...xs) - w / 2, minY = Math.min(...ys) - h / 2
+  const W = Math.max(...xs) - minX + w / 2, H = Math.max(...ys) - minY + h / 2
+  const hex = (cx, cy) => Array.from({ length: 6 }, (_, i) => {
+    const a = (60 * i - 90) * Math.PI / 180, rr = size - 1.6
+    return (cx + rr * Math.cos(a)).toFixed(1) + ',' + (cy + rr * Math.sin(a)).toFixed(1)
+  }).join(' ')
+  return (
+    <svg className="panal" viewBox={`${minX.toFixed(1)} ${minY.toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}`} role="img"
+      aria-label={`${celdas.length} de ${total} celdas llenas`}>
+      {pts.map(([x, y], i) => {
+        const c = celdas[i]
+        return (
+          <g key={i}>
+            <polygon points={hex(x, y)} fill={c ? 'var(--polen)' : 'none'}
+              stroke={c ? 'var(--polen)' : (dark ? 'rgba(255,255,255,.28)' : 'rgba(15,15,13,.28)')} strokeWidth="1.4" strokeDasharray={c ? undefined : '3 3'} />
+            {c && <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={size * 0.52} fontWeight="700" fill="var(--ink)" fontFamily="var(--disp)">{c}</text>}
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+export function Stars({ n, s = 14 }) {
+  return (
+    <span className="stars" aria-label={`${n} de 5`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <svg key={i} width={s} height={s} viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3.5l2.6 5.5 6 .8-4.4 4.1 1.1 6-5.3-2.9-5.3 2.9 1.1-6-4.4-4.1 6-.8L12 3.5Z" fill={i <= n ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+      ))}
+    </span>
+  )
+}
+
+export function Mark({ children }) {
+  return <mark className="hl">{children}</mark>
 }

@@ -6,7 +6,7 @@ import { AVATAR_COLORS } from './format'
 const Ctx = createContext(null)
 export const useColmena = () => useContext(Ctx)
 
-const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,created_at'
+const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,tiene_whatsapp,created_at'
 
 async function q(promise) {
   const { data, error } = await promise
@@ -22,6 +22,12 @@ export function ColmenaProvider({ children }) {
   const [conexiones, setConexiones] = useState([])
   const [asistencias, setAsistencias] = useState([])
   const [encuentro, setEncuentro] = useState(null)
+  const [meSirve, setMeSirve] = useState([])
+  const [reto, setReto] = useState(null)
+  const [participantes, setParticipantes] = useState([])
+  const [votos, setVotos] = useState([])
+  const [resenas, setResenas] = useState([])
+  const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
   const [cargando, setCargando] = useState(true)
   const [errorRed, setErrorRed] = useState(null)
   const perfilesRef = useRef(perfiles)
@@ -33,25 +39,37 @@ export function ColmenaProvider({ children }) {
     ayudas: async () => setAyudas(await q(supabase.from('ayudas').select('*'))),
     conexiones: async () => setConexiones(await q(supabase.from('conexiones').select('*'))),
     asistencias: async () => setAsistencias(await q(supabase.from('asistencias').select('*'))),
+    meSirve: async () => setMeSirve(await q(supabase.from('me_sirve').select('*'))),
+    reto: async () => {
+      const rows = await q(supabase.from('retos').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
+      setReto(rows[0] || null)
+    },
+    participantes: async () => setParticipantes(await q(supabase.from('reto_participantes').select('*').order('created_at', { ascending: true }))),
+    votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
+    resenas: async () => setResenas(await q(supabase.rpc('resenas_publicas'))),
     encuentro: async () => {
       const rows = await q(supabase.from('encuentros').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
       setEncuentro(rows[0] || null)
     }
   }
 
+  // Carga todo; si algo falla (red del celular que se despierta, por ejemplo) reintenta solo lo que falló
   const cargarTodo = useCallback(async () => {
-    try {
-      await Promise.all(Object.values(cargar).map((f) => f()))
-      setErrorRed(null)
-    } catch (e) {
-      setErrorRed('No pudimos conectar con la colmena. Revisa tu internet.')
-      console.error(e)
-    } finally {
-      setCargando(false)
+    let pendientes = Object.entries(cargar)
+    for (let intento = 0; intento < 3 && pendientes.length; intento++) {
+      if (intento) await new Promise((r) => setTimeout(r, 1200 * intento))
+      const res = await Promise.allSettled(pendientes.map(([, f]) => f()))
+      res.forEach((r, i) => { if (r.status === 'rejected') console.warn('Colmena: falló', pendientes[i][0], r.reason) })
+      pendientes = pendientes.filter((_, i) => res[i].status === 'rejected')
     }
+    setErrorRed(pendientes.length ? 'No pudimos conectar con la colmena. Revisa tu internet.' : null)
+    setCargando(false)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { cargarTodo() }, [cargarTodo])
+
+  // Si llega actividad de alguien que aún no está en la lista, se recargan los perfiles
+  const asegurar = (id) => { if (id && !perfilesRef.current.some((x) => x.id === id)) cargar.perfiles() }
 
   // Tiempo real: lo que publica uno lo ven todos sin recargar
   useEffect(() => {
@@ -61,10 +79,13 @@ export function ColmenaProvider({ children }) {
         const autor = p.new?.autor_id
         if (autor && !perfilesRef.current.some((x) => x.id === autor)) cargar.perfiles()
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'ayudas' }, () => cargar.ayudas())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ayudas' }, (p) => { cargar.ayudas(); cargarPendientes(); asegurar(p.new?.perfil_id) })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'me_sirve' }, () => cargar.meSirve())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_participantes' }, (p) => { cargar.participantes(); asegurar(p.new?.perfil_id) })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_votos' }, () => cargar.votos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'asistencias' }, () => cargar.asistencias())
       .subscribe()
-    const t = setInterval(() => { cargar.perfiles(); cargar.conexiones() }, 45000)
+    const t = setInterval(() => { cargar.perfiles(); cargar.resenas(); cargarPendientes() }, 45000)
     const vis = () => { if (document.visibilityState === 'visible') cargarTodo() }
     document.addEventListener('visibilitychange', vis)
     return () => { supabase.removeChannel(ch); clearInterval(t); document.removeEventListener('visibilitychange', vis) }
@@ -84,14 +105,28 @@ export function ColmenaProvider({ children }) {
     return data
   }
 
+  const sesionRef = useRef(sesion)
+  sesionRef.current = sesion
+  async function cargarPendientes() {
+    const s = sesionRef.current
+    if (!s) { setPendientes({ confirmar: [], calificar: [] }); return }
+    const { data, error } = await supabase.rpc('mis_pendientes', { p_id: s.id, p_clave: s.clave })
+    if (!error && data) {
+      setPendientes(data)
+      const ids = [...data.confirmar.map((x) => x.perfil_id), ...data.calificar.map((x) => x.otro)]
+      if (ids.some((id) => !perfilesRef.current.some((p) => p.id === id))) cargar.perfiles()
+    }
+  }
+  useEffect(() => { cargarPendientes() }, [sesion]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const acciones = {
     async crearPerfil(f) {
       const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]
       const { data, error } = await supabase.rpc('crear_perfil', {
         p_nombre: f.nombre, p_marca: f.marca, p_rol: f.rol, p_categorias: f.categorias,
-        p_habilidades: f.habilidades, p_instagram: f.instagram, p_color: color
+        p_habilidades: f.habilidades, p_instagram: f.instagram, p_color: color, p_whatsapp: f.whatsapp
       })
-      if (error) throw new Error('No pudimos crear tu perfil. Intenta de nuevo.')
+      if (error) throw new Error(error.message?.includes('WhatsApp') ? error.message : 'No pudimos crear tu carnet. Intenta de nuevo.')
       const s = { id: data.id, clave: data.clave }
       guardarSesion(s)
       await cargar.perfiles()
@@ -101,18 +136,52 @@ export function ColmenaProvider({ children }) {
     async actualizarPerfil(f) {
       await rpc('actualizar_perfil', {
         p_nombre: f.nombre, p_marca: f.marca, p_rol: f.rol, p_categorias: f.categorias,
-        p_habilidades: f.habilidades, p_instagram: f.instagram
+        p_habilidades: f.habilidades, p_instagram: f.instagram, p_whatsapp: f.whatsapp || null
       })
       await cargar.perfiles()
     },
+    miWhatsapp: () => rpc('mi_whatsapp', {}),
     async borrarPerfil() {
       await rpc('borrar_perfil', {})
       borrarSesion(); setSesion(null)
       await cargarTodo()
     },
-    async publicar(tipo, texto, categorias) {
-      await rpc('publicar', { p_tipo: tipo, p_texto: texto, p_categorias: categorias })
+    async publicar(tipo, texto, categorias, dias = 3) {
+      const id = await rpc('publicar', { p_tipo: tipo, p_texto: texto, p_categorias: categorias, p_dias: dias })
       await cargar.publicaciones()
+      return id
+    },
+    async contactar(perfilId, postId = null) {
+      const n = await rpc('contactar', { p_perfil: perfilId, p_post: postId })
+      if (postId) cargar.ayudas()
+      return n
+    },
+    async confirmarMano(postId, perfilId, estado) {
+      await rpc('confirmar_mano', { p_post: postId, p_perfil: perfilId, p_estado: estado })
+      await Promise.all([cargar.ayudas(), cargarPendientes()])
+    },
+    async alternarMeSirve(postId) {
+      const ya = meSirve.some((m) => m.publicacion_id === postId && m.perfil_id === sesion.id)
+      setMeSirve((l) => ya ? l.filter((m) => !(m.publicacion_id === postId && m.perfil_id === sesion.id)) : [...l, { publicacion_id: postId, perfil_id: sesion.id }])
+      try { return await rpc('alternar_me_sirve', { p_post: postId }) } catch (e) { cargar.meSirve(); throw e }
+    },
+    async calificar(postId, paraId, estrellas, chips, comentario) {
+      const r = await rpc('calificar', { p_post: postId, p_para: paraId, p_estrellas: estrellas, p_chips: chips, p_comentario: comentario })
+      await Promise.all([cargarPendientes(), cargar.resenas()])
+      return r
+    },
+    async unirseReto(retoId, link = '') {
+      await rpc('unirse_reto', { p_reto: retoId, p_link: link })
+      await cargar.participantes()
+    },
+    async salirReto(retoId) {
+      await rpc('salir_reto', { p_reto: retoId })
+      await cargar.participantes()
+    },
+    async alternarVoto(retoId, participanteId) {
+      const r = await rpc('alternar_voto_reto', { p_reto: retoId, p_participante: participanteId })
+      await cargar.votos()
+      return r
     },
     async borrarPublicacion(id) {
       setPublicaciones((l) => l.filter((p) => p.id !== id))
@@ -137,6 +206,7 @@ export function ColmenaProvider({ children }) {
 
   const valor = {
     sesion, yo, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
+    meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
     cargando, errorRed, recargar: cargarTodo, ...acciones,
     perfil: (id) => perfiles.find((p) => p.id === id)
   }

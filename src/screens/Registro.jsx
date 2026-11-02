@@ -1,0 +1,252 @@
+import { useEffect, useState } from 'react'
+import { useColmena } from '../lib/store'
+import { CATS } from '../data/contenido'
+import { carnetId } from '../lib/format'
+import { completitud } from '../lib/logic'
+import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
+
+const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
+const soloDigitos = (v) => v.replace(/\D/g, '')
+export const waValido = (v) => /^3\d{9}$/.test(soloDigitos(v).replace(/^57(?=3\d{9}$)/, ''))
+const fmtWa = (v) => { const d = soloDigitos(v).slice(0, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ') }
+
+export function CarnetCard({ p, numero, nota }) {
+  return (
+    <div className="carnet">
+      <Comb className="combmark" viewBox="0 0 210 250" r={26} w={230} h={270} x0={-16} y0={-20} stroke="rgba(15,15,13,.10)" />
+      <div className="carnet-head">
+        <div className="carnet-lockup"><CeldaAbierta s={18} color="var(--ink)" /><span className="carnet-brand">Colmena</span></div>
+        <span className="carnet-badge">MIEMBRO</span>
+      </div>
+      <div className="carnet-body">
+        <Hex p={p.nombre ? p : null} w={56} h={64} fs={20} />
+        <div className="carnet-info">
+          <h3>{p.nombre || 'Tu nombre'}</h3>
+          <p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || (nota ? 'Tu marca · Lo que haces' : 'Miembro de la colmena')}</p>
+        </div>
+      </div>
+      <div className="carnet-foot">
+        <div className="carnet-col"><span className="carnet-lbl">N.º DE CARNET</span><span className="carnet-val mono">{numero ? carnetId(numero) : 'COL-····'}</span></div>
+        <div className="carnet-col right">
+          <span className="carnet-lbl">ESTADO</span>
+          <span className="carnet-status"><i className="status-hex" />{p.es_ejemplo ? 'Ejemplo' : 'Activa · DCV'}</span>
+        </div>
+      </div>
+      {nota && <span className="carnet-live">{nota}</span>}
+    </div>
+  )
+}
+
+export default function Registro({ motivo, onBack, onListo }) {
+  const c = useColmena()
+  const [paso, setPaso] = useState(1)
+  const [f, setF] = useState({ nombre: '', marca: '', rol: '', whatsapp: '', instagram: '', categorias: [], habilidades: '' })
+  const [acepto, setAcepto] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [err, setErr] = useState('')
+  const set = (k) => (e) => setF({ ...f, [k]: k === 'whatsapp' ? fmtWa(e.target.value) : e.target.value })
+  const toggle = (x) => setF({ ...f, categorias: f.categorias.includes(x) ? f.categorias.filter((y) => y !== x) : f.categorias.length < 3 ? [...f.categorias, x] : f.categorias })
+
+  const ok = paso === 1 ? f.nombre.trim().length >= 2 : paso === 2 ? waValido(f.whatsapp) && acepto : f.categorias.length > 0
+
+  const siguiente = async (e) => {
+    e.preventDefault()
+    if (!ok) return
+    if (paso < 3) { setPaso(paso + 1); setErr(''); return }
+    setEnviando(true); setErr('')
+    try {
+      await c.crearPerfil({
+        ...f, instagram: limpiarIg(f.instagram),
+        habilidades: f.habilidades.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 8)
+      })
+      onListo()
+    } catch (x) { setErr(x.message) } finally { setEnviando(false) }
+  }
+
+  const titulos = ['', 'Quién eres', 'Para que te puedan escribir', 'En qué te mueves']
+
+  return (
+    <>
+      <SubHeader title="Saca tu carnet" onBack={paso > 1 ? () => setPaso(paso - 1) : onBack} />
+      <div className="steps-bar" aria-hidden="true">{[1, 2, 3].map((i) => <i key={i} className={i <= paso ? 'on' : ''} />)}</div>
+      <form className="body fade" onSubmit={siguiente}>
+        <CarnetCard p={{ ...f, habilidades: [] }} nota="Se arma mientras escribes" />
+        <p className="step-t">Paso {paso} de 3 · {titulos[paso]}</p>
+        {paso === 1 && motivo && <p className="soft">{motivo}</p>}
+        <div className="form">
+          {paso === 1 && (
+            <>
+              <div className="field">
+                <label htmlFor="r-nombre">¿Cómo te dicen? *</label>
+                <div className="inp"><input id="r-nombre" autoFocus required maxLength={60} autoComplete="name" value={f.nombre} onChange={set('nombre')} placeholder="Nombre y apellido" /></div>
+              </div>
+              <div className="field">
+                <label htmlFor="r-marca">Tu emprendimiento o marca</label>
+                <div className="inp"><input id="r-marca" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Si aún no tiene nombre, déjalo vacío" /></div>
+              </div>
+              <div className="field">
+                <label htmlFor="r-rol">¿Qué haces?</label>
+                <div className="inp"><input id="r-rol" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div>
+              </div>
+            </>
+          )}
+          {paso === 2 && (
+            <>
+              <div className="field">
+                <label htmlFor="r-wa">Tu WhatsApp *</label>
+                <div className="inp"><span className="pre mono">+57</span><input id="r-wa" className="mono" autoFocus inputMode="tel" autoComplete="tel-national" value={f.whatsapp} onChange={set('whatsapp')} placeholder="310 555 0142" /></div>
+                <span className="hint"><Icon n="lock" s={14} />Solo lo ven los miembros con carnet. Nunca es público.</span>
+              </div>
+              <div className="field">
+                <label htmlFor="r-ig">Instagram <small>(opcional)</small></label>
+                <div className="inp"><span className="pre">@</span><input id="r-ig" maxLength={40} autoCapitalize="none" autoCorrect="off" value={f.instagram} onChange={set('instagram')} placeholder="tumarca" /></div>
+              </div>
+              <label className="consent">
+                <input type="checkbox" checked={acepto} onChange={(e) => setAcepto(e.target.checked)} />
+                <span>
+                  Acepto que mi nombre, marca, rol, habilidades y WhatsApp sean visibles para los miembros de Colmena.
+                  Prototipo académico del Proyecto de Grado de Diseño de Comunicación Visual, Pontificia Universidad Javeriana Cali.
+                  Mis datos se usan solo dentro de la app y para analizar su uso de forma agregada, conforme a la <u>Ley 1581 de 2012</u>.
+                  Puedo borrar mi perfil cuando quiera desde mi carnet.
+                </span>
+              </label>
+            </>
+          )}
+          {paso === 3 && (
+            <>
+              <div className="field">
+                <span className="lbl">Categorías * <small>(hasta 3)</small></span>
+                <div className="chips wrap">
+                  {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}
+                </div>
+                <span className="hint">Con esto te mostramos quién necesita lo que sabes hacer.</span>
+              </div>
+              <div className="field">
+                <label htmlFor="r-hab">Lo que sabes hacer</label>
+                <div className="inp"><input id="r-hab" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas: retoque, reels, empaques" /></div>
+              </div>
+            </>
+          )}
+          {err && <p className="err" role="alert">{err}</p>}
+          <button type="submit" className="btn primary full big" disabled={!ok || enviando}>
+            {enviando ? 'Armando tu carnet…' : paso < 3 ? 'Seguir' : 'Sacar mi carnet'}
+          </button>
+          {paso === 2 && f.whatsapp && !waValido(f.whatsapp) && <p className="fine center">Escribe un celular colombiano de 10 dígitos.</p>}
+          <p className="fine center">Sin contraseñas ni correos. Menos de un minuto.</p>
+        </div>
+      </form>
+    </>
+  )
+}
+
+export function CarnetListo({ onMuro }) {
+  const c = useColmena()
+  const toast = useToast()
+  const yo = c.yo
+  if (!yo) return null
+  const { pct } = completitud(yo)
+  const compartir = async () => {
+    const url = `${location.origin}/?carnet=${yo.id}`
+    const data = { title: 'Ya tengo mi carnet en Colmena', text: `Ya soy parte de Colmena · ${carnetId(yo.carnet)}. Aquí nadie arranca solo.`, url }
+    try {
+      if (navigator.share) await navigator.share(data)
+      else { await navigator.clipboard.writeText(`${data.text} ${url}`); toast('Enlace copiado. Pégalo en tu historia.') }
+    } catch { /* cancelado */ }
+  }
+  return (
+    <div className="listo">
+      <Comb className="listo-comb" viewBox="0 0 200 200" r={22} w={220} h={220} x0={0} y0={0} stroke="rgba(15,15,13,.14)" />
+      <div className="listo-in fade">
+        <h1>Ya eres<br />parte.</h1>
+        <div className="carnet white"><CarnetInner p={yo} /></div>
+        <p className="listo-sub">Aquí nadie arranca solo.</p>
+        <div className="earned">
+          <span className="ehex"><Icon n="card" s={20} w={2} /></span>
+          <span>Insignia ganada: <b>Entró a la colmena</b></span>
+        </div>
+        <div className="pct-card">
+          <b>Tu carnet ya va al {pct}%</b>
+          <div className="prog"><i style={{ width: pct + '%' }} /></div>
+          <span>Completa lo que sabes hacer y te encuentran más rápido.</span>
+        </div>
+        <button type="button" className="btn ink full big" onClick={compartir}><Icon n="share" s={18} />Compartir mi carnet</button>
+        <button type="button" className="btn ghost full" onClick={onMuro}>Ir al muro</button>
+      </div>
+    </div>
+  )
+}
+
+function CarnetInner({ p }) {
+  return (
+    <>
+      <div className="carnet-head">
+        <div className="carnet-lockup"><CeldaAbierta s={18} color="var(--ink)" /><span className="carnet-brand">Colmena</span></div>
+        <span className="carnet-badge">MIEMBRO</span>
+      </div>
+      <div className="carnet-body">
+        <Hex p={p} w={56} h={64} fs={20} />
+        <div className="carnet-info"><h3>{p.nombre}</h3><p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || 'Miembro'}</p></div>
+      </div>
+      <div className="carnet-foot">
+        <div className="carnet-col"><span className="carnet-lbl">N.º DE CARNET</span><span className="carnet-val mono">{carnetId(p.carnet)}</span></div>
+      </div>
+    </>
+  )
+}
+
+export function Editar({ onBack }) {
+  const c = useColmena()
+  const toast = useToast()
+  const b = c.yo
+  const [f, setF] = useState({
+    nombre: b?.nombre || '', marca: b?.marca || '', rol: b?.rol || '', categorias: b?.categorias || [],
+    habilidades: (b?.habilidades || []).join(', '), instagram: b?.instagram || '', whatsapp: ''
+  })
+  const [enviando, setEnviando] = useState(false)
+  const [err, setErr] = useState('')
+  useEffect(() => { c.miWhatsapp().then((n) => n && setF((x) => ({ ...x, whatsapp: fmtWa(n.replace(/^57/, '')) }))).catch(() => {}) }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  if (!b) return null
+  const set = (k) => (e) => setF({ ...f, [k]: k === 'whatsapp' ? fmtWa(e.target.value) : e.target.value })
+  const toggle = (x) => setF({ ...f, categorias: f.categorias.includes(x) ? f.categorias.filter((y) => y !== x) : f.categorias.length < 3 ? [...f.categorias, x] : f.categorias })
+  const ok = f.nombre.trim().length >= 2 && (!f.whatsapp || waValido(f.whatsapp))
+
+  const guardar = async (e) => {
+    e.preventDefault(); if (!ok) return
+    setEnviando(true); setErr('')
+    try {
+      await c.actualizarPerfil({ ...f, instagram: limpiarIg(f.instagram), habilidades: f.habilidades.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 8) })
+      toast('Carnet actualizado'); onBack()
+    } catch (x) { setErr(x.message) } finally { setEnviando(false) }
+  }
+  const borrar = async () => {
+    if (!confirm('Esto borra tu carnet, tus publicaciones y tu actividad de forma permanente. ¿Seguro?')) return
+    try { await c.borrarPerfil(); toast('Tu perfil fue borrado'); onBack() } catch (x) { toast(x.message, true) }
+  }
+
+  return (
+    <>
+      <SubHeader title="Editar carnet" onBack={onBack} />
+      <form className="body fade" onSubmit={guardar}>
+        <div className="form">
+          <div className="field"><label htmlFor="e-n">Nombre *</label><div className="inp"><input id="e-n" maxLength={60} value={f.nombre} onChange={set('nombre')} /></div></div>
+          <div className="field"><label htmlFor="e-m">Emprendimiento o marca</label><div className="inp"><input id="e-m" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Si aún no tiene nombre, déjalo vacío" /></div></div>
+          <div className="field"><label htmlFor="e-r">¿Qué haces?</label><div className="inp"><input id="e-r" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div></div>
+          <div className="field">
+            <label htmlFor="e-w">WhatsApp</label>
+            <div className="inp"><span className="pre mono">+57</span><input id="e-w" className="mono" inputMode="tel" value={f.whatsapp} onChange={set('whatsapp')} placeholder="310 555 0142" /></div>
+            <span className="hint"><Icon n="lock" s={14} />Solo lo ven los miembros con carnet.</span>
+          </div>
+          <div className="field"><label htmlFor="e-i">Instagram</label><div className="inp"><span className="pre">@</span><input id="e-i" maxLength={40} autoCapitalize="none" value={f.instagram} onChange={set('instagram')} placeholder="tumarca" /></div></div>
+          <div className="field">
+            <span className="lbl">Categorías <small>(hasta 3)</small></span>
+            <div className="chips wrap">{CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}</div>
+          </div>
+          <div className="field"><label htmlFor="e-h">Lo que sabes hacer</label><div className="inp"><input id="e-h" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas" /></div></div>
+          {err && <p className="err" role="alert">{err}</p>}
+          <button type="submit" className="btn primary full big" disabled={!ok || enviando}>{enviando ? 'Guardando…' : 'Guardar cambios'}</button>
+          <div className="center"><button type="button" className="linkbtn danger" onClick={borrar}>Borrar mi perfil y mis datos</button></div>
+        </div>
+      </form>
+    </>
+  )
+}
