@@ -423,3 +423,50 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .ej-note { display: inline-block; width: fit-content; justify-self: start; align-self: flex-start; margin-top: 6px; font: 600 11px/1.3 var(--ui); color: rgba(255, 255, 255, .64); border: 1px solid rgba(255, 255, 255, .4); border-radius: 4px; padding: 2px 6px; }
 .panal-card.full .ej-note { justify-self: center; }
 .ej-inline { font-style: normal; color: var(--muted); }
+
+/* Home por bloques: Lo que se mueve · Lo más pedido · Círculos */
+.sec-h h3 { display: inline-flex; align-items: center; gap: 6px; }
+.movimiento { display: flex; flex-direction: column; gap: 10px; }
+.movimiento .sec-h { margin-top: 0; }
+.mov-pista { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: -16px; padding: 2px 16px 4px; scroll-padding-inline: 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
+.mov-pista::-webkit-scrollbar { display: none; }
+.mov { flex: 0 0 86%; scroll-snap-align: start; min-height: 196px; border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.mov.polen { background: var(--polen); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.mov.ink { background: var(--ink); color: var(--surface); }
+.mov.ink .k { color: rgba(255, 255, 255, .64); }
+.mov.white { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.mov h3 { font-size: 22px; line-height: 1.12; letter-spacing: -.02em; }
+.mov-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.mov-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.mov-who { display: inline-flex; align-items: center; gap: 8px; font: 600 13px/1.3 var(--ui); }
+.mov-who em { font-style: normal; font-weight: 400; opacity: .7; }
+.mov-facts { display: flex; gap: 6px; align-items: flex-start; font-size: 14px; line-height: 1.4; color: var(--muted); }
+.mov-facts svg { flex: none; margin-top: 2px; }
+.mov-split { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.mov-split p { font-size: 14px; color: rgba(255, 255, 255, .8); margin-top: 4px; }
+.mov-big { display: block; font: 700 46px/1 var(--disp); letter-spacing: -.04em; margin-top: 8px; }
+.mov-big em { font-style: normal; color: var(--polen); }
+.mov .panal { width: 108px; height: auto; }
+.mov .go { display: inline-flex; gap: 4px; align-items: center; color: var(--polen); font: 600 14px/1 var(--ui); min-height: 36px; margin-top: auto; align-self: flex-start; }
+.mov-dots { display: flex; gap: 6px; justify-content: center; }
+.mov-dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line); transition: width .2s; }
+.mov-dots i.on { width: 18px; background: var(--ink); }
+
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.tile { text-align: left; background: var(--surface); border-radius: 18px; padding: 14px; box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 4px; min-height: 104px; }
+.tile-n { font: 700 28px/1 var(--disp); letter-spacing: -.03em; }
+.tile b { font: 600 16px/1.2 var(--ui); margin-top: auto; }
+.tile small { font-size: 13px; color: var(--muted); }
+.tile[aria-pressed="true"] { background: var(--ink); color: var(--surface); box-shadow: none; }
+.tile[aria-pressed="true"] .tile-n { color: var(--polen); }
+.tile[aria-pressed="true"] small { color: rgba(255, 255, 255, .7); }
+
+.circulos { display: flex; gap: 12px; overflow-x: auto; margin-inline: -16px; padding: 2px 16px; scrollbar-width: none; }
+.circulos::-webkit-scrollbar { display: none; }
+.circulo { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 56px; }
+.circ-hex { width: 52px; height: 58px; display: grid; place-items: center; clip-path: var(--hex); background: var(--ink); color: var(--polen); font: 700 18px/1 var(--disp); }
+.circulo small { font: 600 12px/1.2 var(--ui); }
+.circulo.vacio .circ-hex { background: var(--line); color: var(--muted); }
+.circulo[aria-pressed="true"] .circ-hex { background: var(--polen); color: var(--ink); }
+.circulo[aria-pressed="true"] small { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; }
+@media (prefers-reduced-motion: reduce) { .mov-pista { scroll-behavior: auto; } }
