@@ -119,7 +119,7 @@ function Movimiento({ irTab, nav, pedirPerfil }) {
         <div className="mov-foot">
           <span className="mov-who">
             {gente.length > 0 && <span className="stack">{gente.slice(0, 3).map((x) => <Hex key={x.perfil_id} p={c.perfil(x.perfil_id)} w={22} fs={8} />)}</span>}
-            {gente.length === 0 ? 'Sé el primero' : `${gente.length} ${gente.length === 1 ? 'se le midió' : 'se le midieron'}`}{ejReto > 0 && <em> · {ejReto} de ejemplo</em>}
+            <span>{gente.length === 0 ? 'Sé el primero' : `${gente.length} ${gente.length === 1 ? 'se le midió' : 'se le midieron'}`}{ejReto > 0 && <em><br />{ejReto} de ejemplo</em>}</span>
           </span>
           {!retoAbierto ? <button type="button" className="btn ink sm" onClick={() => irTab('encuentro')}>Ver</button>
             : yoEnReto ? <button type="button" className="btn ink sm" onClick={() => irTab('encuentro')}>Subir propuesta</button>
@@ -147,7 +147,7 @@ function Movimiento({ irTab, nav, pedirPerfil }) {
         <div className="mov-foot">
           <span className="mov-who">
             {van.length > 0 && <span className="stack">{van.slice(0, 3).map((p) => <Hex key={p.id} p={p} w={22} fs={8} />)}</span>}
-            {van.length === 0 ? 'Nadie se ha apuntado aún' : `${van.length} ${van.length === 1 ? 'quiere ir' : 'quieren ir'}`}{ejVan > 0 && <em> · {ejVan} de ejemplo</em>}
+            <span>{van.length === 0 ? 'Nadie se ha apuntado aún' : `${van.length} ${van.length === 1 ? 'quiere ir' : 'quieren ir'}`}{ejVan > 0 && <em><br />{ejVan} de ejemplo</em>}</span>
           </span>
           <button type="button" className="btn primary sm" onClick={() => irTab('encuentro')}>Quiero ir</button>
         </div>
