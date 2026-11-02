@@ -58,18 +58,16 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
           </section>
         )}
 
-        <div className="sec-h" id="lista"><h3>El muro</h3>{cat && <button type="button" className="linkbtn" onClick={() => setCat(null)}>Quitar filtro</button>}</div>
-        <div className="circulos" role="group" aria-label="Filtrar por categoría">
-          {porCat.map(([x, n]) => (
-            <button key={x} type="button" className={'circulo' + (n === 0 ? ' vacio' : '')} aria-pressed={cat === x} onClick={() => elegir(x)}>
-              <span className="circ-hex">{n}</span>
-              <small>{x}</small>
-            </button>
-          ))}
-        </div>
+        <div className="sec-h" id="lista"><h3>El muro</h3><span className="meta">{lista.length} {lista.length === 1 ? 'publicación' : 'publicaciones'}</span></div>
         <div className="segbar" role="group" aria-label="Tipo de publicación">
           {[['todo', 'Todo'], ['need', 'Necesito'], ['offer', 'Ofrezco']].map(([k, t]) => (
             <button key={k} type="button" aria-pressed={tipo === k} onClick={() => setTipo(k)}>{t} <small>{cuenta(k)}</small></button>
+          ))}
+        </div>
+        <div className="filtros" role="group" aria-label="Filtrar por categoría">
+          <button type="button" className="filtro" aria-pressed={!cat} onClick={() => setCat(null)}>Todas</button>
+          {porCat.filter(([, n]) => n > 0).map(([x, n]) => (
+            <button key={x} type="button" className="filtro" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>{x}<small>{n}</small></button>
           ))}
         </div>
 
@@ -79,7 +77,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
             Sé el primero en contar qué necesitas o qué ofreces.
           </Empty>
         ) : (
-          <div className="posts">
+          <div className="posts" key={tipo + (cat || '')}>
             {lista.map((p) => <Post key={p.id} post={p} nav={nav} pedirPerfil={pedirPerfil} />)}
           </div>
         )}
