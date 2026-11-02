@@ -151,10 +151,10 @@ p.fine { display: block; }
 .big em { font-style: normal; color: var(--polen); }
 .panal-card .go { display: inline-flex; gap: 4px; align-items: center; color: var(--polen); font: 600 14px/1 var(--ui); min-height: 32px; }
 .panal-card.slim .panal { width: 84px; }
-.panal-card.big { grid-template-columns: 1fr; justify-items: stretch; gap: 14px; padding: 20px; }
-.panal-card.big .panal { width: min(240px, 70%); justify-self: center; }
-.panal-card.big b.big { font-size: 26px; }
-.panal-card.big > p { font-size: 15px; color: rgba(255, 255, 255, .78); }
+.panal-card.full { grid-template-columns: 1fr; justify-items: stretch; gap: 14px; padding: 20px; }
+.panal-card.full .panal { width: min(240px, 70%); justify-self: center; }
+.panal-card.full b.big { font-size: 26px; }
+.panal-card.full > p { font-size: 15px; color: rgba(255, 255, 255, .78); }
 .ultimas { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255, 255, 255, .14); padding-top: 12px; }
 .mano { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-size: 14px; }
 .mano small { color: rgba(255, 255, 255, .6); font-size: 12px; }

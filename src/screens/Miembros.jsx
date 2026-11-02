@@ -45,7 +45,7 @@ export default function Miembros({ nav, headerRight }) {
                   <Hex p={m} w={44} h={48} fs={16} />
                   <b>{firstName(m.nombre)}</b>
                   <span className="tag dark">{m.habilidades[0] || m.categorias[0]}</span>
-                  {m.es_ejemplo ? <small>Ejemplo</small> : <small>{manosDadas(c, m.id)} manos dadas</small>}
+                  {m.es_ejemplo ? <small>Ejemplo</small> : <small>{manosDadas(c, m.id)} {manosDadas(c, m.id) === 1 ? 'mano dada' : 'manos dadas'}</small>}
                 </button>
               ))}
             </div>

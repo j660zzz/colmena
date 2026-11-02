@@ -39,7 +39,7 @@ function PanalGrande({ irTab }) {
   const { manos, llenas } = panalSemana(c)
   const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
   return (
-    <section className="panal-card big">
+    <section className="panal-card full">
       <span className="k">El panal · semana {semanaDelMes()}</span>
       <Panal celdas={celdas} size={26} />
       <b className="big center"><em>{llenas}</em> de {PANAL} manos dadas</b>
