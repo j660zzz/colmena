@@ -229,14 +229,14 @@ export function Editar({ onBack }) {
       <form className="body fade" onSubmit={guardar}>
         <div className="form">
           <div className="field"><label htmlFor="e-n">Nombre *</label><div className="inp"><input id="e-n" maxLength={60} value={f.nombre} onChange={set('nombre')} /></div></div>
-          <div className="field"><label htmlFor="e-m">Emprendimiento o marca</label><div className="inp"><input id="e-m" maxLength={60} value={f.marca} onChange={set('marca')} /></div></div>
-          <div className="field"><label htmlFor="e-r">¿Qué haces?</label><div className="inp"><input id="e-r" maxLength={60} value={f.rol} onChange={set('rol')} /></div></div>
+          <div className="field"><label htmlFor="e-m">Emprendimiento o marca</label><div className="inp"><input id="e-m" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Si aún no tiene nombre, déjalo vacío" /></div></div>
+          <div className="field"><label htmlFor="e-r">¿Qué haces?</label><div className="inp"><input id="e-r" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div></div>
           <div className="field">
             <label htmlFor="e-w">WhatsApp</label>
             <div className="inp"><span className="pre mono">+57</span><input id="e-w" className="mono" inputMode="tel" value={f.whatsapp} onChange={set('whatsapp')} placeholder="310 555 0142" /></div>
             <span className="hint"><Icon n="lock" s={14} />Solo lo ven los miembros con carnet.</span>
           </div>
-          <div className="field"><label htmlFor="e-i">Instagram</label><div className="inp"><span className="pre">@</span><input id="e-i" maxLength={40} autoCapitalize="none" value={f.instagram} onChange={set('instagram')} /></div></div>
+          <div className="field"><label htmlFor="e-i">Instagram</label><div className="inp"><span className="pre">@</span><input id="e-i" maxLength={40} autoCapitalize="none" value={f.instagram} onChange={set('instagram')} placeholder="tumarca" /></div></div>
           <div className="field">
             <span className="lbl">Categorías <small>(hasta 3)</small></span>
             <div className="chips wrap">{CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}</div>

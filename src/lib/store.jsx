@@ -53,16 +53,17 @@ export function ColmenaProvider({ children }) {
     }
   }
 
+  // Carga todo; si algo falla (red del celular que se despierta, por ejemplo) reintenta solo lo que falló
   const cargarTodo = useCallback(async () => {
-    try {
-      await Promise.all(Object.values(cargar).map((f) => f()))
-      setErrorRed(null)
-    } catch (e) {
-      setErrorRed('No pudimos conectar con la colmena. Revisa tu internet.')
-      console.error(e)
-    } finally {
-      setCargando(false)
+    let pendientes = Object.entries(cargar)
+    for (let intento = 0; intento < 3 && pendientes.length; intento++) {
+      if (intento) await new Promise((r) => setTimeout(r, 1200 * intento))
+      const res = await Promise.allSettled(pendientes.map(([, f]) => f()))
+      res.forEach((r, i) => { if (r.status === 'rejected') console.warn('Colmena: falló', pendientes[i][0], r.reason) })
+      pendientes = pendientes.filter((_, i) => res[i].status === 'rejected')
     }
+    setErrorRed(pendientes.length ? 'No pudimos conectar con la colmena. Revisa tu internet.' : null)
+    setCargando(false)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { cargarTodo() }, [cargarTodo])

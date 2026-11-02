@@ -26,7 +26,7 @@ export default function Calificar({ postId, otroId, onBack }) {
     try {
       const r = await c.calificar(postId, otroId, n, chips, texto.trim())
       setRevelada(r || null)
-      toast('Reseña publicada')
+      toast('Reseña guardada')
     } catch (e) { toast(e.message, true) } finally { setEnviando(false) }
   }
 

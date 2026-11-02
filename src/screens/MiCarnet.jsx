@@ -124,7 +124,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
         <Insignias s={s} />
         <Voces id={yo.id} nav={nav} />
 
-        <div className="sec-h"><h3>Mis publicaciones</h3><span className="meta">{misPosts.filter((p) => activa(p)).length} activas</span></div>
+        <div className="sec-h"><h3>Mis publicaciones</h3><span className="meta">{(() => { const k = misPosts.filter((p) => activa(p)).length; return `${k} ${k === 1 ? 'activa' : 'activas'}` })()}</span></div>
         {misPosts.length === 0 ? <p className="soft">Todavía no has publicado. Pide una mano o comparte lo que sabes desde el muro.</p> : (
           <div className="cards">
             {misPosts.map((p) => (
