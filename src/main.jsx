@@ -17,3 +17,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ColmenaProvider>
   </React.StrictMode>
 )
+
+// Cuando publicamos una versión nueva, el service worker la instala y toma el control.
+// Si esta pestaña venía de una versión anterior, recargamos una sola vez para mostrar la nueva.
+if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  let recargado = false
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (recargado) return
+    recargado = true
+    window.location.reload()
+  })
+}
