@@ -1,14 +1,15 @@
 import { useCallback, useState } from 'react'
 import { useColmena } from './lib/store'
-import { yaVioBienvenida, marcarBienvenida } from './lib/session'
-import { Icon, Hex, ToastProvider } from './components/ui'
-import Bienvenida from './screens/Bienvenida'
-import Muro from './screens/Muro'
+import { Icon, Hex, ToastProvider, Sheet, useToast } from './components/ui'
+import Muro, { Composer } from './screens/Muro'
+import Publicado from './screens/Publicado'
 import Miembros from './screens/Miembros'
 import Carnet from './screens/Carnet'
+import MiCarnet from './screens/MiCarnet'
+import Calificar from './screens/Calificar'
 import Encuentro from './screens/Encuentro'
 import Herramientas, { Ficha, Calculadora } from './screens/Herramientas'
-import Perfil from './screens/Perfil'
+import Registro, { CarnetListo, Editar } from './screens/Registro'
 
 const TABS = [
   { id: 'muro', label: 'Muro', ic: 'wall' },
@@ -25,59 +26,66 @@ function subInicial() {
 
 export default function App() {
   return (
-    <>
-      <main className="app">
-        <ToastProvider><Shell /></ToastProvider>
-      </main>
-    </>
+    <main className="app">
+      <ToastProvider><Shell /></ToastProvider>
+    </main>
   )
 }
 
 function Shell() {
   const c = useColmena()
+  const toast = useToast()
   const [tab, setTab] = useState('muro')
   const [pila, setPila] = useState(subInicial)
-  const [explorando, setExplorando] = useState(() => yaVioBienvenida() || subInicial().length > 0)
+  const [composer, setComposer] = useState(null)
 
-  const nav = useCallback((s) => setPila((p) => [...p, s]), [])
+  const nav = useCallback((s) => { setPila((p) => [...p, s]); document.querySelector('.body')?.scrollTo(0, 0) }, [])
   const atras = useCallback(() => setPila((p) => p.slice(0, -1)), [])
-  const irTab = (id) => { setTab(id); setPila([]); document.querySelector('.body')?.scrollTo(0, 0) }
+  const reemplazar = useCallback((s) => setPila((p) => [...p.slice(0, -1), s]), [])
+  const irTab = useCallback((id) => { setTab(id); setPila([]); document.querySelector('.body')?.scrollTo(0, 0) }, [])
 
+  // Si no hay carnet, primero se saca y luego se sigue con lo que la persona quería hacer
   const pedirPerfil = useCallback((motivo, fn) => {
     if (c.yo) return fn()
-    setPila((p) => [...p, { t: 'perfil', motivo }])
+    setPila((p) => [...p, { t: 'registro', motivo }])
   }, [c.yo])
+
+  const abrirComposer = useCallback((prev = {}) => {
+    pedirPerfil('Para publicar en el muro necesitas tu carnet.', () => setComposer({ tipo: 'need', texto: '', ...prev }))
+  }, [pedirPerfil])
 
   if (c.cargando) return <div className="loading"><div className="hexav" /></div>
 
-  if (!c.yo && !explorando) {
-    return (
-      <Bienvenida
-        onEntrar={() => { marcarBienvenida(); setExplorando(true); setPila([{ t: 'perfil' }]) }}
-        onExplorar={() => { marcarBienvenida(); setExplorando(true) }}
-      />
-    )
-  }
-
+  const avisos = c.pendientes.confirmar.length + c.pendientes.calificar.filter((x) => !x.yo_califique).length
   const headerRight = c.yo
-    ? <button type="button" className="iconbtn avbtn" onClick={() => irTab('carnet')} aria-label="Mi carnet"><Hex p={c.yo} w={34} h={38} fs={12} /></button>
-    : <button type="button" className="enter" onClick={() => pedirPerfil(null, () => {})}>Entrar<Icon n="right" s={16} /></button>
+    ? (
+      <>
+        <button type="button" className="iconbtn bell" onClick={() => irTab('carnet')} aria-label={avisos ? `${avisos} cosas por revisar` : 'Sin novedades'}>
+          <Icon n="bell" s={22} />{avisos > 0 && <i className="dot" />}
+        </button>
+        <button type="button" className="iconbtn avbtn" onClick={() => irTab('carnet')} aria-label="Mi carnet"><Hex p={c.yo} w={32} h={36} fs={12} /></button>
+      </>
+    )
+    : <button type="button" className="enter" onClick={() => pedirPerfil(null, () => {})}>Saca tu carnet</button>
 
-  const comun = { nav, pedirPerfil, headerRight }
+  const comun = { nav, atras, irTab, pedirPerfil, headerRight, abrirComposer }
   const sub = pila[pila.length - 1]
   let pantalla
-  if (sub?.t === 'perfil') pantalla = <Perfil motivo={sub.motivo} onBack={atras} onListo={atras} />
-  else if (sub?.t === 'editar') pantalla = <Perfil modo="editar" onBack={atras} onListo={atras} />
-  else if (sub?.t === 'carnet') pantalla = <Carnet id={sub.id} onBack={atras} editar={() => nav({ t: 'editar' })} {...comun} />
-  else if (sub?.t === 'calc') pantalla = <Calculadora onBack={atras} />
+  if (sub?.t === 'registro') pantalla = <Registro motivo={sub.motivo} onBack={atras} onListo={() => reemplazar({ t: 'listo' })} />
+  else if (sub?.t === 'listo') pantalla = <CarnetListo onMuro={() => { setPila([]); setTab('muro') }} />
+  else if (sub?.t === 'editar') pantalla = <Editar onBack={atras} />
+  else if (sub?.t === 'carnet') pantalla = <Carnet id={sub.id} onBack={atras} {...comun} />
+  else if (sub?.t === 'publicado') pantalla = <Publicado postId={sub.postId} onBack={atras} {...comun} />
+  else if (sub?.t === 'calificar') pantalla = <Calificar postId={sub.postId} otroId={sub.otro} onBack={atras} />
+  else if (sub?.t === 'calc') pantalla = <Calculadora onBack={atras} abrirComposer={abrirComposer} />
   else if (sub?.t === 'ficha') pantalla = <Ficha id={sub.id} onBack={atras} />
   else if (tab === 'muro') pantalla = <Muro {...comun} />
   else if (tab === 'miembros') pantalla = <Miembros {...comun} />
   else if (tab === 'encuentro') pantalla = <Encuentro {...comun} />
   else if (tab === 'herramientas') pantalla = <Herramientas {...comun} />
-  else pantalla = <Carnet editar={() => nav({ t: 'editar' })} {...comun} />
+  else pantalla = <MiCarnet {...comun} />
 
-  const ocultarTabs = sub?.t === 'perfil' || sub?.t === 'editar'
+  const sinTabs = ['registro', 'listo', 'editar', 'calificar'].includes(sub?.t)
 
   return (
     <>
@@ -87,18 +95,26 @@ function Shell() {
         </button>
       )}
       {pantalla}
-      {!ocultarTabs && (
+      {!sinTabs && (
         <nav className="tabbar" aria-label="Navegación principal">
           {TABS.map((t) => {
-            const on = t.id === tab && !(sub && sub.t === 'carnet' && sub.id && t.id === 'carnet')
+            const on = t.id === tab && !(sub && sub.t === 'carnet')
             return (
-              <button key={t.id} type="button" className="tab" aria-current={on ? 'page' : undefined} onClick={() => irTab(t.id)}>
-                <Icon n={t.ic} s={22} w={on ? 1.9 : 1.6} /><span>{t.label}</span><i className="pip" />
+              <button key={t.id} type="button" className="tab" aria-current={on ? 'page' : undefined} aria-label={t.label} onClick={() => irTab(t.id)}>
+                <Icon n={t.ic} s={22} w={on ? 2 : 1.7} />{on && <span>{t.label}</span>}
               </button>
             )
           })}
         </nav>
       )}
+      <Sheet open={!!composer} onClose={() => setComposer(null)} label="Publicar en el muro">
+        {composer && (
+          <Composer inicial={composer} onDone={(postId) => {
+            setComposer(null)
+            if (postId) { toast('Publicado. La colmena ya lo está viendo.'); setTab('muro'); setPila([{ t: 'publicado', postId }]) }
+          }} />
+        )}
+      </Sheet>
     </>
   )
 }

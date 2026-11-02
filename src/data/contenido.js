@@ -1,17 +1,20 @@
 export const CATS = ['Marca', 'Diseño', 'Foto', 'Video', 'Ilustración', 'Producción', 'Moda', 'Comida']
 export const TOOLCATS = ['Precio', 'Ventas', 'Legal', 'Marca']
 
-// Insignias calculadas con actividad real del perfil (ver Carnet.jsx)
+// Insignias calculadas con actividad real del perfil (ver statsDe en Carnet.jsx)
 export const BADGES = [
-  { n: 'Entró a la colmena', k: 'card', ok: (s) => true },
+  { n: 'Entró a la colmena', k: 'card', ok: () => true },
   { n: 'Primera publicación', k: 'wall', ok: (s) => s.publicaciones >= 1 },
-  { n: 'Primera conexión', k: 'link', ok: (s) => s.conexiones >= 1 },
-  { n: 'Le dio la mano a alguien', k: 'hand', ok: (s) => s.ayudo >= 1 },
+  { n: 'Le dio la mano a alguien', k: 'hand', ok: (s) => s.manos >= 1 },
   { n: 'Perfil completo', k: 'seal', ok: (s) => s.completo },
-  { n: 'Fue a un encuentro', k: 'cal', ok: (s) => s.encuentros >= 1 },
-  { n: 'Diez conexiones', k: 'users', ok: (s) => s.conexiones >= 10 },
-  { n: 'Cinco manos dadas', k: 'star', ok: (s) => s.ayudo >= 5 }
+  { n: 'Se le midió a un reto', k: 'spark', ok: (s) => s.retos >= 1 },
+  { n: 'Se apuntó a un encuentro', k: 'cal', ok: (s) => s.encuentros >= 1 },
+  { n: 'Primera reseña', k: 'star', ok: (s) => s.resenas >= 1 },
+  { n: 'Cinco manos dadas', k: 'users', ok: (s) => s.manos >= 5, meta: 5, prog: (s) => s.manos }
 ]
+
+export const CHIPS_CALIFICAR = ['Cumplió a tiempo', 'Buena comunicación', 'Calidad top', 'Lo repetiría']
+export const PALABRA_ESTRELLAS = ['', 'Mal', 'Regular', 'Bien', 'Muy bien', 'Una chimba']
 
 // Fichas de la biblioteca. Contenido práctico y general; lo legal lleva nota de verificación.
 export const TOOLS = [

@@ -19,7 +19,3 @@ export function guardarSesion(s) {
 export function borrarSesion() {
   try { localStorage.removeItem(K) } catch { /* nada */ }
 }
-
-const K_VISTO = 'colmena.bienvenida.v1'
-export const yaVioBienvenida = () => { try { return localStorage.getItem(K_VISTO) === '1' } catch { return false } }
-export const marcarBienvenida = () => { try { localStorage.setItem(K_VISTO, '1') } catch { /* nada */ } }

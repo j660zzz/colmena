@@ -1,32 +1,63 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TOOLS, TOOLCATS } from '../data/contenido'
 import { cop } from '../lib/format'
 import { Icon, Header, SubHeader, useToast } from '../components/ui'
 
+const K_LEIDAS = 'colmena.leidas.v1'
+const leidas = () => { try { return JSON.parse(localStorage.getItem(K_LEIDAS) || '[]') } catch { return [] } }
+const marcarLeida = (id) => { try { const l = leidas(); if (!l.includes(id)) localStorage.setItem(K_LEIDAS, JSON.stringify([...l, id])) } catch { /* nada */ } }
+const ICONO = { Precio: 'note', Ventas: 'trend', Legal: 'seal', Marca: 'spark' }
+
 export default function Herramientas({ nav, headerRight }) {
   const [cat, setCat] = useState(null)
+  const ya = leidas()
   const lista = cat ? TOOLS.filter((t) => t.cat === cat) : TOOLS
+  const empezar = TOOLS.filter((t) => !ya.includes(t.id)).slice(0, 2)
+  const n = TOOLS.filter((t) => ya.includes(t.id)).length
   return (
     <>
       <Header title="Herramientas" sub="Para dejar de improvisar" right={headerRight} />
-      <div className="body">
+      <div className="body fade">
         <button type="button" className="feature" onClick={() => nav({ t: 'calc' })}>
+          <span className="dollar" aria-hidden="true">$</span>
           <span className="k">Calculadora</span>
           <h3>¿Cuánto cuesta lo que haces?</h3>
           <p>Construye tu precio desde materiales, horas y gastos fijos. Deja de cotizar a ojo.</p>
-          <span className="go">Abrir calculadora <Icon n="right" s={17} w={2} /></span>
+          <span className="btn primary sm">Abrir calculadora <Icon n="right" s={16} w={2.2} /></span>
         </button>
-        <div className="sec-h"><h3>Biblioteca</h3><span className="meta">{lista.length} recursos</span></div>
+
+        {empezar.length > 0 && (
+          <>
+            <div className="sec-h"><h3>Para empezar</h3><span className="meta">5 min cada una</span></div>
+            <div className="duo">
+              {empezar.map((t) => (
+                <button key={t.id} type="button" className="tool-mini" onClick={() => nav({ t: 'ficha', id: t.id })}>
+                  <span className="ti"><Icon n={ICONO[t.cat] || 'note'} s={18} w={2} /></span>
+                  <span className="tag">{t.k}</span>
+                  <b>{t.n}</b>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="sec-h"><h3>Biblioteca</h3><span className="meta">{n} de {TOOLS.length} leídas</span></div>
+        <div className="prog"><i style={{ width: Math.round(n / TOOLS.length * 100) + '%' }} /></div>
         <div className="chips" role="group" aria-label="Filtrar herramientas">
+          <button type="button" className="chip" aria-pressed={!cat} onClick={() => setCat(null)}>Todo</button>
           {TOOLCATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>{x}</button>)}
         </div>
-        <div className="gap-16" />
-        <div className="tools">
-          {lista.map((t) => (
-            <button key={t.id} type="button" className="tool" onClick={() => nav({ t: 'ficha', id: t.id })}>
-              <span className="k">{t.k}</span><b>{t.n}</b><span>{t.d}</span>
-            </button>
-          ))}
+        <div className="cards">
+          {lista.map((t) => {
+            const leida = ya.includes(t.id)
+            return (
+              <button key={t.id} type="button" className="row-card link" onClick={() => nav({ t: 'ficha', id: t.id })}>
+                <span className="ti"><Icon n={ICONO[t.cat] || 'note'} s={18} w={2} /></span>
+                <span className="row-text"><span className="tag">{t.k}</span><b>{t.n}</b><small>{t.d}</small></span>
+                {leida ? <span className="readhex" aria-label="Leída"><Icon n="check" s={12} w={3} /></span> : <Icon n="right" s={18} />}
+              </button>
+            )
+          })}
         </div>
       </div>
     </>
@@ -36,6 +67,7 @@ export default function Herramientas({ nav, headerRight }) {
 export function Ficha({ id, onBack }) {
   const toast = useToast()
   const t = TOOLS.find((x) => x.id === id)
+  useEffect(() => { if (t) marcarLeida(t.id) }, [t])
   if (!t) return null
   const copiar = async (txt) => {
     try { await navigator.clipboard.writeText(txt); toast('Plantilla copiada') } catch { toast('No se pudo copiar', true) }
@@ -70,7 +102,7 @@ export function Ficha({ id, onBack }) {
 const K_CALC = 'colmena.calc.v1'
 const INICIAL = { mat: 120000, hrs: 14, vh: 35000, fix: 900000, proj: 4, mg: 35 }
 
-export function Calculadora({ onBack }) {
+export function Calculadora({ onBack, abrirComposer }) {
   const [v, setV] = useState(() => {
     try { return { ...INICIAL, ...JSON.parse(localStorage.getItem(K_CALC) || '{}') } } catch { return INICIAL }
   })
@@ -83,13 +115,15 @@ export function Calculadora({ onBack }) {
   const fijo = v.proj > 0 ? v.fix / v.proj : 0
   const costo = v.mat + mano + fijo
   const precio = costo * (1 + v.mg / 100)
+  const pct = (x) => costo > 0 ? Math.round(x / costo * 100) : 0
+  const resumen = `Mi precio en Colmena: ${cop(precio)}\nMateriales: ${cop(v.mat)}\nTrabajo (${v.hrs} h): ${cop(mano)}\nGastos fijos: ${cop(fijo)}\nCosto total: ${cop(costo)}\nMargen: ${v.mg}%`
 
   const F = ({ id, label, k, pre, suf, step = 1000 }) => (
     <div className="field">
       <label htmlFor={id}>{label}</label>
       <div className="inp">
         {pre && <span className="pre">{pre}</span>}
-        <input id={id} className="num" type="number" inputMode="numeric" min="0" step={step} value={v[k]} onChange={set(k)} />
+        <input id={id} className="num mono" type="number" inputMode="numeric" min="0" step={step} value={v[k]} onChange={set(k)} />
         {suf && <span className="suf">{suf}</span>}
       </div>
     </div>
@@ -100,14 +134,19 @@ export function Calculadora({ onBack }) {
       <SubHeader title="¿Cuánto cuesta lo que haces?" onBack={onBack} />
       <div className="body fade">
         <div className="out">
-          <div className="hero"><div className="l"><span>Precio sugerido</span><b>{cop(precio)}</b></div><em>+{cop(precio - costo)}</em></div>
-          <div className="line"><span>Materiales e insumos</span><b>{cop(v.mat)}</b></div>
-          <div className="line"><span>Tu trabajo · {v.hrs} h</span><b>{cop(mano)}</b></div>
-          <div className="line"><span>Gastos fijos asignados</span><b>{cop(fijo)}</b></div>
-          <div className="line" style={{ background: 'var(--app-bg)' }}><span style={{ fontWeight: 600 }}>Costo total</span><b>{cop(costo)}</b></div>
+          <span className="k">Precio sugerido</span>
+          <b className="price">{cop(precio)}</b>
+          <span className="gain">Ganancia +{cop(precio - costo)}</span>
+          <div className="out-panel">
+            <div className="bar" aria-hidden="true"><i style={{ width: pct(v.mat) + '%' }} /><i style={{ width: pct(mano) + '%' }} /><i style={{ width: pct(fijo) + '%' }} /></div>
+            <div className="line"><span><i className="sw s1" />Materiales e insumos</span><b className="mono">{cop(v.mat)}</b></div>
+            <div className="line"><span><i className="sw s2" />Tu trabajo · {v.hrs} h</span><b className="mono">{cop(mano)}</b></div>
+            <div className="line"><span><i className="sw s3" />Gastos fijos asignados</span><b className="mono">{cop(fijo)}</b></div>
+            <div className="line total"><span>Costo total</span><b className="mono">{cop(costo)}</b></div>
+          </div>
         </div>
         <div className="sec-h"><h3>Tus cifras</h3><span className="meta">Pesos colombianos</span></div>
-        <div className="calc">
+        <div className="form">
           {F({ id: 'c-mat', label: 'Materiales e insumos del proyecto', k: 'mat', pre: '$' })}
           <div className="grid2">
             {F({ id: 'c-hrs', label: 'Horas de trabajo', k: 'hrs', suf: 'h', step: 1 })}
@@ -117,12 +156,19 @@ export function Calculadora({ onBack }) {
             {F({ id: 'c-fix', label: 'Gastos fijos al mes', k: 'fix', pre: '$' })}
             {F({ id: 'c-proj', label: 'Proyectos al mes', k: 'proj', step: 1 })}
           </div>
-          {F({ id: 'c-mg', label: 'Margen de ganancia', k: 'mg', suf: '%', step: 1 })}
+          <div className="field">
+            <label htmlFor="c-mg">Margen de ganancia <b className="mono">{v.mg}%</b></label>
+            <input id="c-mg" className="range" type="range" min="0" max="100" step="5" value={v.mg} onChange={set('mg')} />
+          </div>
         </div>
-        <div className="bring" style={{ marginTop: 18 }}>
-          <Icon n="bulb" s={19} />
-          <p>Los gastos fijos son arriendo, internet, software y transporte. Repartirlos entre tus proyectos del mes es lo que casi nadie hace, y es donde se pierde la plata.</p>
-        </div>
+        <div className="tip"><Icon n="bulb" s={19} /><p>Los gastos fijos son arriendo, internet, software y transporte. Repartirlos entre tus proyectos del mes es lo que casi nadie hace, y es donde se pierde la plata.</p></div>
+        <section className="ink-card">
+          <h3>¿Tu precio está bien?</h3>
+          <p>Pregúntale a la colmena: se publica en el muro como Necesito, sin mostrar tus cifras.</p>
+          <button type="button" className="btn primary full" onClick={() => abrirComposer({ tipo: 'need', texto: '¿Estoy cobrando bien? Busco a alguien que me revise cómo calculo mis precios.' })}>Preguntar a la colmena</button>
+        </section>
+        <a className="btn ghost full" href={`https://wa.me/?text=${encodeURIComponent(resumen)}`} target="_blank" rel="noopener noreferrer"><Icon n="wa" s={18} />Enviar por WhatsApp</a>
+        <p className="fine center">Tus cifras se guardan solo en este celular.</p>
       </div>
     </>
   )
