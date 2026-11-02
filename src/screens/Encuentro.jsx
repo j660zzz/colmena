@@ -36,13 +36,14 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
 
 function PanalGrande({ irTab }) {
   const c = useColmena()
-  const { manos, llenas } = panalSemana(c)
+  const { manos, llenas, ejemplos } = panalSemana(c)
   const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
   return (
     <section className="panal-card full">
       <span className="k">El panal · semana {semanaDelMes()}</span>
       <Panal celdas={celdas} size={26} />
       <b className="big center"><em>{llenas}</em> de {PANAL} manos dadas</b>
+      {ejemplos > 0 && <span className="ej-note center">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
       <p className="center">Si lo llenamos antes del domingo, la colmena elige el tema del próximo encuentro.</p>
       {manos.length > 0 && (
         <div className="ultimas">
@@ -52,7 +53,7 @@ function PanalGrande({ irTab }) {
             return (
               <div key={m.publicacion_id + m.perfil_id} className="mano">
                 <span className="pair"><Hex p={a} w={22} fs={8} /><i /><Hex p={b} w={22} fs={8} /></span>
-                <p><b>{firstName(a?.nombre)}</b> le dio la mano a <b>{firstName(b?.nombre)}</b>{m.post.categorias[0] ? ` · ${m.post.categorias[0]}` : ''}</p>
+                <p><b>{firstName(a?.nombre)}</b> le dio la mano a <b>{firstName(b?.nombre)}</b>{m.post.categorias[0] ? ` · ${m.post.categorias[0]}` : ''}{m.post.es_ejemplo && <Ejemplo p={{ es_ejemplo: true }} />}</p>
                 <small>{hace(m.resuelta_at)}</small>
               </div>
             )
@@ -114,7 +115,9 @@ function Propuestas({ nav, pedirPerfil }) {
                 <button type="button" className="who" onClick={() => p && nav({ t: 'carnet', id: p.id })}>
                   <span className="rank">{String(i + 1).padStart(2, '0')}</span>
                   <Hex p={p} w={34} fs={12} />
-                  <span className="who-t"><b>{p?.nombre}<Ejemplo p={p} /></b><a href={x.link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>Ver propuesta <Icon n="ext" s={13} /></a></span>
+                  <span className="who-t"><b>{p?.nombre}<Ejemplo p={p} /></b>{p?.es_ejemplo
+                    ? <span>Propuesta de ejemplo, sin link</span>
+                    : <a href={x.link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>Ver propuesta <Icon n="ext" s={13} /></a>}</span>
                 </button>
                 <button type="button" className="sirve" aria-pressed={!!voto} disabled={mio} onClick={() => votar(x)}>
                   <Icon n="thumb" s={16} w={voto ? 2.2 : 1.7} />Me sirve<b>{x.votos.length}</b>
@@ -136,6 +139,7 @@ function Ticket({ pedirPerfil }) {
   if (!e) return null
   const asistentes = c.asistencias.filter((a) => a.encuentro_id === e.id).map((a) => c.perfil(a.perfil_id)).filter(Boolean)
   const voy = c.yo && asistentes.some((p) => p.id === c.yo.id)
+  const ejIr = asistentes.filter((p) => p.es_ejemplo).length
   const fecha = fechaLarga(e.fecha)
   const alternar = () => pedirPerfil('Para apuntarte al encuentro necesitas tu carnet.', async () => {
     try { const on = await c.alternarAsistencia(e.id); toast(on ? '¡Te apuntaste! Te avisamos la fecha.' : 'Quitamos tu asistencia') }
@@ -153,7 +157,7 @@ function Ticket({ pedirPerfil }) {
       <div className="ticket-foot">
         <div className="who-row">
           {asistentes.length > 0
-            ? <><div className="stack">{asistentes.slice(0, 4).map((p) => <Hex key={p.id} p={p} w={24} fs={9} />)}</div><span>{asistentes.length} {asistentes.length === 1 ? 'quiere ir' : 'quieren ir'}</span></>
+            ? <><div className="stack">{asistentes.slice(0, 4).map((p) => <Hex key={p.id} p={p} w={24} fs={9} />)}</div><span>{asistentes.length} {asistentes.length === 1 ? 'quiere ir' : 'quieren ir'}{ejIr > 0 && <em className="ej-inline"> · {ejIr} de ejemplo</em>}</span></>
             : <><span className="ghosts"><i /><i /><i /></span><span>Sé el primero en apuntarte</span></>}
         </div>
         <button type="button" className={'btn sm ' + (voy ? 'ghost' : 'ink')} onClick={alternar}>{voy ? <><Icon n="check" s={15} w={2.4} />Vas</> : 'Quiero ir'}</button>

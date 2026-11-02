@@ -56,7 +56,7 @@ export function Voces({ id, nav }) {
               {r.comentario && <p>“{r.comentario}”</p>}
               {r.chips.length > 0 && <div className="post-tags">{r.chips.map((x) => <span key={x} className="tag">{x}</span>)}</div>}
               <button type="button" className="who" onClick={() => de && nav({ t: 'carnet', id: de.id })}>
-                <Hex p={de} w={26} fs={10} /><span className="who-t"><b>{de?.nombre || 'Miembro'}</b><span>{hace(r.created_at)}</span></span>
+                <Hex p={de} w={26} fs={10} /><span className="who-t"><b>{de?.nombre || 'Miembro'}<Ejemplo p={de} /></b><span>{hace(r.created_at)}</span></span>
               </button>
             </div>
           )
@@ -122,10 +122,14 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
           <Icon n="wa" s={22} />
           <div>
             <span className="k">WhatsApp</span>
-            {c.yo
-              ? <b>{m.tiene_whatsapp ? 'Disponible para miembros' : 'Aún no lo agrega'}</b>
-              : <b className="mono"><Icon n="lock" s={14} /> +57 3•• ••• ••••</b>}
-            <span>{c.yo ? `Toca escribir y te lleva al chat con ${firstName(m.nombre)}.` : 'Saca tu carnet para ver su número y escribirle.'}</span>
+            {m.es_ejemplo
+              ? <b>Perfil de ejemplo</b>
+              : c.yo
+                ? <b>{m.tiene_whatsapp ? 'Disponible para miembros' : 'Aún no lo agrega'}</b>
+                : <b className="mono"><Icon n="lock" s={14} /> +57 3•• ••• ••••</b>}
+            <span>{m.es_ejemplo
+              ? 'Con un miembro real, este botón abre WhatsApp con un mensaje listo. Solo lo ven quienes tienen carnet.'
+              : c.yo ? `Toca escribir y te lleva al chat con ${firstName(m.nombre)}.` : 'Saca tu carnet para ver su número y escribirle.'}</span>
           </div>
         </div>
       </div>

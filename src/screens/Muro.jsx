@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { hace, firstName, initials, igUrl } from '../lib/format'
-import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, tendencias, waLink, PANAL } from '../lib/logic'
+import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, tendencias, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, useToast } from '../components/ui'
 
 export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer }) {
@@ -29,6 +29,8 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         ) : (
           <h1 className="headline">Aquí nadie arranca <Mark>solo.</Mark></h1>
         )}
+
+        <AvisoPrueba />
 
         <button type="button" className="composer" onClick={() => abrirComposer()}>
           <span>¿Qué necesitas o qué ofreces?</span>
@@ -69,9 +71,23 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
   )
 }
 
+const AVISO = 'colmena.aviso-prueba.v1'
+function AvisoPrueba() {
+  const [visto, setVisto] = useState(() => { try { return localStorage.getItem(AVISO) === '1' } catch { return false } })
+  if (visto) return null
+  const cerrar = () => { try { localStorage.setItem(AVISO, '1') } catch { /* sin almacenamiento */ } setVisto(true) }
+  return (
+    <aside className="aviso-prueba" aria-label="Prototipo en prueba">
+      <span className="ej-pill">Prototipo en prueba</span>
+      <p>Lo que lleva la etiqueta <b>Ejemplo</b> es contenido de muestra para que veas cómo funciona Colmena: no son personas ni publicaciones reales. Todo lo demás es de la comunidad.</p>
+      <button type="button" className="linkbtn" onClick={cerrar}>Entendido</button>
+    </aside>
+  )
+}
+
 function PanalMini({ onVer }) {
   const c = useColmena()
-  const { manos, llenas } = panalSemana(c)
+  const { manos, llenas, ejemplos } = panalSemana(c)
   const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
   const faltan = PANAL - llenas
   return (
@@ -80,6 +96,7 @@ function PanalMini({ onVer }) {
         <span className="k">El panal de esta semana</span>
         <b className="big"><em>{llenas}</em>/{PANAL}</b>
         <p>{llenas === 0 ? 'Cada mano que se confirma llena una celda.' : `manos dadas · ${faltan > 0 ? `faltan ${faltan} para llenarlo` : '¡lo llenamos!'}`}</p>
+        {ejemplos > 0 && <span className="ej-note">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
         <button type="button" className="go" onClick={onVer}>Ver el panal <Icon n="right" s={15} w={2.2} /></button>
       </div>
       <Panal celdas={celdas} size={17} />
@@ -94,6 +111,7 @@ export function RetoCard({ irTab, pedirPerfil, completo = false }) {
   if (!r) return null
   const gente = c.participantes.filter((x) => x.reto_id === r.id)
   const yoEstoy = c.yo && gente.some((x) => x.perfil_id === c.yo.id)
+  const ejGente = cuantosEjemplo(c, gente.map((x) => x.perfil_id))
   const cerrado = new Date(r.cierra_en).getTime() < Date.now()
   const medirse = () => pedirPerfil('Para medírtele al reto necesitas tu carnet.', async () => {
     try { await c.unirseReto(r.id); toast('¡Te le mediste! Sube tu propuesta antes de que cierre.'); if (!completo) irTab('encuentro') } catch (e) { toast(e.message, true) }
@@ -112,7 +130,7 @@ export function RetoCard({ irTab, pedirPerfil, completo = false }) {
       <div className="reto-foot">
         <div className="who-row">
           {gente.length > 0 && <div className="stack">{gente.slice(0, 4).map((x) => <Hex key={x.perfil_id} p={c.perfil(x.perfil_id)} w={24} fs={9} />)}</div>}
-          <span>{gente.length === 0 ? 'Nadie se le ha medido aún' : `${gente.length} ya se le ${gente.length === 1 ? 'midió' : 'midieron'}`}</span>
+          <span>{gente.length === 0 ? 'Nadie se le ha medido aún' : `${gente.length} ya se le ${gente.length === 1 ? 'midió' : 'midieron'}`}{ejGente > 0 && <em className="ej-inline"> · {ejGente} de ejemplo</em>}</span>
         </div>
         {cerrado ? <span className="tag">Cerrado</span>
           : yoEstoy ? (!completo && <button type="button" className="btn dark sm" onClick={() => irTab('encuentro')}>Subir propuesta</button>)

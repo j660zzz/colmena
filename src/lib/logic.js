@@ -47,13 +47,18 @@ export function manosConfirmadas(c) {
 
 export const PANAL = 19
 
+// Las manos de ejemplo siempre cuentan (para mostrar cómo se ve el panal) y se reportan aparte.
 export function panalSemana(c) {
   const desde = inicioSemana().getTime()
   const manos = manosConfirmadas(c)
-    .filter((m) => new Date(m.resuelta_at || m.created_at).getTime() >= desde)
-    .sort((a, b) => new Date(b.resuelta_at) - new Date(a.resuelta_at))
-  return { manos, llenas: Math.min(manos.length, PANAL), total: PANAL }
+    .filter((m) => m.post.es_ejemplo || new Date(m.resuelta_at || m.created_at).getTime() >= desde)
+    .sort((a, b) => (a.post.es_ejemplo - b.post.es_ejemplo) || (new Date(b.resuelta_at) - new Date(a.resuelta_at)))
+  const ejemplos = Math.min(manos.filter((m) => m.post.es_ejemplo).length, PANAL)
+  return { manos, llenas: Math.min(manos.length, PANAL), ejemplos, total: PANAL }
 }
+
+// Cuántos de una lista de perfiles son de ejemplo
+export const cuantosEjemplo = (c, ids) => ids.filter((id) => c.perfil(id)?.es_ejemplo).length
 
 export function manosDadas(c, id) {
   return manosConfirmadas(c).filter((m) => m.ayuda === id).length
