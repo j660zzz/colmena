@@ -12,7 +12,7 @@ export const QUE_ES_INTERCAMBIAR = 'Intercambiar es cambiar tu trabajo por el de
 export function CobroIconos({ modo, s = 16 }) {
   const x = COBRO[modo]
   if (!x) return null
-  return <span className="cobro-ic" aria-hidden="true">{x.ic.map((n) => <Icon key={n} n={n} s={n === 'deal' ? Math.round(s * 1.25) : s} w={1.8} />)}</span>
+  return <span className="cobro-ic" aria-hidden="true">{x.ic.map((n) => <Icon key={n} n={n} s={s} w={1.8} />)}</span>
 }
 
 // Insignia. Con `abrir` es un botón que explica qué significa; sin él, solo se muestra.
@@ -21,7 +21,7 @@ export function CobroInsignia({ modo, abrir = false, solo = false }) {
   const [ver, setVer] = useState(false)
   const x = COBRO[modo]
   if (!x) return null
-  const cuerpo = <><CobroIconos modo={modo} s={solo ? 15 : 16} />{!solo && <span>{x.t}</span>}</>
+  const cuerpo = <><CobroIconos modo={modo} s={solo ? 18 : 16} />{!solo && <span>{x.t}</span>}</>
   if (!abrir) return <span className={'cobro' + (solo ? ' solo' : '')} title={x.t}>{cuerpo}{solo && <span className="sr">{x.t}</span>}</span>
   return (
     <>
