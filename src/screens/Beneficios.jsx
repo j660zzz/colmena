@@ -118,7 +118,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
 
           <section className="bfila">
             <div className="sec-h"><h3>Aliados en Cali</h3><span className="meta">{reales ? `${reales} ${reales === 1 ? 'negocio' : 'negocios'}` : 'Muy pronto'}</span></div>
-            <p className="soft">Negocios que dan descuento a los miembros de Colmena. Muestras tu carnet y listo.</p>
+            <p className="soft">Negocios que dan descuento a los miembros de Colmena. Para usarlos, muestra tu carnet.</p>
             <div className="bfila-pista">{aliados.map(tile)}</div>
           </section>
         </>

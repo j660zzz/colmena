@@ -145,7 +145,7 @@ Hola, soy Laura, hago fotografía de comida en Cali. Vi que lanzaron carta nueva
 2 · A una marca de ropa
 Hola, soy Andrés, edito reels para marcas locales. Su contenido de producto está muy bien, pero los videos se cortan antes del gancho. Puedo reeditar uno gratis para que vean la diferencia. ¿Les interesa?
 
-3 · A otro emprendedor de la colmena
+3 · A otro emprendedor de Colmena
 Hola, vi en Colmena que buscas quién te imprima etiquetas en vinilo. Yo imprimí las mías con una imprenta que hace tirajes cortos. ¿Te paso el contacto?` }
     ]
   },

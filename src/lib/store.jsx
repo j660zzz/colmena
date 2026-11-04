@@ -8,6 +8,16 @@ export const useColmena = () => useContext(Ctx)
 
 const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,tiene_whatsapp,created_at,bio,disponible,intercambio,portafolio'
 
+// Mensajes del servidor reescritos para que digan qué pasó y qué hacer (las funciones RPC no se tocan)
+const MENSAJES = {
+  'Vas muy rápido. Espera unos minutos para volver a publicar.': 'Publicaste varias veces seguidas. Espera unos minutos y vuelve a intentarlo.',
+  'Vas muy rápido. Espera un rato para escribir a más personas.': 'Les escribiste a muchas personas seguidas. Espera un rato y vuelve a intentarlo.',
+  'Solo se califica una mano confirmada.': 'Solo puedes calificar una ayuda confirmada.',
+  'No puedes darte la mano a ti mismo.': 'No puedes confirmar una ayuda contigo.',
+  'Ese eres tú.': 'Esta publicación es tuya.',
+  'Estado no válido': 'No se pudo guardar. Inténtalo otra vez.'
+}
+
 async function q(promise) {
   const { data, error } = await promise
   if (error) throw error
@@ -106,9 +116,14 @@ export function ColmenaProvider({ children }) {
 
   const rpc = async (fn, args) => {
     const s = sesionRef.current
-    if (!s) throw new Error('Necesitas un perfil')
+    if (!s) throw new Error('Necesitas un carnet para hacer esto.')
     const { data, error } = await supabase.rpc(fn, { p_id: s.id, p_clave: s.clave, ...args })
-    if (error) throw new Error(error.message?.includes('no autorizado') ? 'Tu sesión no es válida en este dispositivo.' : error.message)
+    if (error) {
+      const m = error.message || ''
+      if (m.includes('no autorizado')) throw new Error('No pudimos validar tu carnet en este dispositivo. Recarga la página e inténtalo otra vez.')
+      if (/fetch|network|Failed/i.test(m)) throw new Error('No se pudo conectar. Revisa tu conexión e inténtalo otra vez.')
+      throw new Error(MENSAJES[m] || m)
+    }
     return data
   }
 
