@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { TOOLS, TOOLCATS } from '../data/contenido'
 import { cop } from '../lib/format'
 import { Icon, Header, SubHeader, useToast } from '../components/ui'
+import { marcarCalcAbierta } from './Onboarding'
 
 const K_LEIDAS = 'colmena.leidas.v1'
 const leidas = () => { try { return JSON.parse(localStorage.getItem(K_LEIDAS) || '[]') } catch { return [] } }
@@ -103,6 +104,7 @@ const K_CALC = 'colmena.calc.v1'
 const INICIAL = { mat: 120000, hrs: 14, vh: 35000, fix: 900000, proj: 4, mg: 35 }
 
 export function Calculadora({ onBack, abrirComposer }) {
+  useEffect(() => { marcarCalcAbierta() }, [])
   const [v, setV] = useState(() => {
     try { return { ...INICIAL, ...JSON.parse(localStorage.getItem(K_CALC) || '{}') } } catch { return INICIAL }
   })

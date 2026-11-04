@@ -139,12 +139,12 @@ export default function Registro({ motivo, onBack, onListo }) {
   )
 }
 
-export function CarnetListo({ onMuro }) {
+export function CarnetListo({ onMuro, onSeguir }) {
   const c = useColmena()
   const toast = useToast()
   const yo = c.yo
   if (!yo) return null
-  const { pct } = completitud(yo)
+  const { pct, faltan } = completitud(yo)
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${yo.id}`
     const data = { title: 'Ya tengo mi carnet en Colmena', text: `Ya soy parte de Colmena · ${carnetId(yo.carnet)}. Aquí nadie arranca solo.`, url }
@@ -167,9 +167,10 @@ export function CarnetListo({ onMuro }) {
         <div className="pct-card">
           <b>Tu carnet ya va al {pct}%</b>
           <div className="prog"><i style={{ width: pct + '%' }} /></div>
-          <span>Completa lo que sabes hacer y te encuentran más rápido.</span>
+          <span>{faltan.length ? `Siguiente: ${faltan[0].t.toLowerCase()}. Lo completas en Editar, desde tu carnet.` : 'Tu carnet está completo.'}</span>
         </div>
-        <button type="button" className="btn ink full big" onClick={compartir}><Icon n="share" s={18} />Compartir mi carnet</button>
+        {onSeguir && <button type="button" className="btn ink full big" onClick={onSeguir}>Seguir con lo que ibas a hacer</button>}
+        <button type="button" className={'btn full ' + (onSeguir ? 'ghost' : 'ink big')} onClick={compartir}><Icon n="share" s={18} />Compartir mi carnet</button>
         <button type="button" className="btn ghost full" onClick={onMuro}>Ir al muro</button>
       </div>
     </div>

@@ -91,6 +91,10 @@ export function ColmenaProvider({ children }) {
     return () => { supabase.removeChannel(ch); clearInterval(t); document.removeEventListener('visibilitychange', vis) }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // La sesión vive en un ref para que una acción pedida antes de sacar el carnet funcione al terminar el registro
+  const sesionRef = useRef(sesion)
+  sesionRef.current = sesion
+
   const yo = useMemo(() => (sesion ? perfiles.find((p) => p.id === sesion.id) || null : null), [sesion, perfiles])
 
   // Si el perfil guardado ya no existe en la base (lo borraron), se limpia la sesión
@@ -99,14 +103,13 @@ export function ColmenaProvider({ children }) {
   }, [cargando, sesion, perfiles, yo])
 
   const rpc = async (fn, args) => {
-    if (!sesion) throw new Error('Necesitas un perfil')
-    const { data, error } = await supabase.rpc(fn, { p_id: sesion.id, p_clave: sesion.clave, ...args })
+    const s = sesionRef.current
+    if (!s) throw new Error('Necesitas un perfil')
+    const { data, error } = await supabase.rpc(fn, { p_id: s.id, p_clave: s.clave, ...args })
     if (error) throw new Error(error.message?.includes('no autorizado') ? 'Tu sesión no es válida en este dispositivo.' : error.message)
     return data
   }
 
-  const sesionRef = useRef(sesion)
-  sesionRef.current = sesion
   async function cargarPendientes() {
     const s = sesionRef.current
     if (!s) { setPendientes({ confirmar: [], calificar: [] }); return }
@@ -129,6 +132,7 @@ export function ColmenaProvider({ children }) {
       if (error) throw new Error(error.message?.includes('WhatsApp') ? error.message : 'No pudimos crear tu carnet. Intenta de nuevo.')
       const s = { id: data.id, clave: data.clave }
       guardarSesion(s)
+      sesionRef.current = s
       await cargar.perfiles()
       setSesion(s)
       return data
@@ -161,8 +165,8 @@ export function ColmenaProvider({ children }) {
       await Promise.all([cargar.ayudas(), cargarPendientes()])
     },
     async alternarMeSirve(postId) {
-      const ya = meSirve.some((m) => m.publicacion_id === postId && m.perfil_id === sesion.id)
-      setMeSirve((l) => ya ? l.filter((m) => !(m.publicacion_id === postId && m.perfil_id === sesion.id)) : [...l, { publicacion_id: postId, perfil_id: sesion.id }])
+      const ya = meSirve.some((m) => m.publicacion_id === postId && m.perfil_id === sesionRef.current.id)
+      setMeSirve((l) => ya ? l.filter((m) => !(m.publicacion_id === postId && m.perfil_id === sesionRef.current.id)) : [...l, { publicacion_id: postId, perfil_id: sesionRef.current.id }])
       try { return await rpc('alternar_me_sirve', { p_post: postId }) } catch (e) { cargar.meSirve(); throw e }
     },
     async calificar(postId, paraId, estrellas, chips, comentario) {
@@ -188,18 +192,18 @@ export function ColmenaProvider({ children }) {
       await rpc('borrar_publicacion', { p_post: id })
     },
     async alternarAyuda(postId) {
-      const ya = ayudas.some((a) => a.publicacion_id === postId && a.perfil_id === sesion.id)
-      setAyudas((l) => ya ? l.filter((a) => !(a.publicacion_id === postId && a.perfil_id === sesion.id)) : [...l, { publicacion_id: postId, perfil_id: sesion.id }])
+      const ya = ayudas.some((a) => a.publicacion_id === postId && a.perfil_id === sesionRef.current.id)
+      setAyudas((l) => ya ? l.filter((a) => !(a.publicacion_id === postId && a.perfil_id === sesionRef.current.id)) : [...l, { publicacion_id: postId, perfil_id: sesionRef.current.id }])
       try { return await rpc('alternar_ayuda', { p_post: postId }) } catch (e) { cargar.ayudas(); throw e }
     },
     async alternarConexion(aId) {
-      const ya = conexiones.some((c) => c.de_id === sesion.id && c.a_id === aId)
-      setConexiones((l) => ya ? l.filter((c) => !(c.de_id === sesion.id && c.a_id === aId)) : [...l, { de_id: sesion.id, a_id: aId }])
+      const ya = conexiones.some((c) => c.de_id === sesionRef.current.id && c.a_id === aId)
+      setConexiones((l) => ya ? l.filter((c) => !(c.de_id === sesionRef.current.id && c.a_id === aId)) : [...l, { de_id: sesionRef.current.id, a_id: aId }])
       try { return await rpc('alternar_conexion', { p_a: aId }) } catch (e) { cargar.conexiones(); throw e }
     },
     async alternarAsistencia(encId) {
-      const ya = asistencias.some((a) => a.encuentro_id === encId && a.perfil_id === sesion.id)
-      setAsistencias((l) => ya ? l.filter((a) => !(a.encuentro_id === encId && a.perfil_id === sesion.id)) : [...l, { encuentro_id: encId, perfil_id: sesion.id }])
+      const ya = asistencias.some((a) => a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)
+      setAsistencias((l) => ya ? l.filter((a) => !(a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)) : [...l, { encuentro_id: encId, perfil_id: sesionRef.current.id }])
       try { return await rpc('alternar_asistencia', { p_encuentro: encId }) } catch (e) { cargar.asistencias(); throw e }
     }
   }

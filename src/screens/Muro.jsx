@@ -4,8 +4,9 @@ import { CATS } from '../data/contenido'
 import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
 import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, useToast } from '../components/ui'
+import { PrimerosPasos } from './Onboarding'
 
-export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer }) {
+export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }) {
   const c = useColmena()
   const [tipo, setTipo] = useState('todo')
   const [cat, setCat] = useState(null)
@@ -33,6 +34,10 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         ) : (
           <h1 className="headline">Aquí nadie arranca <Mark>solo.</Mark></h1>
         )}
+        <p className="lede">Pide ayuda para tu emprendimiento o dale una mano a otro estudiante de DCV. Te escriben por WhatsApp.</p>
+        <button type="button" className="como" onClick={() => abrirAyuda()}><Icon n="bulb" s={16} />¿Cómo funciona?</button>
+
+        <PrimerosPasos irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirComposer={abrirComposer} />
 
         <AvisoPrueba />
 
@@ -41,7 +46,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
           <span className="plus"><Icon n="plus" s={18} w={2.4} /></span>
         </button>
 
-        <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} />
+        <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirAyuda={abrirAyuda} />
 
         {pedido.length > 0 && (
           <section className="pedido" aria-label="Lo más pedido">
@@ -88,7 +93,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
 }
 
 // "Lo que se mueve": lo vivo de la colmena en un carrusel (reto, panal, encuentro, herramienta)
-function Movimiento({ irTab, nav, pedirPerfil }) {
+function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
   const c = useColmena()
   const toast = useToast()
   const pista = useRef(null)
@@ -112,7 +117,7 @@ function Movimiento({ irTab, nav, pedirPerfil }) {
   const slides = [
     r && (
       <article key="reto" className="mov polen">
-        <div className="mov-top"><span className="k">Reto de la semana</span><span className="cd">{cierraEn(r.cierra_en)}</span></div>
+        <div className="mov-top"><span className="k">Reto de la semana <QueEs onClick={() => abrirAyuda('reto')} /></span><span className="cd">{cierraEn(r.cierra_en)}</span></div>
         <h3>{r.titulo}</h3>
         <div className="mov-foot">
           <span className="mov-who">
@@ -128,7 +133,7 @@ function Movimiento({ irTab, nav, pedirPerfil }) {
     <article key="panal" className="mov ink">
       <div className="mov-split">
         <div>
-          <span className="k">El panal de esta semana</span>
+          <span className="k">El panal de esta semana <QueEs onClick={() => abrirAyuda('panal')} /></span>
           <b className="mov-big"><em>{llenas}</em>/{PANAL}</b>
           <p>{llenas === 0 ? 'Cada mano confirmada llena una celda.' : `manos dadas · faltan ${Math.max(PANAL - llenas, 0)}`}</p>
           {ejemplos > 0 && <span className="ej-note">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
@@ -175,6 +180,10 @@ function Movimiento({ irTab, nav, pedirPerfil }) {
   )
 }
 
+const QueEs = ({ onClick }) => (
+  <button type="button" className="quees" onClick={onClick} aria-label="¿Qué es esto?">?</button>
+)
+
 const AVISO = 'colmena.aviso-prueba.v1'
 function AvisoPrueba() {
   const [visto, setVisto] = useState(() => { try { return localStorage.getItem(AVISO) === '1' } catch { return false } })
@@ -183,7 +192,7 @@ function AvisoPrueba() {
   return (
     <aside className="aviso-prueba" aria-label="Prototipo en prueba">
       <span className="ej-pill">Prototipo en prueba</span>
-      <p>Lo que lleva la etiqueta <b>Ejemplo</b> es contenido de muestra para que veas cómo funciona Colmena: no son personas ni publicaciones reales. Todo lo demás es de la comunidad.</p>
+      <p>Lo marcado como <b>Ejemplo</b> es de muestra para que veas cómo funciona: no son personas reales.</p>
       <button type="button" className="linkbtn" onClick={cerrar}>Entendido</button>
     </aside>
   )
