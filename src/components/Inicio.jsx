@@ -10,6 +10,7 @@ import { FilaDestacados, VisorDestacados } from './Historias'
 import { Aliados, Logo, rango } from '../screens/Beneficios'
 import { vigentes } from '../screens/Convocatorias'
 
+const fechaHoy = (t) => { const x = new Date(t).toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Bogota' }); return x.charAt(0).toUpperCase() + x.slice(1) }
 const unir = (n) => (n.length <= 1 ? n[0] || '' : `${n.slice(0, -1).join(', ')} y ${n[n.length - 1]}`)
 
 // Datos que usan el encabezado, los destacados y las vitrinas; si una fuente falla, esa parte no se pinta.
@@ -28,8 +29,9 @@ export function Inicio({ nav, irTab, pedirPerfil }) {
   const [vistos, setVistos] = useState(leerVistos)
   const [visor, setVisor] = useState(null)
   const participar = () => irTab('encuentro', 'enc-reto')
-  const disponibles = c.perfiles.filter((p) => p.disponible).slice(0, 4)
-  const nDisp = c.perfiles.filter((p) => p.disponible).length
+  const otrosDisp = c.perfiles.filter((p) => p.disponible && p.id !== c.yo?.id)
+  const disponibles = otrosDisp.slice(0, 4)
+  const nDisp = otrosDisp.length
 
   const anillos = useMemo(() => construirDestacados({
     ahora, ganador, perfilGanador: perfil, reto: c.reto,
@@ -60,17 +62,18 @@ export function Inicio({ nav, irTab, pedirPerfil }) {
 
   return (
     <>
-      <div className="home-saludo">
-        <h1>{c.yo ? `Hola, ${c.yo.nombre.split(' ')[0]}` : 'Tu comunidad para emprender'}</h1>
-        <p>{c.yo ? 'Esto es lo nuevo en la comunidad.' : 'Conoce miembros, encuentra descuentos y comparte lo que haces.'}</p>
+      <header className="hoy">
+        <span className="hoy-fecha">{fechaHoy(ahora)}</span>
+        <h1>{c.yo ? <>Hola, {c.yo.nombre.split(' ')[0]}</> : <>Tu comunidad para <mark className="hl">emprender</mark></>}</h1>
         {disponibles.length > 0 && (
-          <button type="button" className="home-disp" onClick={() => irTab('miembros')} aria-label={`${nDisp} miembros disponibles ahora. Ver miembros`}>
-            <span className="stack">{disponibles.map((p) => <Hex key={p.id} p={p} w={26} fs={10} />)}</span>
-            <span className="home-disp-t"><b>Disponibles ahora</b><span>{unir(disponibles.slice(0, 2).map((p) => p.nombre.split(' ')[0]))}{nDisp > 2 ? ` y ${nDisp - 2} más` : ''}{disponibles.every((p) => p.es_ejemplo) ? ' · Ejemplo' : ''}</span></span>
+          <button type="button" className="hoy-disp" onClick={() => irTab('miembros')} aria-label={`${nDisp} miembros disponibles ahora. Ver miembros`}>
+            <span className="hoy-stack">{disponibles.map((p) => <Hex key={p.id} p={p} w={28} fs={10} />)}<i className="hoy-vivo" aria-hidden="true" /></span>
+            <span className="hoy-disp-t"><b>{nDisp} disponibles ahora</b><span>{nDisp > 2 ? `${disponibles.slice(0, 2).map((p) => p.nombre.split(' ')[0]).join(', ')} y ${nDisp - 2} más` : unir(disponibles.map((p) => p.nombre.split(' ')[0]))}</span></span>
+            {disponibles.every((p) => p.es_ejemplo) && <span className="ejemplo">Ejemplo</span>}
             <Icon n="right" s={16} w={2} />
           </button>
         )}
-      </div>
+      </header>
 
       <FilaDestacados anillos={anillos} vistos={vistos} onAbrir={setVisor} />
       {visor !== null && <VisorDestacados anillos={anillos} inicial={visor} onCerrar={cerrarVisor} onIr={ir} />}

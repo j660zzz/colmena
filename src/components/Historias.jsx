@@ -5,7 +5,7 @@ import { estaVisto, leerVistos, marcarVisto } from '../lib/historias'
 
 const quietoAhora = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false } }
 const DURACION = { ganador: 7000, reto: 7000, aliado: 6000, taller: 7000, conv: 6000, beneficio: 5000 }
-const HEX = 'M12 2.5 20.2 7.25v9.5L12 21.5 3.8 16.75v-9.5L12 2.5Z'
+const ARO = '36,1.5 69.5,20.75 69.5,59.25 36,78.5 2.5,59.25 2.5,20.75'
 
 // Fila de anillos hexagonales. Sin datos no pinta nada: nunca estorba al resto del inicio.
 export function FilaDestacados({ anillos, onAbrir, vistos }) {
@@ -18,8 +18,8 @@ export function FilaDestacados({ anillos, onAbrir, vistos }) {
           <button key={a.id} type="button" className={'dest-item' + (visto ? ' visto' : '')} onClick={() => onAbrir(i)}
             aria-label={`${a.nombre}${visto ? '' : ', nuevo'}`}>
             <span className="dest-hex">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={HEX} className="dest-aro" /></svg>
-              <i><Icon n={a.icono} s={22} w={1.9} /></i>
+              <svg viewBox="0 0 72 80" aria-hidden="true"><polygon points={ARO} className="dest-aro" pathLength="100" /></svg>
+              <i><Icon n={a.icono} s={24} w={1.9} /></i>
             </span>
             <span className="dest-n">{a.nombre}</span>
           </button>

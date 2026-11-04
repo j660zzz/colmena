@@ -1385,9 +1385,6 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 }
 
 /* Inicio: premio, aliados y una sola vitrina de novedades antes del muro. */
-.home-saludo { display: flex; flex-direction: column; gap: 4px; }
-.home-saludo h1 { font-size: 22px; line-height: 1.15; }
-.home-saludo p { font-size: 14px; color: var(--muted); }
 .home-premio { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; border-radius: 24px; background: var(--ink); color: var(--surface); }
 .home-premio > .k, .home-mini > .k { display: flex; align-items: center; gap: 8px; }
 .home-premio > .k { color: rgba(255,255,255,.72); }
@@ -1419,32 +1416,40 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .muro-body { overflow-anchor: none; }
 
 /* ================= Inicio atrapante: encabezado, destacados, cupones y visor ================= */
-.home-saludo { gap: 6px; }
-.home-saludo h1 { font-size: 25px; line-height: 1.08; letter-spacing: -.04em; }
-.home-saludo > p { font-size: 15px; }
-.home-disp { margin-top: 6px; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 14px 8px 10px; border-radius: 999px; background: var(--surface); box-shadow: var(--soft); text-align: left; transition: transform .15s var(--ease); }
-.home-disp:active { transform: scale(.985); }
-.home-disp .stack { display: flex; flex: none; }
-.home-disp .stack .hexav { box-shadow: 0 0 0 2px var(--surface); }
-.home-disp-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.home-disp-t b { font: 600 14px/1.2 var(--ui); }
-.home-disp-t span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Fila de destacados: anillos hexagonales. Sin Polen: el foco de la pantalla es publicar. */
-.dest-fila { display: flex; gap: 0; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 0; scrollbar-width: none; scroll-padding-inline: 16px; }
+/* Encabezado "Hoy": fecha, título grande y quién está disponible */
+.hoy { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.hoy-fecha { font: 600 13px/1.2 var(--ui); letter-spacing: .02em; color: var(--muted); }
+.hoy h1 { font-size: 34px; line-height: 1.06; letter-spacing: -.05em; }
+.hoy h1 mark.hl { padding: 0 .08em; }
+.hoy-disp { display: flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 4px; text-align: left; border-radius: 14px; transition: transform .15s var(--ease); }
+.hoy-disp:active { transform: scale(.985); }
+.hoy-stack { position: relative; display: flex; flex: none; }
+.hoy-stack .hexav { box-shadow: none; }
+.hoy-stack .hexav + .hexav { margin-left: -5px; }
+.hoy-vivo { position: absolute; right: -3px; bottom: -1px; width: 12px; height: 12px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2.5px var(--app-bg); }
+.hoy-disp-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.hoy-disp-t b { font: 600 15px/1.2 var(--ui); }
+.hoy-disp-t span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hoy-disp .ejemplo { margin: 0; flex: none; }
+.hoy-disp > svg { flex: none; color: var(--muted); }
+
+/* Fila de destacados: hexágonos Tinta con ícono Polen (como los avatares); el aro marca lo nuevo */
+.dest-fila { display: flex; justify-content: space-between; gap: 0; overflow-x: auto; margin: 8px -16px 4px; padding: 4px 12px 0; scrollbar-width: none; scroll-padding-inline: 12px; }
 .dest-fila::-webkit-scrollbar { display: none; }
-.dest-item { flex: 1 0 68px; max-width: 84px; min-height: 96px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 0; animation: a-up .2s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.dest-item { flex: 1 0 70px; max-width: 88px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 0 4px; animation: a-up .22s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms); }
 .dest-item:nth-child(2) { --i: 1; } .dest-item:nth-child(3) { --i: 2; } .dest-item:nth-child(4) { --i: 3; } .dest-item:nth-child(5) { --i: 4; } .dest-item:nth-child(6) { --i: 5; }
-.dest-hex { position: relative; width: 68px; height: 76px; display: grid; place-items: center; }
-.dest-hex > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.dest-aro { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; transition: stroke .2s var(--ease); }
-.dest-hex i { width: 52px; height: 58px; clip-path: var(--hex); background: var(--ink); color: var(--surface); display: grid; place-items: center; transition: background .2s var(--ease), color .2s var(--ease); }
-.dest-item.visto .dest-aro { stroke: var(--ink-4); stroke-width: 1; }
-.dest-item.visto .dest-hex i { background: var(--surface); color: var(--ink); box-shadow: none; }
-.dest-item:active .dest-hex { transform: scale(.94); }
-.dest-hex { transition: transform .15s var(--ease); }
-.dest-n { font: 600 12px/1.15 var(--ui); text-align: center; max-width: 76px; }
-.dest-item.visto .dest-n { color: var(--muted); font-weight: 400; }
+.dest-hex { position: relative; width: 64px; height: 72px; display: grid; place-items: center; transition: transform .15s var(--ease); }
+.dest-hex > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dest-aro { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; stroke-dasharray: 100 100; animation: aro-dibuja .5s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms + 120ms); }
+@keyframes aro-dibuja { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+.dest-hex i { width: 54px; height: 61px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; }
+.dest-item.visto .dest-aro { stroke: var(--ink-4); stroke-width: 1.5; animation: none; }
+.dest-item.visto .dest-hex i { opacity: .88; }
+.dest-item:active .dest-hex { transform: scale(.93); }
+.dest-n { font: 600 12px/1.2 var(--ui); text-align: center; max-width: 80px; }
+.dest-item.visto .dest-n { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .dest-aro { animation: none; } }
 
 /* Premio: pasos en una línea y cuenta regresiva */
 .home-premio.con-ganador .home-avatar { animation: a-pop .24s var(--ease) both; }

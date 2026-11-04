@@ -65,7 +65,7 @@ export function construirDestacados({ ahora = Date.now(), ganador = null, perfil
     .sort((a, b) => hasta(a) - hasta(b)).slice(0, 4)
   if (conv.length) {
     anillos.push({
-      id: 'cierran', nombre: 'Cierran pronto', icono: 'hour',
+      id: 'cierran', nombre: 'Por cerrar', icono: 'hour',
       slides: conv.map((x) => ({
         id: `conv-${x.id}`, k: 'conv', oscura: true,
         kicker: x.tipo === 'feria' ? 'Feria' : x.tipo === 'evento' ? 'Evento' : 'Convocatoria', titulo: x.nombre,
