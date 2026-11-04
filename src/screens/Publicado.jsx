@@ -31,7 +31,7 @@ export default function Publicado({ postId, onBack, nav, irTab, pedirPerfil }) {
   const resolver = async (perfilId, estado) => {
     try {
       await c.confirmarMano(post.id, perfilId, estado)
-      if (estado === 'confirmada') toast('¡Mano confirmada! Sumaste una celda al panal.')
+      if (estado === 'confirmada') toast('Ayuda confirmada. Se sumó una celda al panal.')
     } catch (e) { toast(e.message, true) }
   }
 
@@ -42,7 +42,7 @@ export default function Publicado({ postId, onBack, nav, irTab, pedirPerfil }) {
         {nueva && (
           <div className="success">
             <span className="okhex"><Icon n="check" s={26} w={2.6} /></span>
-            <h2>Listo, ya está en el muro</h2>
+            <h2>Tu publicación está en el muro</h2>
           </div>
         )}
         <div className="mini-post">
@@ -67,14 +67,14 @@ export default function Publicado({ postId, onBack, nav, irTab, pedirPerfil }) {
                   </button>
                   {a.estado === 'pendiente' ? (
                     <div className="ask">
-                      <span>¿Se dio la mano?</span>
+                      <span>¿Se concretó?</span>
                       <div className="ask-btns">
-                        <button type="button" className="btn primary sm" onClick={() => resolver(a.perfil_id, 'confirmada')}>Sí, se dio</button>
-                        <button type="button" className="btn ghost sm" onClick={() => resolver(a.perfil_id, 'no')}>No se dio</button>
+                        <button type="button" className="btn primary sm" onClick={() => resolver(a.perfil_id, 'confirmada')}>Sí</button>
+                        <button type="button" className="btn ghost sm" onClick={() => resolver(a.perfil_id, 'no')}>No</button>
                       </div>
                     </div>
                   ) : a.estado === 'confirmada' ? (
-                    <span className="state ok"><Icon n="check" s={15} w={2.4} />{ayuda === c.yo?.id ? 'Diste la mano' : 'Te dio la mano'}</span>
+                    <span className="state ok"><Icon n="check" s={15} w={2.4} />{ayuda === c.yo?.id ? 'Ayudaste' : 'Te ayudó'}</span>
                   ) : (
                     <button type="button" className="linkbtn" onClick={() => resolver(a.perfil_id, 'pendiente')}>No se dio · cambiar</button>
                   )}
@@ -85,9 +85,9 @@ export default function Publicado({ postId, onBack, nav, irTab, pedirPerfil }) {
         )}
 
         <div className="sec-h"><h3>Saben de {post.categorias.join(', ') || 'esto'}</h3></div>
-        <p className="soft">Mientras alguien responde, estas personas te pueden dar una mano:</p>
+        <p className="soft">Mientras tanto, puedes escribirle a alguien que sabe del tema:</p>
         {sugeridos.length === 0 ? (
-          <p className="soft">Aún no hay miembros en esta categoría. Comparte Colmena con quien sepa del tema.</p>
+          <p className="soft">Todavía no hay miembros en esta categoría.</p>
         ) : (
           <div className="cards">
             {sugeridos.map((m) => (
@@ -107,8 +107,8 @@ export default function Publicado({ postId, onBack, nav, irTab, pedirPerfil }) {
 
         <section className="panal-card slim">
           <div className="panal-txt">
-            <span className="k">Cada mano suma</span>
-            <p>Cuando alguien te dé la mano, confírmalo aquí y sumas una celda al panal de la semana.</p>
+            <span className="k">Confirma cuando te ayuden</span>
+            <p>Cuando alguien te ayude, márcalo aquí. Cada ayuda confirmada llena una celda del panal.</p>
           </div>
           <Panal celdas={celdas} size={11} />
         </section>

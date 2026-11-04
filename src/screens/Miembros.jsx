@@ -27,7 +27,7 @@ export default function Miembros({ nav, headerRight }) {
 
   return (
     <>
-      <Header title="Miembros" sub="Encuentra a alguien por lo que sabe hacer" right={headerRight} />
+      <Header title="Miembros" sub="Busca por nombre o habilidad" right={headerRight} />
       <div className="body fade">
         <div className="search">
           <Icon n="search" s={19} />
@@ -45,7 +45,7 @@ export default function Miembros({ nav, headerRight }) {
                   <Hex p={m} w={44} h={48} fs={16} />
                   <b>{firstName(m.nombre)}</b>
                   <span className="tag dark">{m.habilidades[0] || m.categorias[0]}</span>
-                  {m.es_ejemplo ? <small>Ejemplo</small> : <small>{manosDadas(c, m.id)} {manosDadas(c, m.id) === 1 ? 'mano dada' : 'manos dadas'}</small>}
+                  {m.es_ejemplo ? <small>Ejemplo</small> : <small>{manosDadas(c, m.id)} {manosDadas(c, m.id) === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>}
                 </button>
               ))}
             </div>
@@ -72,11 +72,11 @@ export default function Miembros({ nav, headerRight }) {
                   <span className="mhex"><Hex p={m} w={52} h={58} fs={18} />{activo && <i className="live" title="Activo esta semana" />}</span>
                   <span className="minfo">
                     <b>{m.nombre}<Ejemplo p={m} /></b>
-                    <span>{[m.rol, m.marca].filter(Boolean).join(' · ') || 'Miembro de la colmena'}</span>
+                    <span>{[m.rol, m.marca].filter(Boolean).join(' · ') || 'Miembro de Colmena'}</span>
                     {(m.habilidades.length > 0 || m.categorias.length > 0) && (
                       <span className="post-tags">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 2).map((s) => <span key={s} className="tag">{s}</span>)}</span>
                     )}
-                    <small><Icon n="hand" s={14} />{n} {n === 1 ? 'mano dada' : 'manos dadas'}</small>
+                    <small><Icon n="hand" s={14} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>
                   </span>
                   <span className="vc">Ver carnet</span>
                 </button>

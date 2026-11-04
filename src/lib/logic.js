@@ -102,11 +102,11 @@ export function activoSemana(c, id) {
 export function completitud(p) {
   const pasos = [
     { ok: !!p.nombre, v: 20, t: 'Tu nombre' },
-    { ok: p.categorias?.length > 0, v: 20, t: 'Elige en qué te mueves' },
+    { ok: p.categorias?.length > 0, v: 20, t: 'Elige tus categorías' },
     { ok: !!p.tiene_whatsapp, v: 15, t: 'Agrega tu WhatsApp' },
-    { ok: !!p.rol, v: 15, t: 'Cuenta qué haces' },
+    { ok: !!p.rol, v: 15, t: 'Agrega a qué te dedicas' },
     { ok: !!p.marca, v: 15, t: 'Agrega tu marca' },
-    { ok: p.habilidades?.length > 0, v: 15, t: 'Escribe lo que sabes hacer' }
+    { ok: p.habilidades?.length > 0, v: 15, t: 'Agrega tus habilidades' }
   ]
   return { pct: pasos.reduce((s, x) => s + (x.ok ? x.v : 0), 0), faltan: pasos.filter((x) => !x.ok) }
 }

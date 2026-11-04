@@ -46,7 +46,7 @@ export function Voces({ id, nav }) {
   if (!lista.length) return null
   return (
     <>
-      <div className="sec-h"><h3>Voces de la colmena</h3><span className="meta">{lista.length}</span></div>
+      <div className="sec-h"><h3>Reseñas</h3><span className="meta">{lista.length}</span></div>
       <div className="cards">
         {lista.map((r) => {
           const de = c.perfil(r.de_id)
@@ -62,7 +62,7 @@ export function Voces({ id, nav }) {
           )
         })}
       </div>
-      <p className="fine">Reseñas verificadas: salen de manos confirmadas y se publican cuando las dos partes califican.</p>
+      <p className="fine">Solo pueden dejar reseña las personas que trabajaron juntas. Se publican cuando ambas califican.</p>
     </>
   )
 }
@@ -82,13 +82,13 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
       else { await navigator.clipboard.writeText(url); toast('Enlace copiado') }
     } catch { /* cancelado */ }
   }
-  const escribir = () => pedirPerfil(`Saca tu carnet para escribirle a ${firstName(m.nombre)}.`, async () => {
-    if (m.es_ejemplo) { toast('Es un perfil de ejemplo: no hay a quién escribirle.'); return }
+  const escribir = () => pedirPerfil(`Necesitas un carnet para escribirle a ${firstName(m.nombre)}.`, async () => {
+    if (m.es_ejemplo) { toast('Este perfil es de ejemplo, así que no hay a quién escribirle.'); return }
     try {
       const num = await c.contactar(m.id)
       if (num) location.href = waLink(num, `Hola ${firstName(m.nombre)}, te vi en Colmena.`)
       else if (m.instagram) location.href = igUrl(m.instagram)
-      else toast(`${firstName(m.nombre)} aún no agregó su WhatsApp.`)
+      else toast(`${firstName(m.nombre)} todavía no agregó su WhatsApp.`)
     } catch (e) { toast(e.message, true) }
   })
 
@@ -99,20 +99,20 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
       <div className="body fade with-sticky">
         <CarnetCard p={m} numero={m.carnet} />
         <div className="stats">
-          <div><b>{s.manos}</b><span>Manos dadas</span></div>
+          <div><b>{s.manos}</b><span>Ayudas dadas</span></div>
           <div><b>{s.publicaciones}</b><span>{s.publicaciones === 1 ? 'Publicación' : 'Publicaciones'}</span></div>
           <div><b>{s.promedio ? s.promedio.toFixed(1) : '—'}</b><span>{s.resenas ? `${s.resenas} ${s.resenas === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas'}</span></div>
         </div>
-        {m.es_ejemplo && <p className="nota">Este es un perfil de ejemplo para mostrar cómo funciona la colmena. No corresponde a una persona real.</p>}
+        {m.es_ejemplo && <p className="nota">Este es un perfil de ejemplo para mostrar cómo funciona Colmena. No es una persona real.</p>}
 
         {(m.habilidades.length > 0 || m.categorias.length > 0) && (
           <>
-            <div className="sec-h"><h3>Lo que comparte</h3></div>
+            <div className="sec-h"><h3>Habilidades</h3></div>
             <div className="post-tags">{[...m.categorias, ...m.habilidades].map((x) => <span key={x} className="tag">{x}</span>)}</div>
           </>
         )}
         {s.manos === 0 && s.resenas === 0 && !m.es_ejemplo && (
-          <div className="nuevo"><Icon n="spark" s={18} /><p><b>{firstName(m.nombre)} es nuevo en la colmena.</b> Sé su primera mano.</p></div>
+          <div className="nuevo"><Icon n="spark" s={18} /><p><b>{firstName(m.nombre)} es nuevo en Colmena.</b></p></div>
         )}
 
         <Insignias s={s} />
@@ -125,17 +125,17 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
             {m.es_ejemplo
               ? <b>Perfil de ejemplo</b>
               : c.yo
-                ? <b>{m.tiene_whatsapp ? 'Disponible para miembros' : 'Aún no lo agrega'}</b>
+                ? <b>{m.tiene_whatsapp ? 'Disponible para miembros' : 'No lo ha agregado'}</b>
                 : <b className="mono"><Icon n="lock" s={14} /> +57 3•• ••• ••••</b>}
             <span>{m.es_ejemplo
-              ? 'Con un miembro real, este botón abre WhatsApp con un mensaje listo. Solo lo ven quienes tienen carnet.'
-              : c.yo ? `Toca escribir y te lleva al chat con ${firstName(m.nombre)}.` : 'Saca tu carnet para ver su número y escribirle.'}</span>
+              ? 'Con un miembro real, este botón abre WhatsApp con un mensaje listo. El número solo lo ven otros miembros.'
+              : c.yo ? 'Al tocar Escribir se abre el chat de WhatsApp.' : 'Crea tu carnet para ver su número.'}</span>
           </div>
         </div>
       </div>
       <div className="sticky">
         <button type="button" className="btn primary full big" onClick={escribir}>
-          <Icon n={c.yo ? 'wa' : 'lock'} s={18} />{c.yo ? `Escribirle a ${firstName(m.nombre)}` : `Saca tu carnet y escríbele a ${firstName(m.nombre)}`}
+          <Icon n={c.yo ? 'wa' : 'lock'} s={18} />{c.yo ? `Escribirle a ${firstName(m.nombre)}` : 'Crear carnet para escribirle'}
         </button>
       </div>
     </>

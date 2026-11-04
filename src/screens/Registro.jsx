@@ -22,7 +22,7 @@ export function CarnetCard({ p, numero, nota }) {
         <Hex p={p.nombre ? p : null} w={56} h={64} fs={20} />
         <div className="carnet-info">
           <h3>{p.nombre || 'Tu nombre'}</h3>
-          <p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || (nota ? 'Tu marca · Lo que haces' : 'Miembro de la colmena')}</p>
+          <p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || (nota ? 'Tu marca · Lo que haces' : 'Miembro de Colmena')}</p>
         </div>
       </div>
       <div className="carnet-foot">
@@ -63,29 +63,29 @@ export default function Registro({ motivo, onBack, onListo }) {
     } catch (x) { setErr(x.message) } finally { setEnviando(false) }
   }
 
-  const titulos = ['', 'Quién eres', 'Para que te puedan escribir', 'En qué te mueves']
+  const titulos = ['', 'Tus datos', 'Contacto', 'Lo que haces']
 
   return (
     <>
-      <SubHeader title="Saca tu carnet" onBack={paso > 1 ? () => setPaso(paso - 1) : onBack} />
+      <SubHeader title="Crea tu carnet" onBack={paso > 1 ? () => setPaso(paso - 1) : onBack} />
       <div className="steps-bar" aria-hidden="true">{[1, 2, 3].map((i) => <i key={i} className={i <= paso ? 'on' : ''} />)}</div>
       <form className="body fade" onSubmit={siguiente}>
-        <CarnetCard p={{ ...f, habilidades: [] }} nota="Se arma mientras escribes" />
+        <CarnetCard p={{ ...f, habilidades: [] }} nota="Vista previa" />
         <p className="step-t">Paso {paso} de 3 · {titulos[paso]}</p>
         {paso === 1 && motivo && <p className="soft">{motivo}</p>}
         <div className="form">
           {paso === 1 && (
             <>
               <div className="field">
-                <label htmlFor="r-nombre">¿Cómo te dicen? *</label>
+                <label htmlFor="r-nombre">Nombre *</label>
                 <div className="inp"><input id="r-nombre" autoFocus required maxLength={60} autoComplete="name" value={f.nombre} onChange={set('nombre')} placeholder="Nombre y apellido" /></div>
               </div>
               <div className="field">
-                <label htmlFor="r-marca">Tu emprendimiento o marca</label>
-                <div className="inp"><input id="r-marca" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Si aún no tiene nombre, déjalo vacío" /></div>
+                <label htmlFor="r-marca">Emprendimiento o marca</label>
+                <div className="inp"><input id="r-marca" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Opcional" /></div>
               </div>
               <div className="field">
-                <label htmlFor="r-rol">¿Qué haces?</label>
+                <label htmlFor="r-rol">¿A qué te dedicas?</label>
                 <div className="inp"><input id="r-rol" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div>
               </div>
             </>
@@ -93,9 +93,9 @@ export default function Registro({ motivo, onBack, onListo }) {
           {paso === 2 && (
             <>
               <div className="field">
-                <label htmlFor="r-wa">Tu WhatsApp *</label>
+                <label htmlFor="r-wa">WhatsApp *</label>
                 <div className="inp"><span className="pre mono">+57</span><input id="r-wa" className="mono" autoFocus inputMode="tel" autoComplete="tel-national" value={f.whatsapp} onChange={set('whatsapp')} placeholder="310 555 0142" /></div>
-                <span className="hint"><Icon n="lock" s={14} />Solo lo ven los miembros con carnet. Nunca es público.</span>
+                <span className="hint"><Icon n="lock" s={14} />Solo lo ven otros miembros. No es público.</span>
               </div>
               <div className="field">
                 <label htmlFor="r-ig">Instagram <small>(opcional)</small></label>
@@ -119,20 +119,20 @@ export default function Registro({ motivo, onBack, onListo }) {
                 <div className="chips wrap">
                   {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}
                 </div>
-                <span className="hint">Con esto te mostramos quién necesita lo que sabes hacer.</span>
+                <span className="hint">Las usamos para mostrarte publicaciones que te pueden interesar.</span>
               </div>
               <div className="field">
-                <label htmlFor="r-hab">Lo que sabes hacer</label>
+                <label htmlFor="r-hab">Habilidades</label>
                 <div className="inp"><input id="r-hab" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas: retoque, reels, empaques" /></div>
               </div>
             </>
           )}
           {err && <p className="err" role="alert">{err}</p>}
           <button type="submit" className="btn primary full big" disabled={!ok || enviando}>
-            {enviando ? 'Armando tu carnet…' : paso < 3 ? 'Seguir' : 'Sacar mi carnet'}
+            {enviando ? 'Creando tu carnet…' : paso < 3 ? 'Siguiente' : 'Crear carnet'}
           </button>
           {paso === 2 && f.whatsapp && !waValido(f.whatsapp) && <p className="fine center">Escribe un celular colombiano de 10 dígitos.</p>}
-          <p className="fine center">Sin contraseñas ni correos. Menos de un minuto.</p>
+          <p className="fine center">No necesitas correo ni contraseña.</p>
         </div>
       </form>
     </>
@@ -147,29 +147,29 @@ export function CarnetListo({ onMuro, onSeguir }) {
   const { pct, faltan } = completitud(yo)
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${yo.id}`
-    const data = { title: 'Ya tengo mi carnet en Colmena', text: `Ya soy parte de Colmena · ${carnetId(yo.carnet)}. Aquí nadie arranca solo.`, url }
+    const data = { title: 'Mi carnet en Colmena', text: `Ya tengo mi carnet en Colmena, la red de emprendedores de DCV · ${carnetId(yo.carnet)}`, url }
     try {
       if (navigator.share) await navigator.share(data)
-      else { await navigator.clipboard.writeText(`${data.text} ${url}`); toast('Enlace copiado. Pégalo en tu historia.') }
+      else { await navigator.clipboard.writeText(`${data.text} ${url}`); toast('Enlace copiado') }
     } catch { /* cancelado */ }
   }
   return (
     <div className="listo">
       <Comb className="listo-comb" viewBox="0 0 200 200" r={22} w={220} h={220} x0={0} y0={0} stroke="rgba(15,15,13,.14)" />
       <div className="listo-in fade">
-        <h1>Ya eres<br />parte.</h1>
+        <h1>Tu carnet<br />está listo.</h1>
         <div className="carnet white"><CarnetInner p={yo} /></div>
-        <p className="listo-sub">Aquí nadie arranca solo.</p>
+        <p className="listo-sub">Ya puedes publicar y escribirles a otros miembros.</p>
         <div className="earned">
           <span className="ehex"><Icon n="card" s={20} w={2} /></span>
-          <span>Insignia ganada: <b>Entró a la colmena</b></span>
+          <span>Nueva insignia: <b>Miembro de Colmena</b></span>
         </div>
         <div className="pct-card">
           <b>Tu carnet ya va al {pct}%</b>
           <div className="prog"><i style={{ width: pct + '%' }} /></div>
-          <span>{faltan.length ? `Siguiente: ${faltan[0].t.toLowerCase()}. Lo completas en Editar, desde tu carnet.` : 'Tu carnet está completo.'}</span>
+          <span>{faltan.length ? `Siguiente: ${faltan[0].t.toLowerCase()}. Puedes completarlo en Editar.` : 'Tu carnet está completo.'}</span>
         </div>
-        {onSeguir && <button type="button" className="btn ink full big" onClick={onSeguir}>Seguir con lo que ibas a hacer</button>}
+        {onSeguir && <button type="button" className="btn ink full big" onClick={onSeguir}>Continuar</button>}
         <button type="button" className={'btn full ' + (onSeguir ? 'ghost' : 'ink big')} onClick={compartir}><Icon n="share" s={18} />Compartir mi carnet</button>
         <button type="button" className="btn ghost full" onClick={onMuro}>Ir al muro</button>
       </div>
@@ -230,19 +230,19 @@ export function Editar({ onBack }) {
       <form className="body fade" onSubmit={guardar}>
         <div className="form">
           <div className="field"><label htmlFor="e-n">Nombre *</label><div className="inp"><input id="e-n" maxLength={60} value={f.nombre} onChange={set('nombre')} /></div></div>
-          <div className="field"><label htmlFor="e-m">Emprendimiento o marca</label><div className="inp"><input id="e-m" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Si aún no tiene nombre, déjalo vacío" /></div></div>
-          <div className="field"><label htmlFor="e-r">¿Qué haces?</label><div className="inp"><input id="e-r" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div></div>
+          <div className="field"><label htmlFor="e-m">Emprendimiento o marca</label><div className="inp"><input id="e-m" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Opcional" /></div></div>
+          <div className="field"><label htmlFor="e-r">¿A qué te dedicas?</label><div className="inp"><input id="e-r" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div></div>
           <div className="field">
             <label htmlFor="e-w">WhatsApp</label>
             <div className="inp"><span className="pre mono">+57</span><input id="e-w" className="mono" inputMode="tel" value={f.whatsapp} onChange={set('whatsapp')} placeholder="310 555 0142" /></div>
-            <span className="hint"><Icon n="lock" s={14} />Solo lo ven los miembros con carnet.</span>
+            <span className="hint"><Icon n="lock" s={14} />Solo lo ven otros miembros.</span>
           </div>
           <div className="field"><label htmlFor="e-i">Instagram</label><div className="inp"><span className="pre">@</span><input id="e-i" maxLength={40} autoCapitalize="none" value={f.instagram} onChange={set('instagram')} placeholder="tumarca" /></div></div>
           <div className="field">
             <span className="lbl">Categorías <small>(hasta 3)</small></span>
             <div className="chips wrap">{CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}</div>
           </div>
-          <div className="field"><label htmlFor="e-h">Lo que sabes hacer</label><div className="inp"><input id="e-h" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas" /></div></div>
+          <div className="field"><label htmlFor="e-h">Habilidades</label><div className="inp"><input id="e-h" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas" /></div></div>
           {err && <p className="err" role="alert">{err}</p>}
           <button type="submit" className="btn primary full big" disabled={!ok || enviando}>{enviando ? 'Guardando…' : 'Guardar cambios'}</button>
           <div className="center"><button type="button" className="linkbtn danger" onClick={borrar}>Borrar mi perfil y mis datos</button></div>

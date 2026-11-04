@@ -16,7 +16,7 @@ export default function Calificar({ postId, otroId, onBack }) {
   const post = c.publicaciones.find((p) => p.id === postId)
   const otro = c.perfil(otroId)
   const pend = c.pendientes.calificar.find((x) => x.publicacion_id === postId && x.otro === otroId)
-  if (!post || !otro) return <><SubHeader title="Calificar la mano" onBack={onBack} /><div className="body"><Empty title="No encontramos esta mano" /></div></>
+  if (!post || !otro) return <><SubHeader title="Calificar" onBack={onBack} /><div className="body"><Empty title="No encontramos esta ayuda" /></div></>
 
   const yoAyude = c.yo && partesDe(post, post.autor_id === c.yo.id ? otroId : c.yo.id).ayuda === c.yo.id
   const toggle = (x) => setChips((l) => l.includes(x) ? l.filter((y) => y !== x) : [...l, x])
@@ -33,7 +33,7 @@ export default function Calificar({ postId, otroId, onBack }) {
   if (revelada !== undefined) {
     return (
       <>
-        <SubHeader title="Calificar la mano" onBack={onBack} />
+        <SubHeader title="Calificar" onBack={onBack} />
         <div className="body fade">
           <div className="success">
             <span className="okhex"><Icon n="check" s={26} w={2.6} /></span>
@@ -56,10 +56,10 @@ export default function Calificar({ postId, otroId, onBack }) {
 
   return (
     <>
-      <SubHeader title="Calificar la mano" onBack={onBack} />
+      <SubHeader title="Calificar" onBack={onBack} />
       <div className="body fade">
         <div className="mini-post">
-          <div className="who"><Hex p={otro} w={36} fs={13} /><span className="who-t"><b>{otro.nombre}</b><span>{yoAyude ? 'Le diste la mano' : 'Te dio la mano'} · {post.categorias[0] || 'Muro'}</span></span></div>
+          <div className="who"><Hex p={otro} w={36} fs={13} /><span className="who-t"><b>{otro.nombre}</b><span>{yoAyude ? 'Ayudaste' : 'Te ayudó'} · {post.categorias[0] || 'Muro'}</span></span></div>
         </div>
         <h1 className="q">¿Cómo te fue con {firstName(otro.nombre)}?</h1>
         <div className="star-pick" role="radiogroup" aria-label="Calificación">
@@ -72,18 +72,18 @@ export default function Calificar({ postId, otroId, onBack }) {
         <p className="star-word">{PALABRA_ESTRELLAS[n] || 'Toca una estrella'}</p>
         <span className="lbl">¿Qué destacas?</span>
         <div className="chips wrap">{CHIPS_CALIFICAR.map((x) => <button key={x} type="button" className="chip" aria-pressed={chips.includes(x)} onClick={() => toggle(x)}>{x}</button>)}</div>
-        <label className="lbl" htmlFor="cal-t">Cuéntale a la colmena <small>(opcional)</small></label>
+        <label className="lbl" htmlFor="cal-t">Comentario <small>(opcional)</small></label>
         <div className="ta">
-          <textarea id="cal-t" maxLength={140} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Una frase basta" />
+          <textarea id="cal-t" maxLength={140} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Escribe un comentario corto" />
           <span className="counter">{texto.length}/140</span>
         </div>
         <section className="ink-card">
           <div className="who"><span className="lockhex"><Icon n="lock" s={16} w={2} /></span>
-            <p>{pend?.otro_califico ? <><b>{firstName(otro.nombre)} ya te calificó.</b> Califícalo para ver lo que dijo de ti.</> : <>Las dos reseñas se publican juntas. Así nadie califica por compromiso.</>}</p>
+            <p>{pend?.otro_califico ? <><b>{firstName(otro.nombre)} ya te calificó.</b> Califica para ver su reseña.</> : <>Las dos reseñas se publican al mismo tiempo. Así son más honestas.</>}</p>
           </div>
         </section>
         <button type="button" className="btn primary full big" disabled={!n || enviando} onClick={enviar}>
-          {enviando ? 'Publicando…' : pend?.otro_califico ? 'Publicar y ver lo que dijo de mí' : 'Publicar mi reseña'}
+          {enviando ? 'Publicando…' : pend?.otro_califico ? 'Publicar y ver su reseña' : 'Publicar mi reseña'}
         </button>
       </div>
     </>

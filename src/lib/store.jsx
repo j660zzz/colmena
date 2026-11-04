@@ -62,7 +62,7 @@ export function ColmenaProvider({ children }) {
       res.forEach((r, i) => { if (r.status === 'rejected') console.warn('Colmena: falló', pendientes[i][0], r.reason) })
       pendientes = pendientes.filter((_, i) => res[i].status === 'rejected')
     }
-    setErrorRed(pendientes.length ? 'No pudimos conectar con la colmena. Revisa tu internet.' : null)
+    setErrorRed(pendientes.length ? 'No se pudo conectar. Revisa tu conexión.' : null)
     setCargando(false)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

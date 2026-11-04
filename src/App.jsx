@@ -56,7 +56,7 @@ function Shell() {
   }, [c.yo])
 
   const abrirComposer = useCallback((prev = {}) => {
-    pedirPerfil('Para publicar en el muro necesitas tu carnet.', () => setComposer({ tipo: 'need', texto: '', ...prev }))
+    pedirPerfil('Necesitas un carnet para publicar.', () => setComposer({ tipo: 'need', texto: '', ...prev }))
   }, [pedirPerfil])
 
   const abrirAyuda = useCallback((tema = null) => setAyuda({ tema }), [])
@@ -97,13 +97,13 @@ function Shell() {
   const headerRight = c.yo
     ? (
       <>
-        <button type="button" className="iconbtn bell" onClick={() => irTab('carnet')} aria-label={avisos ? `${avisos} cosas por revisar` : 'Sin novedades'}>
+        <button type="button" className="iconbtn bell" onClick={() => irTab('carnet')} aria-label={avisos ? `${avisos} pendientes` : 'Sin novedades'}>
           <Icon n="bell" s={22} />{avisos > 0 && <i className="dot" />}
         </button>
         <button type="button" className="iconbtn avbtn" onClick={() => irTab('carnet')} aria-label="Mi carnet"><Hex p={c.yo} w={32} h={36} fs={12} /></button>
       </>
     )
-    : <button type="button" className="enter" onClick={() => pedirPerfil(null, () => {})}>Saca tu carnet</button>
+    : <button type="button" className="enter" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>
 
   const comun = { nav, atras, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }
   const sub = pila[pila.length - 1]
@@ -156,7 +156,7 @@ function Shell() {
         {composer && (
           <Composer inicial={composer} onDone={(postId) => {
             setComposer(null)
-            if (postId) { toast('Publicado. La colmena ya lo está viendo.'); setTab('muro'); setPila([{ t: 'publicado', postId }]) }
+            if (postId) { toast('Publicado'); setTab('muro'); setPila([{ t: 'publicado', postId }]) }
           }} />
         )}
       </Sheet>

@@ -17,19 +17,19 @@ export default function Herramientas({ nav, headerRight }) {
   const n = TOOLS.filter((t) => ya.includes(t.id)).length
   return (
     <>
-      <Header title="Herramientas" sub="Para dejar de improvisar" right={headerRight} />
+      <Header title="Herramientas" sub="Guías y plantillas para tu emprendimiento" right={headerRight} />
       <div className="body fade">
         <button type="button" className="feature" onClick={() => nav({ t: 'calc' })}>
           <span className="dollar" aria-hidden="true">$</span>
           <span className="k">Calculadora</span>
           <h3>¿Cuánto cuesta lo que haces?</h3>
-          <p>Construye tu precio desde materiales, horas y gastos fijos. Deja de cotizar a ojo.</p>
+          <p>Calcula tu precio a partir de materiales, horas de trabajo y gastos fijos.</p>
           <span className="btn primary sm">Abrir calculadora <Icon n="right" s={16} w={2.2} /></span>
         </button>
 
         {empezar.length > 0 && (
           <>
-            <div className="sec-h"><h3>Para empezar</h3><span className="meta">5 min cada una</span></div>
+            <div className="sec-h"><h3>Para empezar</h3><span className="meta">5 min de lectura</span></div>
             <div className="duo">
               {empezar.map((t) => (
                 <button key={t.id} type="button" className="tool-mini" onClick={() => nav({ t: 'ficha', id: t.id })}>
@@ -163,14 +163,14 @@ export function Calculadora({ onBack, abrirComposer }) {
             <input id="c-mg" className="range" type="range" min="0" max="100" step="5" value={v.mg} onChange={set('mg')} />
           </div>
         </div>
-        <div className="tip"><Icon n="bulb" s={19} /><p>Los gastos fijos son arriendo, internet, software y transporte. Repartirlos entre tus proyectos del mes es lo que casi nadie hace, y es donde se pierde la plata.</p></div>
+        <div className="tip"><Icon n="bulb" s={19} /><p>Los gastos fijos son arriendo, internet, software y transporte. Repartirlos entre los proyectos del mes evita cobrar por debajo de tus costos.</p></div>
         <section className="ink-card">
-          <h3>¿Tu precio está bien?</h3>
-          <p>Pregúntale a la colmena: se publica en el muro como Necesito, sin mostrar tus cifras.</p>
-          <button type="button" className="btn primary full" onClick={() => abrirComposer({ tipo: 'need', texto: '¿Estoy cobrando bien? Busco a alguien que me revise cómo calculo mis precios.' })}>Preguntar a la colmena</button>
+          <h3>¿Quieres una segunda opinión?</h3>
+          <p>Publica una pregunta en el muro. Tus cifras no se muestran.</p>
+          <button type="button" className="btn primary full" onClick={() => abrirComposer({ tipo: 'need', texto: '¿Estoy cobrando bien? Busco a alguien que me revise cómo calculo mis precios.' })}>Preguntar en el muro</button>
         </section>
         <a className="btn ghost full" href={`https://wa.me/?text=${encodeURIComponent(resumen)}`} target="_blank" rel="noopener noreferrer"><Icon n="wa" s={18} />Enviar por WhatsApp</a>
-        <p className="fine center">Tus cifras se guardan solo en este celular.</p>
+        <p className="fine center">Tus cifras se guardan solo en este dispositivo.</p>
       </div>
     </>
   )

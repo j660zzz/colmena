@@ -45,18 +45,18 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
       <div className="intro-pista" ref={pista} onScroll={alMover}>
         <section className="intro-slide">
           <div className="intro-art"><Panal celdas={DEMO} size={24} /></div>
-          <span className="eyebrow">Bienvenido a Colmena</span>
-          <h1 className="intro-h">La red de los que emprenden en DCV.</h1>
-          <p className="intro-p">Aquí pides ayuda para tu emprendimiento y le das una mano a otros estudiantes de Diseño de la Javeriana. Entre pares y sin costo.</p>
+          <span className="eyebrow">Te damos la bienvenida</span>
+          <h1 className="intro-h">Ayuda entre emprendedores de DCV.</h1>
+          <p className="intro-p">Colmena conecta a estudiantes de Diseño de la Javeriana que tienen un emprendimiento. Pides ayuda, ofreces lo que sabes y hablan por WhatsApp. Es gratis.</p>
         </section>
 
         <section className="intro-slide">
-          <span className="eyebrow">Así funciona</span>
-          <h1 className="intro-h">Tres pasos, nada más.</h1>
+          <span className="eyebrow">Cómo funciona</span>
+          <h1 className="intro-h">Tres pasos.</h1>
           <ol className="intro-pasos">
-            <li><i><Icon n="plus" s={18} w={2.2} /></i><div><b>Publica lo que necesitas o lo que ofreces</b><span>Un logo, fotos de producto, una imprenta barata. Cabe en una frase.</span></div></li>
-            <li><i><Icon n="wa" s={18} /></i><div><b>Alguien te escribe por WhatsApp</b><span>Quien puede ayudarte toca “Puedo ayudar” y te llega su mensaje.</span></div></li>
-            <li><i><Icon n="hand" s={18} /></i><div><b>Confirmas que se dio la mano</b><span>Cada ayuda confirmada llena una celda del panal de la semana.</span></div></li>
+            <li><i><Icon n="plus" s={18} w={2.2} /></i><div><b>Publica lo que necesitas o lo que ofreces</b><span>Por ejemplo: alguien que revise tu logo o fotos para tu producto.</span></div></li>
+            <li><i><Icon n="wa" s={18} /></i><div><b>Te escriben por WhatsApp</b><span>Quien puede ayudarte toca “Puedo ayudar” y te llega su mensaje.</span></div></li>
+            <li><i><Icon n="hand" s={18} /></i><div><b>Confirmas que te ayudaron</b><span>Cada ayuda confirmada llena una celda del panal de la semana.</span></div></li>
           </ol>
         </section>
 
@@ -67,8 +67,8 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
             <span className="mono">COL-····</span>
           </div>
           <span className="eyebrow">Tu carnet</span>
-          <h1 className="intro-h">Es tu entrada a la colmena.</h1>
-          <p className="intro-p">Con él publicas, le escribes a otros y te encuentran por lo que sabes hacer. Sin contraseñas, en menos de un minuto.</p>
+          <h1 className="intro-h">Tu carnet es tu perfil.</h1>
+          <p className="intro-p">Con él puedes publicar, escribirles a otros miembros y aparecer en el directorio. No necesitas correo ni contraseña.</p>
         </section>
       </div>
 
@@ -78,8 +78,8 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <button type="button" className="btn primary full big" onClick={onCerrar}>Entendido</button>
         ) : ultimo ? (
           <>
-            <button type="button" className="btn primary full big" onClick={onCarnet}>Sacar mi carnet</button>
-            <button type="button" className="btn ghost full" onClick={onCerrar}>Primero quiero mirar</button>
+            <button type="button" className="btn primary full big" onClick={onCarnet}>Crear mi carnet</button>
+            <button type="button" className="btn ghost full" onClick={onCerrar}>Explorar primero</button>
           </>
         ) : (
           <button type="button" className="btn ink full big" onClick={() => ir(i + 1)}>Siguiente</button>
@@ -101,10 +101,10 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
   }, [])
   const yo = c.yo
   const pasos = [
-    { t: 'Saca tu carnet', d: 'Tu identidad en la colmena.', ok: !!yo, go: () => pedirPerfil(null, () => {}), cta: 'Sacar' },
-    { t: 'Publica lo que necesitas u ofreces', d: 'Una frase basta.', ok: !!yo && c.publicaciones.some((p) => p.autor_id === yo.id), go: () => abrirComposer(), cta: 'Publicar' },
-    { t: 'Dale una mano a alguien', d: 'Toca “Puedo ayudar” en un Necesito.', ok: leer(K_PRACTICA) === '1' || (!!yo && c.ayudas.some((a) => a.perfil_id === yo.id)), go: () => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), cta: 'Ver el muro' },
-    { t: 'Calcula cuánto cobrar', d: 'La calculadora te da un precio.', ok: leer(K_CALC_ABIERTA) === '1', go: () => nav({ t: 'calc' }), cta: 'Abrir' }
+    { t: 'Crea tu carnet', d: 'Tu perfil en Colmena.', ok: !!yo, go: () => pedirPerfil(null, () => {}), cta: 'Crear' },
+    { t: 'Publica lo que necesitas u ofreces', d: 'Lo que necesitas o lo que ofreces.', ok: !!yo && c.publicaciones.some((p) => p.autor_id === yo.id), go: () => abrirComposer(), cta: 'Publicar' },
+    { t: 'Responde una publicación', d: 'Toca “Puedo ayudar” en una de ellas.', ok: leer(K_PRACTICA) === '1' || (!!yo && c.ayudas.some((a) => a.perfil_id === yo.id)), go: () => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), cta: 'Ver el muro' },
+    { t: 'Calcula cuánto cobrar', d: 'Usa la calculadora de precios.', ok: leer(K_CALC_ABIERTA) === '1', go: () => nav({ t: 'calc' }), cta: 'Abrir' }
   ]
   const hechos = pasos.filter((p) => p.ok).length
   if (oculto || hechos === pasos.length) return null
@@ -136,13 +136,13 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
 
 // ---------- ¿Cómo funciona? Glosario en una hoja ----------
 export const TEMAS = {
-  muro: { t: 'El muro', d: 'Es el centro de Colmena. Cada publicación es un Necesito (pides ayuda) o un Ofrezco (ofreces lo que sabes hacer). Vencen solas para que el muro esté siempre fresco.' },
-  mano: { t: 'Dar una mano', d: 'Cuando tocas “Puedo ayudar” o “Me interesa”, se abre WhatsApp con un mensaje listo para esa persona. Después, quien publicó confirma si se dio la mano.' },
-  panal: { t: 'El panal', d: 'Cada mano confirmada llena una celda. El panal es de toda la colmena y se reinicia cada lunes: mide cuánto nos ayudamos esta semana.' },
-  reto: { t: 'El reto de la semana', d: 'Un ejercicio corto para practicar con un caso real. Te le mides, subes tu propuesta como link y la colmena vota con “Me sirve”.' },
-  sirve: { t: 'Me sirve', d: 'Es como guardar o apoyar una publicación. Le muestra a quien publicó que su aporte es útil.' },
-  carnet: { t: 'Tu carnet', d: 'Tu identidad en la colmena: quién eres, qué haces y las manos que has dado. Tu WhatsApp solo lo ven miembros con carnet.' },
-  ejemplo: { t: 'Contenido de ejemplo', d: 'Lo que dice “Ejemplo” es de muestra para que veas cómo funciona. No son personas reales.' }
+  muro: { t: 'El muro', d: 'Donde están todas las publicaciones. Cada una es un “Necesito” (alguien pide ayuda) o un “Ofrezco” (alguien ofrece lo que sabe hacer). Se ocultan solas cuando vencen.' },
+  mano: { t: 'Responder', d: 'Al tocar “Puedo ayudar” o “Me interesa” se abre WhatsApp con un mensaje listo para esa persona. Después, quien publicó confirma si la ayuda se concretó.' },
+  panal: { t: 'El panal', d: 'Muestra cuántas ayudas se confirmaron esta semana entre todos los miembros. Cada ayuda llena una celda y el panal se reinicia cada lunes.' },
+  reto: { t: 'El reto de la semana', d: 'Un ejercicio corto con un caso real. Te inscribes, subes tu propuesta como link y los miembros votan con “Útil”.' },
+  sirve: { t: 'Útil', d: 'Marca una publicación o propuesta que te parece valiosa. Le muestra a quien la publicó que su aporte sirve.' },
+  carnet: { t: 'Tu carnet', d: 'Tu perfil en Colmena: quién eres, a qué te dedicas y cuántas veces has ayudado. Tu WhatsApp solo lo ven otros miembros.' },
+  ejemplo: { t: 'Contenido de ejemplo', d: 'Lo marcado como “Ejemplo” es contenido de muestra para que veas cómo funciona. No son personas reales.' }
 }
 
 export function Ayuda({ tema, onIntro }) {
