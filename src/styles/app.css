@@ -1447,12 +1447,6 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .dest-item.visto .dest-n { color: var(--muted); font-weight: 400; }
 
 /* Premio: pasos en una línea y cuenta regresiva */
-.home-ruta { list-style: none; margin: 0; padding: 0; display: flex; gap: 12px; flex-wrap: wrap; font: 600 13px/1.2 var(--ui); }
-.home-ruta li { display: inline-flex; align-items: center; gap: 6px; color: rgba(255, 255, 255, .86); }
-.home-ruta i { width: 22px; height: 24px; clip-path: var(--hex); background: var(--surface); color: var(--ink); display: grid; place-items: center; font: 700 12px/1 var(--disp); font-style: normal; }
-.home-premio-pie { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; width: 100%; }
-.home-premio-pie small { font-size: 12px; color: rgba(255, 255, 255, .72); }
-.home-premio .cd { background: var(--surface); color: var(--ink); }
 .home-premio.con-ganador .home-avatar { animation: a-pop .24s var(--ease) both; }
 
 /* Tarjetas de la vitrina Esta semana */
@@ -1462,8 +1456,41 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .home-mini small { font-size: 13px; color: var(--muted); }
 
 /* Cupones de aliados */
-.home-aliados { gap: 8px; }
-.home-aliados > .fine { margin: 2px 0 6px; }
+.home-aliados, .home-semana { display: flex; flex-direction: column; }
+.home-semana { gap: 12px; }
+.home-semana .sec-h { margin-top: 0; }
+.home-aliados h2, .home-semana h2, .home-gratis h2 { font-size: 20px; line-height: 1.15; }
+.home-aliados { gap: 8px; margin: 16px 0 16px; }
+.cupones { margin-top: 4px; }
+.home-aliados .cmini { margin-top: 8px; }
+.home-aliados .sec-h { margin-top: 0; }
+.home-aliados-sub { font-size: 14px; }
+
+/* Premio */
+.home-premio { gap: 12px; margin-top: 8px; }
+.home-premio-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
+.home-premio-top .k { white-space: nowrap; display: flex; align-items: center; gap: 8px; color: rgba(255, 255, 255, .72); }
+.home-cierra { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px; border-radius: 999px; background: rgba(255, 255, 255, .12); font: 600 12px/1 var(--disp); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.home-premio > p { color: rgba(255, 255, 255, .8); max-width: 34ch; }
+.home-premio-pie { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 4px; }
+.home-premio-pie .btn { flex: 1; min-height: 48px; }
+
+/* Carnet mini: la llave de los descuentos */
+.cmini { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px 12px 12px 16px; border-radius: 18px; background: var(--polen); box-shadow: inset 0 0 0 1.5px var(--ink); text-align: left; transition: transform .15s var(--ease); }
+.cmini:active { transform: scale(.985); }
+.cmini-hex { flex: none; width: 40px; display: grid; place-items: center; }
+.cmini-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cmini-t b { font: 700 16px/1.2 var(--disp); letter-spacing: -.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmini-t small { font-size: 13px; line-height: 1.3; }
+.cmini-cta { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; background: var(--ink); color: var(--surface); font: 600 14px/1 var(--ui); white-space: nowrap; }
+
+/* Invitación para negocios */
+.invita { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 16px; border-radius: 18px; border: 1.5px dashed var(--ink-4); text-align: left; transition: transform .15s var(--ease); }
+.invita:active { transform: scale(.985); }
+.invita-ic { flex: none; width: 36px; height: 40px; clip-path: var(--hex); background: var(--surface); display: grid; place-items: center; }
+.invita-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.invita-t b { font: 600 15px/1.25 var(--ui); }
+.invita-t small { font-size: 13px; color: var(--muted); }
 .cupones { display: flex; flex-direction: column; gap: 8px; }
 .cupon { display: flex; align-items: stretch; width: 100%; min-height: 88px; border-radius: 18px; background: var(--surface); box-shadow: var(--soft); text-align: left; overflow: hidden; transition: transform .15s var(--ease); padding-right: 12px; align-items: center; }
 .cupon:active { transform: scale(.985); }
@@ -1479,17 +1506,6 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .cupon-cuerpo small { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; font-size: 12px; color: var(--muted); }
 .cupon-cuerpo small .ejemplo { margin-left: 0; }
 .cupon .ejemplo { margin-left: 6px; vertical-align: 2px; }
-.cupon.invita { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-4); min-height: 72px; border-style: none; }
-.cupon.invita .cupon-valor { background: transparent; color: var(--ink); }
-.cupon.invita .cupon-valor::before, .cupon.invita .cupon-valor::after { display: none; }
-.cupon.invita .cupon-cuerpo { border-left-color: var(--ink-4); }
-.cmini { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 14px 8px 12px; border-radius: 18px; background: var(--polen); box-shadow: inset 0 0 0 1.5px var(--ink); text-align: left; transition: transform .15s var(--ease); }
-.cmini:active { transform: scale(.985); }
-.cmini-hex { flex: none; width: 36px; display: grid; place-items: center; }
-.cmini-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.cmini-t b { font: 700 16px/1.15 var(--disp); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cmini-t small { font-size: 12px; }
-.cmini-cta { flex: none; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px; border-radius: 999px; background: var(--ink); color: var(--surface); font: 600 13px/1 var(--ui); white-space: nowrap; }
 
 /* Vitrinas intercaladas */
 .posts > .home-semana, .posts > .home-gratis { margin-block: 8px; }

@@ -280,6 +280,7 @@ export function Aliados({ nav, pedirPerfil, limite = 0, invitar = false, onVerTo
       <h2>Descuentos con tu carnet</h2>
       {onVerTodos && todos.length > lista.length && <button type="button" className="ver" onClick={onVerTodos}>Ver todos</button>}
     </div>
+    <p className="soft home-aliados-sub">Muestra tu carnet al pagar en estos negocios.</p>
     {lista.length > 0 && (
       <div className="cupones">
         {lista.map((b) => {
@@ -290,7 +291,7 @@ export function Aliados({ nav, pedirPerfil, limite = 0, invitar = false, onVerTo
               <span className="cupon-cuerpo">
                 <b>{b.nombre}</b>
                 <span>{b.oferta}</span>
-                <small><Icon n="pin" s={13} />{[b.zona, b.categoria].filter(Boolean).join(' · ')}<Ejemplo p={b} /></small>
+                <small><Icon n="pin" s={13} />{b.zona || b.categoria}<Ejemplo p={b} /></small>
               </span>
               <Icon n="right" s={18} w={2} />
             </button>
@@ -298,16 +299,18 @@ export function Aliados({ nav, pedirPerfil, limite = 0, invitar = false, onVerTo
         })}
       </div>
     )}
-    {lista.length > 0 && lista.every((b) => b.es_ejemplo) && <p className="fine">Ejemplos: así se verán los descuentos de negocios reales.</p>}
     <button type="button" className="cmini" onClick={mostrar}>
-      <span className="cmini-hex">{c.yo ? <Hex p={c.yo} w={36} fs={13} /> : <CeldaAbierta s={24} />}</span>
-      <span className="cmini-t"><b>{c.yo ? c.yo.nombre : 'Tu carnet'}</b><small className={c.yo ? 'mono' : ''}>{c.yo ? carnetId(c.yo.carnet) : 'Créalo para usar los descuentos.'}</small></span>
-      <span className="cmini-cta">Mostrar mi carnet<Icon n="right" s={16} w={2.2} /></span>
+      <span className="cmini-hex">{c.yo ? <Hex p={c.yo} w={40} fs={14} /> : <CeldaAbierta s={28} />}</span>
+      <span className="cmini-t">
+        <b>{c.yo ? c.yo.nombre : 'Usa los descuentos'}</b>
+        <small className={c.yo ? 'mono' : ''}>{c.yo ? carnetId(c.yo.carnet) : 'Necesitas un carnet.'}</small>
+      </span>
+      <span className="cmini-cta">{c.yo ? 'Mostrar' : 'Crear carnet'}</span>
     </button>
     {invitar && (
-      <button type="button" className="cupon invita" onClick={() => setProponer(true)}>
-        <span className="cupon-valor"><Icon n="plus" s={26} w={2} /></span>
-        <span className="cupon-cuerpo"><b>¿Tienes un negocio?</b><span>Propón un descuento para los miembros.</span></span>
+      <button type="button" className="invita" onClick={() => setProponer(true)}>
+        <span className="invita-ic"><Icon n="plus" s={18} w={2.2} /></span>
+        <span className="invita-t"><b>¿Tienes un negocio?</b><small>Propón un descuento para los miembros.</small></span>
         <Icon n="right" s={18} w={2} />
       </button>
     )}

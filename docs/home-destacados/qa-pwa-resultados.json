@@ -1,5 +1,5 @@
 {
-  "runAt": "2026-11-04T22:38:31.623Z",
+  "runAt": "2026-11-04T22:45:45.673Z",
   "passed": [
     "PWA controlada por service worker",
     "No recarga datos frescos al volver al primer plano",

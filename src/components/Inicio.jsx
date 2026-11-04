@@ -77,7 +77,9 @@ export function Inicio({ nav, irTab, pedirPerfil }) {
 
       <EstadoDatos nombres={['reto', 'participantes', 'votos']}>
         <section className={'home-premio' + (perfil ? ' con-ganador' : '')} aria-label="Destacado de la semana">
-          <span className="k"><Icon n="star" s={16} /> Destacado de la semana</span>
+          <div className="home-premio-top">
+            <span className="k"><Icon n="star" s={16} /> Destacado de la semana</span>
+          </div>
           {perfil ? (
             <>
               <div className="home-ganador">
@@ -99,16 +101,10 @@ export function Inicio({ nav, irTab, pedirPerfil }) {
           ) : (
             <>
               <h2>Tu emprendimiento puede estar aquí.</h2>
-              <ol className="home-ruta" aria-label="Cómo se gana">
-                <li><i>1</i>Participa</li>
-                <li><i>2</i>Reciben Útil</li>
-                <li><i>3</i>7 días arriba</li>
-              </ol>
+              <p>{abierto ? 'Participa en el reto. La propuesta con más votos Útil se muestra aquí durante 7 días.' : 'El próximo reto elige al siguiente destacado con los votos Útil.'}</p>
               <div className="home-premio-pie">
-                <button className="btn outline-w sm" onClick={participar}>{abierto ? 'Participar en el reto' : 'Ver los retos'} <Icon n="right" s={16} /></button>
-                {abierto
-                  ? <span className="cd">{cierraEn(c.reto.cierra_en)}</span>
-                  : <small>El próximo destacado se elige con los votos Útil.</small>}
+                <button className="btn outline-w" onClick={participar}>{abierto ? 'Participar en el reto' : 'Ver los retos'} <Icon n="right" s={16} /></button>
+                {abierto && <span className="home-cierra"><Icon n="hour" s={14} />{cierraEn(c.reto.cierra_en)}</span>}
               </div>
             </>
           )}
