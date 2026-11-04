@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-04T21:58:43.107Z",
+  "passed": [
+    "Anuncio antes del cierre",
+    "Sin ganador antes del cierre",
+    "Un solo carrusel de novedades",
+    "Tres aliados identificados de ejemplo",
+    "No se intercala el carrusel viejo",
+    "Descuento abre su detalle y conserva Mostrar mi carnet",
+    "Aliados antes de categorías digitales",
+    "Ganador tras cierre: Valentina/Tinta Viva",
+    "Ganador de ejemplo explícito",
+    "Un solo carrusel de novedades",
+    "Tres aliados identificados de ejemplo",
+    "No se intercala el carrusel viejo",
+    "Descuento abre su detalle y conserva Mostrar mi carnet",
+    "Insignia activa en carnet",
+    "Premio presente en historial",
+    "Aliados antes de categorías digitales",
+    "Sin errores JS en home y carnet"
+  ],
+  "errors": [],
+  "interceptedRpc": 1,
+  "productionWrites": 0
+}
