@@ -105,7 +105,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes de DCV que <mark className="hl">emprenden</mark>.</h1>
           <ul className="intro-lista">
             <li className="a-up" style={{ '--d': 4 }}><i><Icon n="wall" s={16} /></i><div><b>Muro</b><span>Pide ayuda u ofrece lo que sabes hacer.</span></div></li>
-            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="seal" s={16} /></i><div><b>Beneficios</b><span>{digitales.length > 0 ? `${digitales.length} programas` : 'Programas'} gratis o con descuento por ser estudiante.</span></div></li>
+            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="gift" s={16} /></i><div><b>Beneficios</b><span>{digitales.length > 0 ? `${digitales.length} programas` : 'Programas'} gratis o con descuento por ser estudiante.</span></div></li>
             <li className="a-up" style={{ '--d': 6 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Una reunión presencial al mes con un taller práctico.</span></div></li>
           </ul>
           <p className="intro-p a-up" style={{ '--d': 7 }}>Es gratis.</p>

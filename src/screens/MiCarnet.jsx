@@ -27,7 +27,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           <ul className="para-que">
             <li><i><Icon n="users" s={16} /></i><span><b>Te encuentran por lo que sabes</b>Apareces en Miembros con tus habilidades.</span></li>
             <li><i><Icon n="wa" s={16} /></i><span><b>Te escriben por WhatsApp</b>Quien necesita lo que haces te escribe directo.</span></li>
-            <li><i><Icon n="seal" s={16} /></i><span><b>Usas los descuentos de aliados</b>Muestras tu carnet en los negocios aliados de Cali.</span></li>
+            <li><i><Icon n="gift" s={16} /></i><span><b>Usas los descuentos de aliados</b>Muestras tu carnet en los negocios aliados de Cali.</span></li>
           </ul>
           <button type="button" className="btn primary full big" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>
           <p className="fine center">Toma menos de un minuto.</p>

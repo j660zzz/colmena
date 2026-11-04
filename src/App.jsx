@@ -18,7 +18,7 @@ const TABS = [
   { id: 'muro', label: 'Muro', ic: 'wall' },
   { id: 'miembros', label: 'Miembros', ic: 'users' },
   { id: 'encuentro', label: 'Encuentro', ic: 'cal' },
-  { id: 'herramientas', label: 'Beneficios', ic: 'seal' },
+  { id: 'herramientas', label: 'Beneficios', ic: 'gift' },
   { id: 'carnet', label: 'Carnet', ic: 'card' }
 ]
 
