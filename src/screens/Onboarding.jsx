@@ -19,10 +19,16 @@ export const marcarCalcAbierta = () => { guardar(K_CALC_ABIERTA, '1'); avisar() 
 // Tocar "Puedo ayudar" en una publicación de ejemplo cuenta como práctica del paso "Dale una mano"
 export const marcarPractica = () => { guardar(K_PRACTICA, '1'); avisar() }
 
-// ---------- Bienvenida: un "pase" que se desbloquea al entrar ----------
-// Cuatro pantallas cortas: qué es, el muro, beneficios y el carnet con el nivel. Las cifras salen de la base de datos.
-const SLIDES = ['pase', 'muro', 'beneficios', 'carnet']
-const OSCURA = { pase: true, muro: false, beneficios: false, carnet: true }
+// ---------- Bienvenida: historias cortas ----------
+// Cada pantalla avanza sola (como las historias de Instagram): tocar a la derecha adelanta, a la izquierda
+// devuelve y mantener presionado pausa. Con reduced-motion no avanza sola. Las cifras salen de la base de datos.
+const SLIDES = [
+  { k: 'que', dur: 5000, oscura: true },
+  { k: 'muro', dur: 9000, oscura: false },
+  { k: 'meta', dur: 6000, oscura: false },
+  { k: 'beneficios', dur: 5000, oscura: false },
+  { k: 'carnet', dur: 0, oscura: true }
+]
 
 // Panal que se arma celda por celda (ilustración, no es el símbolo de marca)
 const HEX7 = [[0, 0], [1, 0], [0.5, 0.866], [-0.5, 0.866], [-1, 0], [-0.5, -0.866], [0.5, -0.866]]
@@ -53,7 +59,7 @@ function Cuenta({ n, activo }) {
     let raf, t0
     const paso = (t) => {
       t0 = t0 || t
-      const k = Math.min(1, (t - t0) / 700)
+      const k = Math.min(1, (t - t0) / 600)
       setV(Math.round(n * (1 - Math.pow(1 - k, 3))))
       if (k < 1) raf = requestAnimationFrame(paso)
     }
@@ -64,21 +70,72 @@ function Cuenta({ n, activo }) {
   return <>{v}</>
 }
 
+// Demo del muro: alguien pide, otro toca "Puedo ayudar" y se abre el chat; luego lo mismo con Ofrezco
+function DemoMuro({ activo, pausa }) {
+  const [paso, setPaso] = useState(0)
+  useEffect(() => {
+    if (!activo) { setPaso(0); return }
+    if (pausa) return
+    const t = setTimeout(() => setPaso((p) => (p + 1) % 6), paso === 5 ? 1800 : 1400)
+    return () => clearTimeout(t)
+  }, [activo, pausa, paso])
+  const ofrezco = paso >= 3
+  const fase = paso % 3 // 0: publicación, 1: toca el botón, 2: chat
+  const x = ofrezco
+    ? { tipo: 'offer', pill: 'Ofrezco', ic: 'spark', quien: 'Camila', texto: 'Hago fotos de producto con fondo blanco.', boton: 'Me interesa', chat: 'Hola Camila, me interesan las fotos para mi tienda.', dice: 'Ofreces lo que sabes hacer' }
+    : { tipo: 'need', pill: 'Necesito', ic: 'hand', quien: 'Sara', texto: 'Necesito que alguien me revise el logo antes de imprimir.', boton: 'Puedo ayudar', chat: 'Hola Sara, te vi en Colmena. Puedo revisarte el logo.', dice: 'Pides ayuda' }
+  return (
+    <div className="demo2" aria-hidden="true">
+      <div className="demo2-tabs"><span className={!ofrezco ? 'on' : ''}>Necesito</span><span className={ofrezco ? 'on' : ''}>Ofrezco</span></div>
+      <div className="demo2-dice" key={'d' + ofrezco}>{x.dice}</div>
+      <div className={'demo2-post ' + x.tipo} key={'p' + ofrezco}>
+        <div className="demo2-top"><span className="demo2-av">{x.quien[0]}</span><b>{x.quien}</b><span className="ejemplo">Ejemplo</span><span className={'pill ' + x.tipo}><Icon n={x.ic} s={12} w={2} />{x.pill}</span></div>
+        <p>{x.texto}</p>
+        <span className={'demo2-btn' + (fase >= 1 ? ' toca' : '')}><Icon n="wa" s={15} />{x.boton}</span>
+      </div>
+      <div className={'demo2-chat' + (fase === 2 ? ' on' : '')}><Icon n="wa" s={15} /><span>{x.chat}</span></div>
+    </div>
+  )
+}
+
 export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
   const c = useColmena()
   const [i, setI] = useState(0)
-  const pista = useRef(null)
-  const ir = (n) => {
-    const el = pista.current
-    if (el) el.scrollTo({ left: n * el.clientWidth, behavior: 'smooth' })
-    setI(n)
+  const [pausa, setPausa] = useState(false)
+  const [quieto] = useState(() => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false } })
+  const toque = useRef({ x: 0, t: 0 })
+  const total = SLIDES.length
+  const ultimo = i === total - 1
+  const actual = SLIDES[i]
+  const ir = (n) => setI(Math.max(0, Math.min(total - 1, n)))
+
+  // Avance automático
+  useEffect(() => {
+    if (quieto || pausa || !actual.dur) return
+    const t = setTimeout(() => ir(i + 1), actual.dur)
+    return () => clearTimeout(t)
+  }, [i, pausa, quieto]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Pausa si la app pasa a segundo plano
+  useEffect(() => {
+    const vis = () => setPausa(document.visibilityState !== 'visible')
+    document.addEventListener('visibilitychange', vis)
+    return () => document.removeEventListener('visibilitychange', vis)
+  }, [])
+  useEffect(() => {
+    const tecla = (e) => { if (e.key === 'ArrowRight') ir(i + 1); if (e.key === 'ArrowLeft') ir(i - 1) }
+    window.addEventListener('keydown', tecla)
+    return () => window.removeEventListener('keydown', tecla)
+  }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const abajo = (e) => { toque.current = { x: e.clientX, t: Date.now() }; setPausa(true) }
+  const arriba = (e) => {
+    setPausa(false)
+    if (e.target.closest('button, a')) return
+    const dx = e.clientX - toque.current.x
+    const largo = Date.now() - toque.current.t > 350
+    if (Math.abs(dx) > 40) ir(i + (dx < 0 ? 1 : -1))
+    else if (!largo) ir(i + (e.clientX > window.innerWidth * 0.33 ? 1 : -1))
   }
-  const alMover = () => {
-    const el = pista.current
-    if (el) setI(Math.round(el.scrollLeft / el.clientWidth))
-  }
-  const ultimo = i === SLIDES.length - 1
-  const oscura = OSCURA[SLIDES[i]]
 
   const digitales = c.beneficios.filter((b) => b.tipo === 'digital')
   const nGratis = digitales.filter((b) => b.gratis).length
@@ -87,56 +144,56 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
   const on = (k) => (i === k ? ' on' : '')
 
   return (
-    <div className={'intro' + (oscura ? ' oscura' : '')} role="dialog" aria-modal="true" aria-label="Bienvenida a Colmena">
+    <div className={'intro' + (actual.oscura ? ' oscura' : '') + (pausa ? ' pausa' : '')} role="dialog" aria-modal="true" aria-label="Bienvenida a Colmena">
       <div className="intro-top">
         <div className="intro-prog" aria-hidden="true">
-          {SLIDES.map((s, k) => <i key={s} className={k < i ? 'ok' : k === i ? 'on' : ''} />)}
+          {SLIDES.map((x, k) => <i key={x.k} className={k < i ? 'ok' : k === i ? 'on' : ''} style={{ '--dur': `${x.dur || 300}ms` }} />)}
         </div>
         <div className="intro-bar">
-          <span className="intro-logo"><CeldaAbierta s={20} color={oscura ? 'var(--polen)' : 'var(--ink)'} /> Colmena</span>
+          <span className="intro-logo"><CeldaAbierta s={20} color={actual.oscura ? 'var(--polen)' : 'var(--ink)'} /> Colmena</span>
           {!ultimo && <button type="button" className="intro-saltar" onClick={onCerrar}>Saltar</button>}
         </div>
       </div>
 
-      <div className="intro-pista" ref={pista} onScroll={alMover}>
-        <section className={'intro-slide' + on(0)} aria-label="Qué es Colmena">
+      <div className="intro-pista" onPointerDown={abajo} onPointerUp={arriba} onPointerCancel={() => setPausa(false)} onContextMenu={(e) => e.preventDefault()}>
+        <section className={'intro-slide' + on(0)} aria-label="Qué es Colmena" aria-hidden={i !== 0}>
           <div className="intro-hero a-up" style={{ '--d': 0 }}><PanalArma /></div>
           <span className="eyebrow a-up" style={{ '--d': 2 }}>Te damos la bienvenida</span>
           <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes de DCV que <mark className="hl">emprenden</mark>.</h1>
           <ul className="intro-lista">
             <li className="a-up" style={{ '--d': 4 }}><i><Icon n="wall" s={16} /></i><div><b>Muro</b><span>Pide ayuda u ofrece lo que sabes hacer.</span></div></li>
-            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="gift" s={16} /></i><div><b>Beneficios</b><span>{digitales.length > 0 ? `${digitales.length} programas` : 'Programas'} gratis o con descuento por ser estudiante.</span></div></li>
-            <li className="a-up" style={{ '--d': 6 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Una reunión presencial al mes con un taller práctico.</span></div></li>
+            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Una meta al mes y una reunión para mostrarla.</span></div></li>
+            <li className="a-up" style={{ '--d': 6 }}><i><Icon n="gift" s={16} /></i><div><b>Beneficios</b><span>{digitales.length > 0 ? `${digitales.length} programas` : 'Programas'} gratis o con descuento.</span></div></li>
           </ul>
-          <p className="intro-p a-up" style={{ '--d': 7 }}>Es gratis.</p>
         </section>
 
-        <section className={'intro-slide' + on(1)} aria-label="Cómo funciona el muro">
-          <div className="demo">
-            <div className="demo-post a-left" style={{ '--d': 0 }}>
-              <span className="pill need">Necesito</span><span className="ejemplo">Ejemplo</span>
-              <p>Busco quien me revise el logo antes de imprimir.</p>
-            </div>
-            <div className="demo-post a-right" style={{ '--d': 2 }}>
-              <span className="pill offer">Ofrezco</span><span className="ejemplo">Ejemplo</span>
-              <p>Hago fotos de producto con fondo blanco.</p>
-            </div>
-            <div className="demo-wa a-pop" style={{ '--d': 5 }}><Icon n="wa" s={16} />Hola, te vi en Colmena. Puedo revisarte el logo.</div>
-          </div>
-          <span className="eyebrow a-up" style={{ '--d': 3 }}>El muro</span>
-          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Publica lo que necesitas o lo que ofreces.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Quien puede ayudarte toca “Puedo ayudar” y te escribe por WhatsApp. Si ves algo que te sirve, toca “Me interesa”. Sin comisiones.</p>
+        <section className={'intro-slide' + on(1)} aria-label="Cómo funciona el muro" aria-hidden={i !== 1}>
+          <span className="eyebrow a-up" style={{ '--d': 0 }}>El muro</span>
+          <h1 className="intro-h a-up" style={{ '--d': 1 }}>Pide ayuda u ofrece lo que sabes.</h1>
+          <DemoMuro activo={i === 1} pausa={pausa} />
+          <p className="intro-p a-up" style={{ '--d': 3 }}>Tocas <b>Puedo ayudar</b> o <b>Me interesa</b> y se abre WhatsApp con el mensaje listo. Sin comisiones.</p>
         </section>
 
-        <section className={'intro-slide' + on(2)} aria-label="Beneficios de estudiante">
+        <section className={'intro-slide' + on(2)} aria-label="Tu meta del mes" aria-hidden={i !== 2}>
+          <span className="eyebrow a-up" style={{ '--d': 0 }}>Encuentro</span>
+          <h1 className="intro-h a-up" style={{ '--d': 1 }}>Ponte una meta y muéstrala al final del mes.</h1>
+          <ol className="intro-ruta">
+            {[['Semana 1', 'Escribe tu meta', 'edit'], ['Semanas 2 y 3', 'Cuenta cómo vas', 'trend'], ['Encuentro', 'Muestra lo que lograste', 'spark']].map(([t, d, ic], k) => (
+              <li key={t} className="a-left" style={{ '--d': 2 + k * 2 }}><i><Icon n={ic} s={16} /></i><div><small>{t}</small><b>{d}</b></div></li>
+            ))}
+          </ol>
+          <p className="intro-p a-up" style={{ '--d': 8 }}>Una frase por semana. Cumplirla sube tu nivel.</p>
+        </section>
+
+        <section className={'intro-slide' + on(3)} aria-label="Beneficios de estudiante" aria-hidden={i !== 3}>
           {digitales.length > 0 && (
             <div className="ben-cifras a-up" style={{ '--d': 0 }}>
-              <span><b><Cuenta n={nGratis} activo={i === 2} /></b>gratis</span>
-              <span><b><Cuenta n={nDesc} activo={i === 2} /></b>con descuento</span>
+              <span><b><Cuenta n={nGratis} activo={i === 3} /></b>gratis</span>
+              <span><b><Cuenta n={nDesc} activo={i === 3} /></b>con descuento</span>
             </div>
           )}
           <span className="eyebrow a-up" style={{ '--d': 1 }}>Beneficios</span>
-          <h1 className="intro-h a-up" style={{ '--d': 2 }}>Programas y descuentos que tienes por ser estudiante.</h1>
+          <h1 className="intro-h a-up" style={{ '--d': 2 }}>Lo que ya tienes gratis por ser estudiante.</h1>
           {muestra.length > 0 && (
             <div className="ben-mini">
               {muestra.map((b, k) => (
@@ -146,10 +203,10 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
               ))}
             </div>
           )}
-          <p className="intro-p a-up" style={{ '--d': 9 }}>Cada beneficio explica cómo activarlo, paso a paso.</p>
+          <p className="intro-p a-up" style={{ '--d': 9 }}>Cada uno dice cómo activarlo, paso a paso.</p>
         </section>
 
-        <section className={'intro-slide' + on(3)} aria-label="Tu carnet">
+        <section className={'intro-slide' + on(4)} aria-label="Tu carnet" aria-hidden={i !== 4}>
           <div className="intro-carnet a-rise" style={{ '--d': 0 }}>
             <span className="intro-carnet-top"><CeldaAbierta s={16} /> Colmena <em>Miembro</em></span>
             <div className="intro-carnet-mid">
@@ -164,9 +221,8 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
             <span className="mono">COL-····</span>
           </div>
           <span className="eyebrow a-up" style={{ '--d': 3 }}>Tu carnet</span>
-          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Tu carnet es tu perfil en Colmena.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Muestra lo que sabes hacer y si cobras o intercambias. Lo necesitas para publicar y escribirles a otros miembros. No pide contraseña y lo guardas con tu correo Javeriana.</p>
-          <p className="intro-nivel a-up" style={{ '--d': 6 }}><Icon n="trend" s={18} /><span><b>Tu nivel</b> sube cuando ayudas, participas en retos y vas a los encuentros.</span></p>
+          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Crea tu carnet en un minuto.</h1>
+          <p className="intro-p a-up" style={{ '--d': 5 }}>Con él publicas, escribes a otros miembros y subes de nivel cuando ayudas. Sin contraseña.</p>
         </section>
       </div>
 
@@ -179,7 +235,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
             <button type="button" className="btn outline-w full" onClick={onCerrar}>Explorar primero</button>
           </>
         ) : (
-          <button type="button" className={'btn full big ' + (oscura ? 'primary' : 'ink')} onClick={() => ir(i + 1)}>
+          <button type="button" className={'btn full big ' + (actual.oscura ? 'primary' : 'ink')} onClick={() => ir(i + 1)}>
             Siguiente<Icon n="right" s={18} w={2.2} />
           </button>
         )}

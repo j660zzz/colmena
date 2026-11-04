@@ -1279,3 +1279,43 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .mc-ultimo svg { flex: none; margin-top: 2px; }
 .muestra { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--ink); font-size: 14px; line-height: 1.35; }
 .muestra .stack { flex: none; }
+
+/* ---------- Bienvenida como historias ---------- */
+.intro-pista { position: relative; display: block; overflow: hidden; scroll-snap-type: none; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.intro-slide { position: absolute; inset: 0; scroll-snap-align: none; opacity: 0; visibility: hidden; transform: translateX(16px); transition: opacity .22s var(--ease), transform .22s var(--ease), visibility 0s .22s; }
+.intro-slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity .22s var(--ease), transform .22s var(--ease), visibility 0s; }
+.intro-prog i.on::after { animation: llena var(--dur, 5s) linear both; }
+.intro.pausa .intro-prog i.on::after, .intro.pausa .intro-slide.on * { animation-play-state: paused; }
+.intro-p b { font-weight: 600; opacity: 1; }
+
+/* Demo del muro */
+.demo2 { display: flex; flex-direction: column; gap: 10px; margin: 4px 0; }
+.demo2-tabs { display: inline-flex; align-self: flex-start; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface); box-shadow: var(--soft); }
+.demo2-tabs span { padding: 8px 14px; border-radius: 999px; font: 600 13px/1 var(--ui); color: var(--muted); transition: background .2s var(--ease), color .2s var(--ease); }
+.demo2-tabs span.on { background: var(--ink); color: var(--surface); }
+.demo2-dice { font: 700 15px/1.2 var(--disp); animation: a-up .24s var(--ease) both; }
+.demo2-post { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 20px; background: var(--surface); box-shadow: var(--soft); animation: a-up .24s var(--ease) both; }
+.demo2-top { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.demo2-top .ejemplo { margin-left: 0; }
+.demo2-top .pill { margin-left: auto; gap: 4px; padding: 5px 9px 5px 7px; }
+.demo2-av { width: 28px; height: 31px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; font: 700 12px/1 var(--disp); }
+.demo2-post p { font: 700 17px/1.25 var(--disp); letter-spacing: -.02em; }
+.demo2-btn { align-self: flex-end; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 999px; background: var(--app-bg); font: 600 14px/1 var(--ui); transition: transform .18s var(--ease), background .18s, color .18s; }
+.demo2-btn.toca { background: var(--ink); color: var(--surface); transform: scale(.95); box-shadow: 0 0 0 6px rgba(255, 242, 0, .9); }
+.demo2-chat { align-self: flex-end; max-width: 88%; display: flex; gap: 8px; align-items: flex-start; padding: 10px 14px; border-radius: 18px 18px 4px 18px; background: var(--ink); color: var(--surface); font-size: 14px; line-height: 1.35; opacity: 0; transform: translateY(8px); transition: opacity .22s var(--ease), transform .22s var(--ease); }
+.demo2-chat svg { flex: none; margin-top: 1px; color: var(--polen); }
+.demo2-chat.on { opacity: 1; transform: none; }
+
+/* Ruta de la meta */
+.intro-ruta { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.intro-ruta li { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: center; padding: 12px; border-radius: 16px; background: var(--surface); box-shadow: var(--soft); }
+.intro-ruta i { width: 36px; height: 40px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; }
+.intro-ruta li:last-child i { background: var(--polen); color: var(--ink); }
+.intro-ruta small { display: block; font-size: 12px; color: var(--muted); }
+.intro-ruta b { font: 700 17px/1.2 var(--disp); letter-spacing: -.02em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-slide { transform: none; }
+  .intro-prog i.on::after { animation: none; transform: none; }
+  .demo2-chat { transition: none; }
+}
