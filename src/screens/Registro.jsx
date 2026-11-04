@@ -57,7 +57,7 @@ export function CarnetCard({ p, numero, nota, estado }) {
         <div className="carnet-col"><span className="carnet-lbl">N.º DE CARNET</span><span className="carnet-val mono">{numero ? carnetId(numero) : 'COL-····'}</span></div>
         <div className="carnet-col right">
           <span className="carnet-lbl">ESTADO</span>
-          <span className="carnet-status"><i className="status-hex" />{estado || (p.es_ejemplo ? 'Ejemplo' : 'Activa · DCV')}</span>
+          <span className="carnet-status"><i className="status-hex" />{estado || (p.es_ejemplo ? 'Ejemplo' : 'Activa')}</span>
         </div>
       </div>
     </div>
@@ -225,7 +225,7 @@ export function CarnetListo({ onMuro, onSeguir }) {
   const { pct, faltan } = completitud(yo)
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${yo.id}`
-    const data = { title: 'Mi carnet en Colmena', text: `Ya tengo mi carnet en Colmena, la red de emprendedores de DCV · ${carnetId(yo.carnet)}`, url }
+    const data = { title: 'Mi carnet en Colmena', text: `Ya tengo mi carnet en Colmena, la red de estudiantes que emprenden · ${carnetId(yo.carnet)}`, url }
     try {
       if (navigator.share) await navigator.share(data)
       else { await navigator.clipboard.writeText(`${data.text} ${url}`); toast('Enlace copiado') }

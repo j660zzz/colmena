@@ -190,7 +190,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
         <section className={'intro-slide' + on(0)} aria-label="Qué es Colmena" aria-hidden={i !== 0}>
           <div className="intro-hero a-up" style={{ '--d': 0 }}><PanalArma /></div>
           <span className="eyebrow a-up" style={{ '--d': 2 }}>Te damos la bienvenida</span>
-          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes de DCV que <mark className="hl">emprenden</mark>.</h1>
+          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes que <mark className="hl">emprenden</mark>.</h1>
           <ul className="intro-lista">
             <li className="a-up" style={{ '--d': 4 }}><i><Icon n="wall" s={16} /></i><div><b>Muro</b><span>Pide ayuda u ofrece lo que sabes hacer.</span></div></li>
             <li className="a-up" style={{ '--d': 5 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Talleres prácticos y una reunión al mes.</span></div></li>
