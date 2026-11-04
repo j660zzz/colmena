@@ -4,7 +4,7 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 
 ## Diseño (Antigravity / Gemini)
 - [x] Bienvenida: animación de entrada de las celdas, respetando `prefers-reduced-motion` (Claude, rediseño de la bienvenida tipo pase desbloqueado).
-- [ ] Muro: microinteracción al tocar "Puedo ayudar" (la celda se llena) y al publicar (la tarjeta nueva entra desde arriba).
+- [ ] Muro: microinteracción al tocar "Puedo ayudar" (la celda se llena). Hecho por Claude en `diseno/muro-pulido`: la publicación nueva entra desde arriba, "Útil" se rellena al marcarlo y las hojas suben con movimiento corto.
 - [ ] Carnet: versión "para compartir" del carnet como imagen vertical 1080 × 1920 (historia de Instagram).
 - [ ] Estados vacíos con ilustración propia de celdas (sin abejas literales).
 - [ ] Revisar contraste AA de textos `--ink-3` / `--ink-4` sobre crema.
