@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { Icon, Panal, CeldaAbierta } from '../components/ui'
 
@@ -12,7 +12,11 @@ export const K_CALC_ABIERTA = 'colmena.calc-abierta.v1'
 
 export const introVista = () => leer(K_INTRO) === '1'
 export const marcarIntroVista = () => guardar(K_INTRO, '1')
-export const marcarCalcAbierta = () => guardar(K_CALC_ABIERTA, '1')
+const K_PRACTICA = 'colmena.practica-mano.v1'
+const avisar = () => { try { window.dispatchEvent(new Event('colmena-pasos')) } catch { /* nada */ } }
+export const marcarCalcAbierta = () => { guardar(K_CALC_ABIERTA, '1'); avisar() }
+// Tocar "Puedo ayudar" en una publicación de ejemplo cuenta como práctica del paso "Dale una mano"
+export const marcarPractica = () => { guardar(K_PRACTICA, '1'); avisar() }
 
 // ---------- Bienvenida: 3 pantallas la primera vez ----------
 const DEMO = [' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -89,11 +93,17 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
 export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
   const c = useColmena()
   const [oculto, setOculto] = useState(() => leer(K_PASOS) === '1')
+  const [, refrescar] = useState(0)
+  useEffect(() => {
+    const f = () => refrescar((n) => n + 1)
+    window.addEventListener('colmena-pasos', f)
+    return () => window.removeEventListener('colmena-pasos', f)
+  }, [])
   const yo = c.yo
   const pasos = [
     { t: 'Saca tu carnet', d: 'Tu identidad en la colmena.', ok: !!yo, go: () => pedirPerfil(null, () => {}), cta: 'Sacar' },
     { t: 'Publica lo que necesitas u ofreces', d: 'Una frase basta.', ok: !!yo && c.publicaciones.some((p) => p.autor_id === yo.id), go: () => abrirComposer(), cta: 'Publicar' },
-    { t: 'Dale una mano a alguien', d: 'Toca “Puedo ayudar” en un Necesito.', ok: !!yo && c.ayudas.some((a) => a.perfil_id === yo.id), go: () => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), cta: 'Ver el muro' },
+    { t: 'Dale una mano a alguien', d: 'Toca “Puedo ayudar” en un Necesito.', ok: leer(K_PRACTICA) === '1' || (!!yo && c.ayudas.some((a) => a.perfil_id === yo.id)), go: () => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), cta: 'Ver el muro' },
     { t: 'Calcula cuánto cobrar', d: 'La calculadora te da un precio.', ok: leer(K_CALC_ABIERTA) === '1', go: () => nav({ t: 'calc' }), cta: 'Abrir' }
   ]
   const hechos = pasos.filter((p) => p.ok).length
@@ -115,8 +125,8 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
         {pasos.map((p, k) => (
           <li key={p.t} className={p.ok ? 'ok' : k === siguiente ? 'now' : ''}>
             <span className="paso-n">{p.ok ? <Icon n="check" s={14} w={3} /> : k + 1}</span>
-            <div><b>{p.t}</b>{k === siguiente && <span>{p.d}</span>}</div>
-            {k === siguiente && <button type="button" className="btn primary sm" onClick={p.go}>{p.cta}</button>}
+            <div><b>{p.t}</b>{!p.ok && <span>{p.d}</span>}</div>
+            {!p.ok && <button type="button" className={'btn sm ' + (k === siguiente ? 'primary' : 'ghost')} onClick={p.go}>{p.cta}</button>}
           </li>
         ))}
       </ol>

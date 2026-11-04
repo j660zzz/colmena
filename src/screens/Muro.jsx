@@ -4,7 +4,7 @@ import { CATS } from '../data/contenido'
 import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
 import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, useToast } from '../components/ui'
-import { PrimerosPasos } from './Onboarding'
+import { PrimerosPasos, marcarPractica } from './Onboarding'
 
 export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }) {
   const c = useColmena()
@@ -248,7 +248,7 @@ export function Post({ post, nav, pedirPerfil }) {
   const vence = quedan(post.vence_en)
 
   const escribir = () => pedirPerfil('Para escribirle necesitas tu carnet. Así sabe quién eres.', async () => {
-    if (autor?.es_ejemplo) { toast('Esta publicación es de ejemplo: no hay a quién escribirle.'); return }
+    if (autor?.es_ejemplo) { marcarPractica(); toast('Era de ejemplo. Con alguien real se abre WhatsApp con el mensaje listo. Paso completado.'); return }
     try {
       const num = await c.contactar(post.autor_id, post.id)
       const msg = `Hola ${firstName(autor?.nombre)}, te vi en Colmena. Sobre tu publicación “${titular}”: ${post.tipo === 'need' ? 'puedo ayudarte.' : 'me interesa.'}`
