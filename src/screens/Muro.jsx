@@ -13,7 +13,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
 
   const activas = useMemo(() => c.publicaciones.filter((p) => activa(p)), [c.publicaciones])
   const lista = activas.filter((p) => (tipo === 'todo' || p.tipo === tipo) && (!cat || p.categorias.includes(cat)))
-  const cuenta = (t) => activas.filter((p) => t === 'todo' || p.tipo === t).length
+  const cuenta = (t) => activas.filter((p) => (t === 'todo' || p.tipo === t) && (!cat || p.categorias.includes(cat))).length
   const teNecesitan = c.yo ? quienesTeNecesitan(c, c.yo) : []
   const irLista = () => setTimeout(() => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
   const porCat = CATS.map((x) => [x, activas.filter((p) => p.categorias.includes(x)).length])
