@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
-import { Icon, CeldaAbierta, Sheet } from '../components/ui'
+import { Icon, Celda, CeldaAbierta, Sheet } from '../components/ui'
 import { CobroLista, CobroIconos } from '../components/Cobro'
 
 // ---------- Recordar qué ya vio cada persona (solo en este navegador) ----------
@@ -241,12 +241,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <div className="intro-carnet a-rise" style={{ '--d': 0 }}>
             <span className="intro-carnet-top"><CeldaAbierta s={16} /> Colmena <em>Miembro</em></span>
             <div className="intro-carnet-mid">
-              <span className="intro-carnet-av">
-                <span className="intro-carnet-hex">Tú</span>
-                <svg className="nivel-dibuja" viewBox="0 0 100 100" aria-hidden="true">
-                  <polygon points="50,2 91.6,26 91.6,74 50,98 8.4,74 8.4,26" pathLength="6" />
-                </svg>
-              </span>
+              <Celda s={84} className="intro-carnet-celda"><b>Tú</b></Celda>
               <span className="intro-carnet-t"><b>Tu nombre</b><span>Tu emprendimiento</span><small>Nivel 1</small><span className="intro-cobro"><CobroIconos modo="ambos" s={14} />Cobra o intercambia</span></span>
             </div>
             <span className="mono">COL-····</span>

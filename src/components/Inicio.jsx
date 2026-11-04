@@ -4,7 +4,8 @@ import { destacadoActual } from '../lib/destacados'
 import { construirDestacados, leerVistos } from '../lib/historias'
 import { useRelojRetos } from '../lib/reloj'
 import { cierraEn, waLink } from '../lib/logic'
-import { Icon, Hex, Ejemplo, useToast } from './ui'
+import { Icon, Hex, Celda, Ejemplo, useToast } from './ui'
+import { initials } from '../lib/format'
 import { EstadoDatos } from './EstadoDatos'
 import { FilaDestacados, VisorDestacados } from './Historias'
 import { Aliados, Logo, rango } from '../screens/Beneficios'
@@ -86,7 +87,7 @@ export function Inicio({ nav, irTab, pedirPerfil }) {
           {perfil ? (
             <>
               <div className="home-ganador">
-                <span className="home-avatar"><Hex p={perfil} w={64} /></span>
+                <Celda s={72} className="home-celda"><b>{initials(perfil.nombre)}</b></Celda>
                 <div>
                   <h2>{perfil.marca || perfil.nombre}</h2>
                   <span>{perfil.nombre}</span>
