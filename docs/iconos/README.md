@@ -22,7 +22,7 @@ Kit propio, dibujado para Colmena. Todos viven en `I` dentro de `src/components/
 - `kit.html` y `kit.png` se regeneraron con los dibujos nuevos.
 
 ## Celda (contenedor con la forma del logo)
-`Celda` en `src/components/ui.jsx` repite el símbolo como contenedor: el trazo abierto usa las coordenadas literales de la celda abierta (viewBox `8 3 84 94`, abertura en el lado derecho) y el hexágono interior es regular, concéntrico y separado del trazo por el mismo aire en los seis lados. Antes, el aro era un polígono SVG y el interior un `clip-path` CSS con otra proporción, por eso no se veían concéntricos; y el carnet de la bienvenida usaba un trazo con lados sueltos. Ahora se usa la misma forma en:
+`Celda` en `src/components/ui.jsx` repite el símbolo como contenedor: el trazo abierto usa las coordenadas literales de la celda abierta (viewBox `8 3 84 94`, abertura en el lado derecho) y el hexágono interior es regular, concéntrico y separado del trazo por el mismo aire en los seis lados. Trazo 4,5 y aire 4,5 (en unidades del símbolo): el aire mide lo mismo que el trazo. Antes, el aro era un polígono SVG y el interior un `clip-path` CSS con otra proporción, por eso no se veían concéntricos; y el carnet de la bienvenida usaba un trazo con lados sueltos. Ahora se usa la misma forma en:
 - los destacados del inicio (Tinta; el trazo se dibuja al entrar y queda gris cuando ya se vio),
 - el visor (Tinta en pantallas claras, Blanco en oscuras),
 - el ganador de la semana (Polen, como insignia ganada) en la tarjeta del inicio y en el visor,
