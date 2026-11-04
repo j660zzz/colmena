@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { firstName } from '../lib/format'
-import { activa, activoSemana, manosDadas, quienesPueden, normal } from '../lib/logic'
+import { activa, activoSemana, manosDadas, quienesPueden, normal, nivelDe, puntosDe } from '../lib/logic'
 import { Icon, Hex, Ejemplo, Header, Empty, Mark, Sheet } from '../components/ui'
 
 export default function Miembros({ nav, headerRight }) {
@@ -13,7 +13,7 @@ export default function Miembros({ nav, headerRight }) {
   const [verCats, setVerCats] = useState(false)
 
   const ordenados = useMemo(() => [...c.perfiles].sort((a, b) =>
-    (a.es_ejemplo - b.es_ejemplo) || (manosDadas(c, b.id) - manosDadas(c, a.id)) || (new Date(b.created_at) - new Date(a.created_at))), [c.perfiles, c.ayudas]) // eslint-disable-line react-hooks/exhaustive-deps
+    (a.es_ejemplo - b.es_ejemplo) || ((nivelDe(c, b.id).n >= 5) - (nivelDe(c, a.id).n >= 5)) || (puntosDe(c, b.id).total - puntosDe(c, a.id).total) || (new Date(b.created_at) - new Date(a.created_at))), [c.perfiles, c.ayudas, c.participantes, c.asistencias, c.resenas]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const lista = ordenados.filter((m) => {
     if (c.yo && m.id === c.yo.id) return false
@@ -85,6 +85,7 @@ export default function Miembros({ nav, headerRight }) {
           <div className="cards">
             {lista.map((m) => {
               const n = manosDadas(c, m.id)
+              const nv = nivelDe(c, m.id)
               const activo = !m.es_ejemplo && activoSemana(c, m.id)
               return (
                 <button key={m.id} type="button" className="member" onClick={() => nav({ t: 'carnet', id: m.id })}>
@@ -95,7 +96,7 @@ export default function Miembros({ nav, headerRight }) {
                     {(m.habilidades.length > 0 || m.categorias.length > 0) && (
                       <small className="m-skills">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 3).join(' · ')}</small>
                     )}
-                    {n > 0 && <small className="m-ayudas"><Icon n="hand" s={13} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>}
+                    {(n > 0 || nv.n > 1) && <small className="m-ayudas">{nv.n > 1 && <span className="m-nv">Nivel {nv.n}</span>}{n > 0 && <><Icon n="hand" s={13} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</>}</small>}
                   </span>
                   <Icon n="right" s={18} />
                 </button>

@@ -12,6 +12,7 @@ import Herramientas, { Ficha, Calculadora } from './screens/Herramientas'
 import Registro, { CarnetListo, Editar } from './screens/Registro'
 import { Bienvenida, Ayuda, introVista, marcarIntroVista } from './screens/Onboarding'
 import { CarnetParaMostrar } from './screens/Beneficios'
+import { AvisoNivel } from './components/Nivel'
 
 const TABS = [
   { id: 'muro', label: 'Muro', ic: 'wall' },
@@ -129,6 +130,7 @@ function Shell() {
 
   return (
     <>
+      <AvisoNivel />
       {c.errorRed && (
         <button type="button" className="network-banner" onClick={c.recargar}>
           {c.errorRed} Toca para reintentar.

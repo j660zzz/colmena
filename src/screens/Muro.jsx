@@ -110,7 +110,7 @@ function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
   const van = e ? c.asistencias.filter((a) => a.encuentro_id === e.id).map((a) => c.perfil(a.perfil_id)).filter(Boolean) : []
   const ejVan = van.filter((p) => p.es_ejemplo).length
 
-  const nBen = c.beneficios.filter((b) => b.tipo === 'digital').length
+  const nBen = c.beneficios.filter((b) => b.tipo === 'digital' && !b.para_todos).length
   const slides = [
     nBen > 0 && (
       <article key="beneficios" className="mov ink">
@@ -222,6 +222,7 @@ export function RetoCard({ irTab, pedirPerfil, completo = false }) {
       </div>
       <h3>{r.titulo}</h3>
       {completo && r.descripcion && <p className="reto-desc">{r.descripcion}</p>}
+      {completo && <p className="reto-pts">Subir tu propuesta suma 2 puntos a tu nivel.</p>}
       {completo && r.pasos?.length > 0 && (
         <ol className="steps">{r.pasos.map((x, i) => <li key={i}><i>{i + 1}</i><span>{x}</span></li>)}</ol>
       )}

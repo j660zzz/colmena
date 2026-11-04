@@ -4,6 +4,7 @@ import { firstName, igUrl, hace, mesDesde } from '../lib/format'
 import { manosDadas, completitud, waLink, activa } from '../lib/logic'
 import { Icon, Hex, Ejemplo, SubHeader, Empty, Stars, useToast } from '../components/ui'
 import { CarnetCard } from './Registro'
+import { NivelChip } from '../components/Nivel'
 
 export function statsDe(c, id) {
   const p = c.perfil(id)
@@ -117,6 +118,7 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
         <div className="perfil-meta">
           <span className={'disp ' + (m.disponible ? 'on' : 'off')}><i />{m.disponible ? 'Disponible para proyectos' : 'Sin cupo por ahora'}</span>
           <span className="desde">Miembro desde {mesDesde(m.created_at)}</span>
+          <NivelChip id={m.id} />
         </div>
 
         <div className="stats">

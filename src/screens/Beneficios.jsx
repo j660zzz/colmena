@@ -1,54 +1,120 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { carnetId } from '../lib/format'
-import { Icon, Hex, Ejemplo, Sheet, useToast } from '../components/ui'
+import { normal } from '../lib/logic'
+import { Icon, Hex, Ejemplo, Sheet, Empty, useToast } from '../components/ui'
 
 const fecha = (d) => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
 const inicial = (n) => (n.replace(/^(Suite|Plan) de /i, '').match(/[A-Za-zÁÉÍÓÚÑ]/) || ['·'])[0].toUpperCase()
 
-// Bloque de beneficios: los digitales que ya tienes por ser estudiante y los aliados en Cali
+const CATS_B = ['Diseño', 'Web', 'Productividad', 'Audio y video', 'Equipos']
+const TITULO = {
+  'Diseño': 'Para diseñar',
+  Web: 'Para lanzar tu marca en internet',
+  Productividad: 'Para organizarte',
+  'Audio y video': 'Para el día a día',
+  Equipos: 'Para equiparte'
+}
+
+// Beneficios como tienda: destacados, colecciones por categoría, filtros y buscador
 export function SeccionBeneficios({ pedirPerfil, nav }) {
   const c = useColmena()
   const [abierto, setAbierto] = useState(null)
   const [proponer, setProponer] = useState(false)
+  const [filtro, setFiltro] = useState('todo')
+  const [q, setQ] = useState('')
+  const arriba = useRef(null)
+
   const digitales = c.beneficios.filter((b) => b.tipo === 'digital')
   const aliados = c.beneficios.filter((b) => b.tipo === 'aliado')
   const reales = aliados.filter((b) => !b.es_ejemplo).length
+  const destacados = digitales.filter((b) => b.destacado)
+  const nGratis = digitales.filter((b) => b.gratis).length
+  const cats = CATS_B.filter((k) => digitales.some((b) => b.categoria === k))
+
+  const t = normal(q.trim())
+  const coincide = (b) => !t || normal([b.nombre, b.oferta, b.categoria, b.detalle].join(' ')).includes(t)
+  const lista = c.beneficios.filter((b) => coincide(b) && (
+    filtro === 'todo' ? true
+      : filtro === 'gratis' ? b.gratis
+      : filtro === 'aliados' ? b.tipo === 'aliado'
+      : b.tipo === 'digital' && b.categoria === filtro))
+  const tienda = filtro === 'todo' && !t
+  const elegir = (f) => { setFiltro(f); arriba.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+  const filtros = [['todo', 'Todo'], ['gratis', 'Gratis'], ...cats.map((k) => [k, k]), ['aliados', 'Aliados en Cali']]
 
   return (
     <>
       <section className="ben-hero">
         <span className="k">Con tu correo Javeriana</span>
-        <h3>Ya tienes {digitales.length} beneficios que quizás no estás usando</h3>
-        <p>Software y suscripciones gratis o con descuento por ser estudiante. Revisamos cada uno en su página oficial.</p>
+        <h3>{digitales.length} beneficios para ti y para tu marca</h3>
+        <div className="ben-nums">
+          <span><b>{nGratis}</b>gratis</span>
+          <span><b>{digitales.length - nGratis}</b>con descuento</span>
+          <span><b>{aliados.length}</b>{reales ? 'aliados en Cali' : 'aliados (ejemplo)'}</span>
+        </div>
       </section>
 
-      <div className="ben-list">
-        {digitales.map((b) => (
-          <button key={b.id} type="button" className="ben" onClick={() => setAbierto(b)}>
-            <span className="ben-ic">{inicial(b.nombre)}</span>
-            <span className="ben-t"><b>{b.nombre}</b><span>{b.oferta}</span></span>
-            <Icon n="right" s={18} />
-          </button>
-        ))}
+      <div className="ben-filtros" ref={arriba}>
+        <div className="search">
+          <Icon n="search" s={19} />
+          <input type="search" placeholder="Busca Adobe, Spotify, dominio…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar beneficios" />
+          {q && <button type="button" className="iconbtn" aria-label="Limpiar búsqueda" onClick={() => setQ('')}><Icon n="x" s={18} /></button>}
+        </div>
+        <div className="bchips" role="tablist" aria-label="Filtrar beneficios">
+          {filtros.map(([k, txt]) => (
+            <button key={k} type="button" role="tab" aria-selected={filtro === k} onClick={() => elegir(k)}>{txt}</button>
+          ))}
+        </div>
       </div>
 
-      <div className="sec-h"><h3>Aliados en Cali</h3><span className="meta">{reales ? `${reales} ${reales === 1 ? 'negocio' : 'negocios'}` : 'Muy pronto'}</span></div>
-      <p className="soft">Negocios que dan descuento a los miembros de Colmena. Muestras tu carnet y listo.</p>
-      <div className="aliados">
-        {aliados.map((b) => (
-          <button key={b.id} type="button" className="aliado" onClick={() => setAbierto(b)}>
-            <span className="al-top"><span className="tag">{b.categoria}</span>{b.es_ejemplo && <Ejemplo p={b} />}</span>
-            <b>{b.oferta}</b>
-            <span className="al-n">{b.nombre}{b.zona ? ` · ${b.zona}` : ''}</span>
-          </button>
-        ))}
-      </div>
+      {tienda ? (
+        <>
+          {destacados.length > 0 && (
+            <div className="bdest-pista">
+              {destacados.map((b, i) => (
+                <button key={b.id} type="button" className={'bdest ' + (i % 2 ? 'polen' : 'ink')} onClick={() => setAbierto(b)}>
+                  <span className="k">{b.categoria}</span>
+                  <b className="bdest-et">{b.etiqueta || 'Beneficio'}</b>
+                  <span className="bdest-n">{b.nombre}</span>
+                  <span className="bdest-o">{b.oferta}</span>
+                  <span className="go">Cómo obtenerlo <Icon n="right" s={15} w={2.2} /></span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {cats.map((k) => {
+            const fila = digitales.filter((b) => b.categoria === k)
+            return (
+              <section key={k} className="bfila">
+                <div className="sec-h"><h3>{TITULO[k] || k}</h3><button type="button" className="ver" onClick={() => elegir(k)}>Ver {fila.length}</button></div>
+                <div className="bfila-pista">{fila.map((b) => <Tile key={b.id} b={b} onClick={() => setAbierto(b)} />)}</div>
+              </section>
+            )
+          })}
+
+          <section className="bfila">
+            <div className="sec-h"><h3>Aliados en Cali</h3><span className="meta">{reales ? `${reales} ${reales === 1 ? 'negocio' : 'negocios'}` : 'Muy pronto'}</span></div>
+            <p className="soft">Negocios que dan descuento a los miembros de Colmena. Muestras tu carnet y listo.</p>
+            <div className="bfila-pista">{aliados.map((b) => <Tile key={b.id} b={b} onClick={() => setAbierto(b)} />)}</div>
+          </section>
+        </>
+      ) : lista.length === 0 ? (
+        <Empty title="No encontramos ese beneficio">Prueba con otra palabra o mira todas las categorías.</Empty>
+      ) : (
+        <>
+          <p className="fine">{lista.length} {lista.length === 1 ? 'beneficio' : 'beneficios'}{filtro !== 'todo' && filtro !== 'gratis' && filtro !== 'aliados' ? ` en ${filtro}` : ''}</p>
+          <div className="bgrid">{lista.map((b) => <Tile key={b.id} b={b} onClick={() => setAbierto(b)} />)}</div>
+        </>
+      )}
+
       <button type="button" className="sumate" onClick={() => setProponer(true)}>
         <Icon n="spark" s={18} />
         <span><b>¿Tienes un negocio o conoces uno?</b><small>Propón un descuento para los miembros de Colmena.</small></span>
         <Icon n="right" s={18} />
       </button>
+      <p className="fine center">Revisamos cada beneficio en su página oficial. Los precios y condiciones los pone cada marca y pueden cambiar.</p>
 
       <Sheet open={!!abierto} onClose={() => setAbierto(null)} label="Detalle del beneficio">
         {abierto && (
@@ -62,10 +128,31 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
   )
 }
 
+function Tile({ b, onClick }) {
+  const aliado = b.tipo === 'aliado'
+  return (
+    <button type="button" className={'btile' + (aliado ? ' aliado' : '')} onClick={onClick}>
+      <span className="btile-top">
+        <span className="ben-ic">{inicial(b.nombre)}</span>
+        {b.etiqueta && <span className="bet">{b.etiqueta}</span>}
+      </span>
+      <b>{b.nombre}</b>
+      <span className="btile-o">{b.oferta}</span>
+      <span className="btile-f">
+        {aliado ? <>{b.zona || b.categoria}{b.es_ejemplo && <Ejemplo p={b} />}</> : b.para_todos ? 'Gratis para todos' : 'Para estudiantes'}
+      </span>
+    </button>
+  )
+}
+
 function Detalle({ b, onCarnet }) {
   return (
     <div className="ben-det">
-      <span className="tag">{b.tipo === 'digital' ? b.categoria : `Aliado · ${b.categoria}`}</span>
+      <div className="ben-det-top">
+        <span className="tag">{b.tipo === 'digital' ? b.categoria : `Aliado · ${b.categoria}`}</span>
+        {b.para_todos && <span className="tag">Gratis para todos</span>}
+      </div>
+      {b.etiqueta && <b className="ben-det-et">{b.etiqueta}</b>}
       <h2>{b.nombre}{b.es_ejemplo && <Ejemplo p={b} />}</h2>
       <p className="ben-oferta">{b.oferta}</p>
       {b.detalle && <p>{b.detalle}</p>}

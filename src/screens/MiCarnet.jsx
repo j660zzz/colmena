@@ -3,6 +3,7 @@ import { carnetId, firstName, hace, mesDesde } from '../lib/format'
 import { completitud, inicioSemana, panalSemana, activa } from '../lib/logic'
 import { Icon, Hex, Ejemplo, Header, Empty, useToast } from '../components/ui'
 import { CarnetCard } from './Registro'
+import { NivelCard } from '../components/Nivel'
 import { statsDe, Insignias, Voces } from './Carnet'
 
 export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
@@ -33,7 +34,6 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
   const misCeldas = panal.manos.filter((m) => m.ayuda === yo.id).length
   const confirmar = c.pendientes.confirmar
   const calificar = c.pendientes.calificar.filter((x) => !x.yo_califique)
-  const faltanCinco = Math.max(0, 5 - s.manos)
 
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${yo.id}`
@@ -110,18 +110,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           <div><b>{misCeldas}</b><span>{misCeldas === 1 ? 'Celda aportada' : 'Celdas aportadas'}</span></div>
         </div>
 
-        {faltanCinco > 0 && (
-          <section className="card next-badge">
-            <span className="nb-hex"><Icon n="users" s={22} w={2} /></span>
-            <div>
-              <span className="k">Próxima insignia</span>
-              <b>Cinco ayudas</b>
-              <div className="dots">{[0, 1, 2, 3, 4].map((i) => <i key={i} className={i < s.manos ? 'on' : ''} />)}</div>
-              <small>Te {faltanCinco === 1 ? 'falta 1 ayuda' : `faltan ${faltanCinco} ayudas`} para ganarla</small>
-            </div>
-          </section>
-        )}
-
+        <NivelCard id={yo.id} />
         <Insignias s={s} />
         <Voces id={yo.id} nav={nav} />
 
