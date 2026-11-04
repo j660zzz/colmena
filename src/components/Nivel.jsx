@@ -26,6 +26,7 @@ export function NivelChip({ id, nombre }) {
   const c = useColmena()
   const [ver, setVer] = useState(false)
   const l = nivelDe(c, id)
+  if (l.n < 2) return null
   return (
     <>
       <button type="button" className="nivel-chip" onClick={() => setVer(true)} aria-label={`Nivel ${l.n}, ${l.t}. Ver cómo funcionan los niveles`}>

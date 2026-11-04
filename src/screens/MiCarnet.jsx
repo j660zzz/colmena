@@ -62,6 +62,8 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
         </div>
         <button type="button" className="linkbtn center-self" onClick={() => nav({ t: 'carnet', id: yo.id })}>Ver mi carnet como lo ven otros →</button>
 
+        <NivelCard id={yo.id} />
+
         {confirmar.map((x) => {
           const post = c.publicaciones.find((p) => p.id === x.publicacion_id)
           const quien = c.perfil(x.perfil_id)
@@ -110,7 +112,6 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           <div><b>{misCeldas}</b><span>{misCeldas === 1 ? 'Celda aportada' : 'Celdas aportadas'}</span></div>
         </div>
 
-        <NivelCard id={yo.id} />
         <Insignias s={s} />
         <Voces id={yo.id} nav={nav} />
 
