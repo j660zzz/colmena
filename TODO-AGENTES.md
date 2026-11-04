@@ -10,7 +10,7 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [ ] Revisar contraste AA de textos `--ink-3` / `--ink-4` sobre crema.
 - [ ] Escritorio (≥ 1024 px): hoy es la app centrada; evaluar una vista de dos columnas.
 - [x] Beneficios: sumar las categorías nuevas (Claude, con permiso de Jhon) **Apoyo para emprender**, **Aprender** y **Vender** a `CATS_B`, `TITULO` e `ICONO_CAT` en `src/screens/Beneficios.jsx`. Ya hay 7 filas con esas categorías en la tabla `beneficios` (Campus Nova, Ley 1780, Fondo Emprender, Perfil de Negocio, Biblioteca, Cámara de Comercio, HubSpot). Hasta que se agreguen, solo salen en destacados, en la búsqueda y en el filtro Gratis. Títulos sugeridos: "Para empezar tu emprendimiento", "Para aprender gratis" y "Para vender". Detalle en `docs/beneficios/investigacion-2026-11.md`.
-- [x] Beneficios: en `PRIMERO` (`src/screens/Beneficios.jsx`) sacar Spotify de los destacados (no ayuda a emprender) y dar prioridad a Campus Nova, Ley 1780 y Google AI Plus.
+- [x] Beneficios: en `PRIMERO` (`src/screens/Beneficios.jsx`) dar prioridad a Campus Nova, Ley 1780 y Google AI Plus. Spotify sigue destacado, al final del carrusel (decisión de Jhon).
 
 ## Datos y lógica (Claude)
 - [ ] Notificaciones dentro de la app cuando alguien responde tu publicación.
