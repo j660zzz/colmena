@@ -12,7 +12,7 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [x] Claude: quitar "DCV" de la interfaz, borrar el perfil de prueba, cupones de aliados, destacados tipo historias con visor, encabezado y tarjeta más ricos, vitrinas intercaladas y `--mono` corregido.
 - [ ] Jhon: actualizar `docs/marca/colmena-brand-spec.md` ("Activa · DCV" → "Activa").
 - [ ] Jhon: confirmar ventana de "Por cerrar" (21 días) y si el reloj de "Mostrar mi carnet" sigue en mono.
-- [ ] Revisar PR de `diseno/home-destacados` contra main. No fusionar sin indicación.
+- [x] PR #11 (`diseno/home-destacados`) aprobado por Jhon, fusionado y publicado el 4 de noviembre de 2026.
 
 ## Fiabilidad de los flujos (Codex, autorizada por Jhon)
 - [x] Carga por pantalla, límite de espera, recuperación y estados de error sin cifras no verificadas.

@@ -13,7 +13,7 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 
 ## 4 de noviembre de 2026 · Inicio atrapante, destacados y cupones (Claude)
 
-Misma rama y PR (`diseno/home-destacados`, sin fusionar). Detalle, razonamiento y capturas en `docs/home-destacados/README.md`.
+Misma rama y PR (`diseno/home-destacados`). **Fusionado y publicado** el 4 de noviembre de 2026 (PR #11) por pedido de Jhon, tras aprobar el encabezado rediseñado. Detalle, razonamiento y capturas en `docs/home-destacados/README.md`.
 - "DCV" fuera de la interfaz (bienvenida, estado del carnet "Activa", textos de compartir). **Pendiente de Jhon:** el spec de marca aún dice "Activa · DCV"; no se editó.
 - Perfil de prueba "jhon" (carnet 101) borrado con migración de solo datos `supabase/migraciones/20261104_borrar_perfil_prueba_jhon.sql`: 1 perfil y 1 publicación borrados. La base queda con 8 perfiles, todos de ejemplo.
 - Aliados como cupones ("Mostrar mi carnet" en el detalle de cada uno) e invitación a sumar un negocio. Fila de destacados tipo historias con visor a pantalla completa (reto/destacado, descuentos, talleres, convocatorias que cierran pronto, beneficios), visto/no visto en el navegador. Encabezado con "Disponibles ahora", tarjeta del destacado con los pasos y vitrinas intercaladas entre publicaciones.
