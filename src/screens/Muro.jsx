@@ -327,7 +327,7 @@ export function Post({ post, nav, pedirPerfil }) {
             </div>
           </div>
         ) : resuelta ? (
-          <span className="fine">Ya lo resolvió</span>
+          <span className="fine">Ya se resolvió</span>
         ) : (
           <button type="button" className={'btn sm ' + (yaEscribi ? 'dark' : 'primary')} onClick={escribir}>
             <Icon n="wa" s={17} />{yaEscribi ? 'Escribir otra vez' : cta}

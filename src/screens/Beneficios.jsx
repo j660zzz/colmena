@@ -4,7 +4,7 @@ import { carnetId } from '../lib/format'
 import { Icon, Hex, Ejemplo, Sheet, useToast } from '../components/ui'
 
 const fecha = (d) => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
-const inicial = (n) => n.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ ]/g, '').split(' ').filter(Boolean).slice(0, 2).map((x) => x[0]).join('').toUpperCase()
+const inicial = (n) => (n.replace(/^(Suite|Plan) de /i, '').match(/[A-Za-zÁÉÍÓÚÑ]/) || ['·'])[0].toUpperCase()
 
 // Bloque de beneficios: los digitales que ya tienes por ser estudiante y los aliados en Cali
 export function SeccionBeneficios({ pedirPerfil, nav }) {
