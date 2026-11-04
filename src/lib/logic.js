@@ -129,6 +129,7 @@ export const PUNTOS = [
   { k: 'recibida', t: 'Confirmar una ayuda que recibiste', v: 1 },
   { k: 'reto', t: 'Subir tu propuesta a un reto', v: 2 },
   { k: 'encuentro', t: 'Inscribirte al encuentro del mes', v: 1 },
+  { k: 'meta', t: 'Cumplir tu meta del mes', v: 2 },
   { k: 'resena', t: 'Recibir una reseña', v: 1 },
   { k: 'completo', t: 'Completar tu carnet (una vez)', v: 2 }
 ]
@@ -149,6 +150,7 @@ export function puntosDe(c, id) {
     recibida: manos.filter((m) => m.recibe === id).length,
     reto: c.participantes.filter((x) => x.perfil_id === id && x.link).length,
     encuentro: c.asistencias.filter((x) => x.perfil_id === id).length,
+    meta: (c.metas || []).filter((x) => x.perfil_id === id && x.cumplida).length,
     resena: c.resenas.filter((r) => r.para_id === id).length,
     completo: p && completitud(p).pct === 100 ? 1 : 0
   }

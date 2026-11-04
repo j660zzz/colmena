@@ -51,6 +51,8 @@ export function ColmenaProvider({ children }) {
   const [resenas, setResenas] = useState([])
   const [beneficios, setBeneficios] = useState([])
   const [convocatorias, setConvocatorias] = useState([])
+  const [metas, setMetas] = useState([])
+  const [avances, setAvances] = useState([])
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
   const [cuenta, setCuenta] = useState(null)
   const [avisoCuenta, setAvisoCuenta] = useState(null)
@@ -74,6 +76,8 @@ export function ColmenaProvider({ children }) {
     votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
     resenas: async () => setResenas(await q(supabase.rpc('resenas_publicas'))),
     beneficios: async () => setBeneficios(await q(supabase.from('beneficios').select('*').order('tipo').order('orden'))),
+    metas: async () => setMetas(await q(supabase.from('metas').select('*').order('updated_at', { ascending: false }))),
+    avances: async () => setAvances(await q(supabase.from('avances').select('*').order('created_at', { ascending: false }).limit(500))),
     convocatorias: async () => setConvocatorias(await q(supabase.from('convocatorias').select('*').eq('activo', true).order('orden'))),
     encuentro: async () => {
       const rows = await q(supabase.from('encuentros').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
@@ -112,6 +116,8 @@ export function ColmenaProvider({ children }) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_participantes' }, (p) => { cargar.participantes(); asegurar(p.new?.perfil_id) })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_votos' }, () => cargar.votos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'asistencias' }, () => cargar.asistencias())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'metas' }, (p) => { cargar.metas(); asegurar(p.new?.perfil_id) })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'avances' }, () => cargar.avances())
       .subscribe()
     const t = setInterval(() => { cargar.perfiles(); cargar.resenas(); cargarPendientes() }, 45000)
     const vis = () => { if (document.visibilityState === 'visible') cargarTodo() }
@@ -313,6 +319,23 @@ export function ColmenaProvider({ children }) {
       setConexiones((l) => ya ? l.filter((c) => !(c.de_id === sesionRef.current.id && c.a_id === aId)) : [...l, { de_id: sesionRef.current.id, a_id: aId }])
       try { return await rpc('alternar_conexion', { p_a: aId }) } catch (e) { cargar.conexiones(); throw e }
     },
+    async guardarMeta(encId, texto) {
+      await rpc('guardar_meta', { p_encuentro: encId, p_texto: texto })
+      await cargar.metas()
+    },
+    async contarAvance(encId, texto, link) {
+      await rpc('contar_avance', { p_encuentro: encId, p_texto: texto, p_link: link || null })
+      await cargar.avances()
+    },
+    async alternarMuestra(encId) {
+      const r = await rpc('alternar_muestra', { p_encuentro: encId })
+      await cargar.metas()
+      return r
+    },
+    async marcarMetaCumplida(encId, cumplida) {
+      await rpc('marcar_meta_cumplida', { p_encuentro: encId, p_cumplida: cumplida })
+      await cargar.metas()
+    },
     async alternarAsistencia(encId) {
       const ya = asistencias.some((a) => a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)
       setAsistencias((l) => ya ? l.filter((a) => !(a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)) : [...l, { encuentro_id: encId, perfil_id: sesionRef.current.id }])
@@ -321,7 +344,7 @@ export function ColmenaProvider({ children }) {
   }
 
   const valor = {
-    sesion, yo, beneficios, convocatorias, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
+    sesion, yo, beneficios, convocatorias, metas, avances, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
     cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
     cargando, errorRed, recargar: cargarTodo, ...acciones,

@@ -5,35 +5,25 @@ import { panalSemana, semanaDelMes, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, Header, Titulo, Panal, useToast } from '../components/ui'
 import { RetoCard } from './Muro'
 import Convocatorias from './Convocatorias'
+import TuMes from './Metas'
 
 export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
   const c = useColmena()
-  const semana = semanaDelMes()
-  const ruta = [['Semana 1', 1], ['Semana 2', 2], ['Semana 3', 3], ['Encuentro', 4]]
 
   return (
     <>
       <Header right={headerRight} />
       <div className="body fade">
-        <Titulo title="Encuentro" sub="El encuentro del mes, ferias y convocatorias en Cali, y el reto de la semana." />
+        <Titulo title="Encuentro" sub="Ponte una meta, cuenta cómo vas y muéstrala en el encuentro del mes." />
         <nav className="enc-saltos" aria-label="Secciones de Encuentro">
-          {[['enc-ticket', 'Encuentro', 'cal'], ['enc-ferias', 'Ferias y convocatorias', 'bag'], ['enc-reto', 'Reto', 'spark'], ['enc-panal', 'Panal', 'hand']].map(([id, t, ic]) => (
+          {[['enc-ticket', 'Encuentro', 'cal'], ['enc-meta', 'Tu meta', 'trend'], ['enc-ferias', 'Ferias y convocatorias', 'bag'], ['enc-reto', 'Reto', 'spark'], ['enc-panal', 'Panal', 'hand']].map(([id, t, ic]) => (
             <button key={id} type="button" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><Icon n={ic} s={15} />{t}</button>
           ))}
         </nav>
         <div id="enc-ticket"><Ticket pedirPerfil={pedirPerfil} /></div>
+        <div id="enc-meta"><TuMes nav={nav} pedirPerfil={pedirPerfil} /></div>
         <div id="enc-ferias"><Convocatorias /></div>
-        <div id="enc-reto" className="route" aria-label={`Vas en la semana ${semana} del mes`}>
-          {ruta.map(([t, i]) => (
-            <div key={t} className={'node' + (i < semana ? ' done' : i === semana ? ' now' : '') + (i === 4 ? ' end' : '')}>
-              <span className="nh">{i === 4 ? <Icon n="cal" s={14} w={2} /> : i < semana ? <Icon n="check" s={12} w={3} /> : null}</span>
-              <small>{t}</small>
-              {i === semana && <em>Estás aquí</em>}
-            </div>
-          ))}
-        </div>
-        <p className="fine center">Tres semanas en la app y un encuentro presencial al final del mes.</p>
-
+        <div id="enc-reto" />
         <RetoCard irTab={irTab} pedirPerfil={pedirPerfil} completo />
         <Propuestas nav={nav} pedirPerfil={pedirPerfil} />
         <div id="enc-panal"><PanalGrande irTab={irTab} /></div>
