@@ -6,6 +6,7 @@ import { manosDadas, completitud, waLink, activa } from '../lib/logic'
 import { Icon, Hex, Ejemplo, SubHeader, Empty, Stars, useToast } from '../components/ui'
 import { CarnetCard } from './Registro'
 import { NivelChip } from '../components/Nivel'
+import { COBRO, CobroInsignia } from '../components/Cobro'
 
 export function statsDe(c, id) {
   const p = c.perfil(id)
@@ -106,11 +107,6 @@ export function Voces({ id, nav }) {
   )
 }
 
-const INTERCAMBIO = {
-  dinero: { t: 'Cobra en dinero', d: 'Trabaja por un precio acordado.' },
-  trueque: { t: 'Prefiere intercambio', d: 'Cambia su trabajo por el de otro miembro.' },
-  ambos: { t: 'Dinero o intercambio', d: 'Acepta las dos formas, según el proyecto.' }
-}
 const hostDe = (url) => { try { return new URL(url).hostname.replace(/^www\./, '') } catch { return url } }
 
 export default function Carnet({ id, onBack, nav, pedirPerfil }) {
@@ -142,7 +138,7 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
       else toast(`${firstName(m.nombre)} todavía no agregó su WhatsApp.`)
     } catch (e) { toast(e.message, true) }
   })
-  const inter = INTERCAMBIO[m.intercambio]
+  const inter = COBRO[m.intercambio]
 
   return (
     <>
@@ -194,12 +190,10 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
         {inter && (
           <section className="perfil-sec">
             <h3>Cómo trabaja</h3>
-            <div className="inter" role="list">
-              {Object.keys(INTERCAMBIO).map((k) => (
-                <span key={k} role="listitem" className={k === m.intercambio ? 'on' : ''}>{k === 'dinero' ? 'Dinero' : k === 'trueque' ? 'Intercambio' : 'Ambos'}</span>
-              ))}
+            <div className="como-trabaja">
+              <CobroInsignia modo={m.intercambio} abrir />
+              <p className="soft">{inter.d}</p>
             </div>
-            <p className="soft"><b>{inter.t}.</b> {inter.d}</p>
           </section>
         )}
 

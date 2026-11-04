@@ -4,6 +4,7 @@ import { CATS, SUGERENCIAS } from '../data/contenido'
 import { carnetId } from '../lib/format'
 import { completitud, manosDadas } from '../lib/logic'
 import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
+import { COBRO, CobroIconos, CobroInsignia, QUE_ES_INTERCAMBIAR } from '../components/Cobro'
 
 const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
 const soloDigitos = (v) => v.replace(/\D/g, '')
@@ -11,7 +12,6 @@ export const waValido = (v) => /^3\d{9}$/.test(soloDigitos(v).replace(/^57(?=3\d
 // Si pegan el número con +57, se quita el indicativo antes de formatear
 const fmtWa = (v) => { let d = soloDigitos(v); if (d.length > 10 && d.startsWith('57')) d = d.slice(2); d = d.slice(0, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ') }
 
-const COBRA = { dinero: 'Cobra en dinero', trueque: 'Prefiere intercambio', ambos: 'Dinero o intercambio' }
 
 // El carnet como ficha: quién es, en qué te puede ayudar y cómo trabaja
 export function CarnetCard({ p, numero, nota, estado }) {
@@ -42,7 +42,7 @@ export function CarnetCard({ p, numero, nota, estado }) {
       {real && (
         <div className="carnet-datos">
           <span className={p.disponible ? 'on' : ''}><i />{p.disponible ? 'Disponible' : 'Sin cupo'}</span>
-          {COBRA[p.intercambio] && <span>{COBRA[p.intercambio]}</span>}
+          {p.intercambio && <CobroInsignia modo={p.intercambio} />}
           {ayudas > 0 && <span>{ayudas} {ayudas === 1 ? 'ayuda dada' : 'ayudas dadas'}</span>}
         </div>
       )}
@@ -258,7 +258,7 @@ export function Editar({ onBack }) {
   }
   const borrar = async () => {
     if (!confirm('Esto borra tu carnet, tus publicaciones y tu actividad de forma permanente. ¿Seguro?')) return
-    try { await c.borrarPerfil(); toast('Tu perfil fue borrado'); onBack() } catch (x) { toast(x.message, true) }
+    try { await c.borrarPerfil(); toast('Borramos tu perfil'); onBack() } catch (x) { toast(x.message, true) }
   }
 
   return (
@@ -292,12 +292,15 @@ export function Editar({ onBack }) {
             </div>
           </div>
           <div className="field">
-            <span className="lbl">¿Cómo prefieres trabajar?</span>
-            <div className="segbar" role="group" aria-label="Forma de pago">
-              {[['dinero', 'Dinero'], ['trueque', 'Intercambio'], ['ambos', 'Ambos']].map(([k, t]) => (
-                <button key={k} type="button" aria-pressed={f.intercambio === k} onClick={() => setF({ ...f, intercambio: f.intercambio === k ? '' : k })}>{t}</button>
+            <span className="lbl">¿Cómo cobras?</span>
+            <div className="inter-opc" role="group" aria-label="Cómo cobras">
+              {Object.entries(COBRO).map(([k, x]) => (
+                <button key={k} type="button" aria-pressed={f.intercambio === k} onClick={() => setF({ ...f, intercambio: f.intercambio === k ? '' : k })}>
+                  <CobroIconos modo={k} s={20} />{x.t}
+                </button>
               ))}
             </div>
+            <span className="hint">{QUE_ES_INTERCAMBIAR}</span>
           </div>
           <div className="field">
             <label htmlFor="e-p">Link de portafolio</label>

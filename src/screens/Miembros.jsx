@@ -5,8 +5,8 @@ import { firstName } from '../lib/format'
 import { activa, activoSemana, manosDadas, quienesPueden, normal, nivelDe, puntosDe } from '../lib/logic'
 import { Icon, Hex, Ejemplo, Header, Titulo, Empty, Mark } from '../components/ui'
 import { statsDe } from './Carnet'
+import { CobroInsignia } from '../components/Cobro'
 
-const COBRA = { dinero: 'Cobra', trueque: 'Intercambio', ambos: 'Cobra o intercambia' }
 const MODOS = [['todos', 'Todos'], ['disponibles', 'Disponibles'], ['intercambio', 'Intercambian']]
 
 export default function Miembros({ nav, headerRight }) {
@@ -126,7 +126,7 @@ export default function Miembros({ nav, headerRight }) {
                   {sabe.length > 0 && <span className="m2-skills">{sabe.map((x) => <em key={x}>{x}</em>)}</span>}
                   <span className="m2-meta">
                     <span className={'m2-disp' + (m.disponible ? ' on' : '')}><i />{m.disponible ? 'Disponible' : 'Sin cupo'}</span>
-                    {COBRA[m.intercambio] && <span>{COBRA[m.intercambio]}</span>}
+                    {m.intercambio && <CobroInsignia modo={m.intercambio} />}
                     {st.manos > 0 && <span><Icon n="hand" s={13} />{st.manos}</span>}
                     {st.promedio > 0 && <span><Icon n="star" s={13} w={2} />{st.promedio.toFixed(1)}</span>}
                     {nv.n > 1 && !mismoNivel && <span className="m-nv">Nivel {nv.n}</span>}
