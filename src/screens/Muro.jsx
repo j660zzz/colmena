@@ -1,9 +1,9 @@
 import { Fragment, useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
-import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
-import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, nivelDe, PANAL } from '../lib/logic'
-import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, Sheet, useToast } from '../components/ui'
+import { hace, firstName, igUrl, fechaLarga } from '../lib/format'
+import { activa, quedan, cierraEn, quienesTeNecesitan, waLink, cuantosEjemplo, nivelDe } from '../lib/logic'
+import { Icon, Hex, Ejemplo, BrandHeader, Empty, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
 import { CobroInsignia } from '../components/Cobro'
 
@@ -156,8 +156,6 @@ function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
   const [i, setI] = useState(0)
   const r = c.reto
   const e = c.encuentro
-  const { llenas, ejemplos, manos } = panalSemana(c)
-  const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
 
   const gente = r ? c.participantes.filter((x) => x.reto_id === r.id) : []
   const yoEnReto = c.yo && gente.some((x) => x.perfil_id === c.yo.id)
@@ -195,18 +193,14 @@ function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
         </div>
       </article>
     ),
-    <article key="panal" className="mov ink">
-      <div className="mov-split">
-        <div>
-          <span className="k">El panal de esta semana <QueEs onClick={() => abrirAyuda('panal')} /></span>
-          <b className="mov-big"><em>{llenas}</em>/{PANAL}</b>
-          <p>{llenas === 0 ? 'Cada ayuda confirmada llena una celda.' : `ayudas esta semana · faltan ${Math.max(PANAL - llenas, 0)}`}</p>
-          {ejemplos > 0 && <span className="ej-note">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
-        </div>
-        <Panal celdas={celdas} size={14} />
-      </div>
-      <button type="button" className="go" onClick={() => irTab('encuentro')}>Ver el panal <Icon n="right" s={15} w={2.2} /></button>
-    </article>,
+    c.talleres[0] && (
+      <article key="talleres" className="mov ink">
+        <div className="mov-top"><span className="k">Talleres</span>{c.talleres[0].es_ejemplo && <span className="ejemplo">Ejemplo</span>}</div>
+        <h3>{c.talleres[0].titulo}</h3>
+        <p className="mov-facts claro">{c.talleres.slice(1, 3).map((t) => t.titulo).join(' · ')}</p>
+        <button type="button" className="go" onClick={() => irTab('encuentro')}>Ver talleres <Icon n="right" s={15} w={2.2} /></button>
+      </article>
+    ),
     e && (
       <article key="encuentro" className="mov white">
         <div className="mov-top"><span className="k">Encuentro {String(e.numero).padStart(2, '0')} · cierre del mes</span></div>
@@ -283,9 +277,6 @@ export function RetoCard({ irTab, pedirPerfil, completo = false }) {
       <h3>{r.titulo}</h3>
       {completo && r.descripcion && <p className="reto-desc">{r.descripcion}</p>}
       {completo && <p className="reto-pts">Subir tu propuesta suma 2 puntos a tu nivel.</p>}
-      {completo && r.pasos?.length > 0 && (
-        <ol className="steps">{r.pasos.map((x, i) => <li key={i}><i>{i + 1}</i><span>{x}</span></li>)}</ol>
-      )}
       <div className="reto-foot">
         <div className="who-row">
           {gente.length > 0 && <div className="stack">{gente.slice(0, 4).map((x) => <Hex key={x.perfil_id} p={c.perfil(x.perfil_id)} w={24} fs={9} />)}</div>}

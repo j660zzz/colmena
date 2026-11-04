@@ -25,7 +25,7 @@ export const marcarPractica = () => { guardar(K_PRACTICA, '1'); avisar() }
 const SLIDES = [
   { k: 'que', dur: 5000, oscura: true },
   { k: 'muro', dur: 9000, oscura: false },
-  { k: 'meta', dur: 6000, oscura: false },
+  { k: 'talleres', dur: 6000, oscura: false },
   { k: 'beneficios', dur: 5000, oscura: false },
   { k: 'carnet', dur: 0, oscura: true }
 ]
@@ -162,7 +162,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes de DCV que <mark className="hl">emprenden</mark>.</h1>
           <ul className="intro-lista">
             <li className="a-up" style={{ '--d': 4 }}><i><Icon n="wall" s={16} /></i><div><b>Muro</b><span>Pide ayuda u ofrece lo que sabes hacer.</span></div></li>
-            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Una meta al mes y una reunión para mostrarla.</span></div></li>
+            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Talleres prácticos y una reunión al mes.</span></div></li>
             <li className="a-up" style={{ '--d': 6 }}><i><Icon n="gift" s={16} /></i><div><b>Beneficios</b><span>{digitales.length > 0 ? `${digitales.length} programas` : 'Programas'} gratis o con descuento.</span></div></li>
           </ul>
         </section>
@@ -174,15 +174,15 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <p className="intro-p a-up" style={{ '--d': 3 }}>Tocas <b>Puedo ayudar</b> o <b>Me interesa</b> y se abre WhatsApp con el mensaje listo. Sin comisiones.</p>
         </section>
 
-        <section className={'intro-slide' + on(2)} aria-label="Tu meta del mes" aria-hidden={i !== 2}>
+        <section className={'intro-slide' + on(2)} aria-label="Talleres y encuentro" aria-hidden={i !== 2}>
           <span className="eyebrow a-up" style={{ '--d': 0 }}>Encuentro</span>
-          <h1 className="intro-h a-up" style={{ '--d': 1 }}>Ponte una meta y muéstrala al final del mes.</h1>
+          <h1 className="intro-h a-up" style={{ '--d': 1 }}>Aprende lo que tu marca necesita.</h1>
           <ol className="intro-ruta">
-            {[['Semana 1', 'Escribe tu meta', 'edit'], ['Semanas 2 y 3', 'Cuenta cómo vas', 'trend'], ['Encuentro', 'Muestra lo que lograste', 'spark']].map(([t, d, ic], k) => (
-              <li key={t} className="a-left" style={{ '--d': 2 + k * 2 }}><i><Icon n={ic} s={16} /></i><div><small>{t}</small><b>{d}</b></div></li>
+            {(c.talleres.length ? c.talleres.slice(0, 3).map((t) => [t.categoria, t.titulo]) : [['Video', 'Edita reels con el celular'], ['Web e IA', 'Claude Code: tu primera página web'], ['Foto', 'Fotos de producto con luz natural']]).map(([cat, t], k) => (
+              <li key={t} className="a-left" style={{ '--d': 2 + k * 2 }}><i><Icon n={cat === 'Video' ? 'spark' : cat === 'Foto' ? 'ig' : 'bulb'} s={16} /></i><div><small>{cat} · Ejemplo</small><b>{t}</b></div></li>
             ))}
           </ol>
-          <p className="intro-p a-up" style={{ '--d': 8 }}>Una frase por semana. Cumplirla sube tu nivel.</p>
+          <p className="intro-p a-up" style={{ '--d': 8 }}>Talleres cortos con otros miembros y una noche al mes para mostrar tu marca.</p>
         </section>
 
         <section className={'intro-slide' + on(3)} aria-label="Beneficios de estudiante" aria-hidden={i !== 3}>
@@ -312,7 +312,7 @@ export const TEMAS = {
   carnet: { t: 'Tu carnet', d: 'Tu perfil en Colmena: quién eres, a qué te dedicas y cuántas veces has ayudado. Tu WhatsApp solo lo ven otros miembros.' },
   cobro: { t: 'Cobra o intercambia', d: 'Cada carnet muestra cómo trabaja esa persona. Intercambiar es cambiar tu trabajo por el de otro miembro.', extra: 'cobro' },
   nivel: { t: 'Tu nivel', d: 'Subes de nivel cuando ayudas a otros miembros, participas en los retos y vas a los encuentros. Cada nivel cierra un lado de tu celda. No pierdes nada si no subes: todo funciona desde el nivel 1.' },
-  meta: { t: 'Tu meta del mes', d: 'En la semana 1 escribes qué quieres lograr antes del encuentro. Cada semana cuentas en una frase cómo vas, y en el encuentro tienes 3 minutos para mostrarlo. Cumplirla suma 2 puntos a tu nivel.' },
+  talleres: { t: 'Talleres', d: 'Talleres cortos, presenciales o virtuales, dictados por otros miembros: reels, fotos de producto, páginas web con IA y más. Toca Me interesa para que sepamos cuáles programar primero. Si sabes algo que a otros les sirve, puedes dictar uno.' },
   ferias: { t: 'Ferias y convocatorias', d: 'En Encuentro hay ferias para vender y convocatorias para conseguir proyectos en Cali. Cada una tiene su fecha, sus requisitos y el link oficial. Lo que ya cerró se oculta solo.' },
   beneficios: { t: 'Beneficios', d: 'Software y suscripciones que ya tienes gratis o con descuento por ser estudiante de la Javeriana, y negocios de Cali que dan descuento al mostrar tu carnet.' },
   ejemplo: { t: 'Contenido de ejemplo', d: 'Lo marcado como “Ejemplo” es contenido de muestra para que veas cómo funciona. No son personas reales.' }

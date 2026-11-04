@@ -1236,49 +1236,37 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .enc-saltos button:active { transform: scale(.96); }
 #enc-ticket, #enc-ferias, #enc-reto, #enc-panal { scroll-margin-top: 8px; }
 
-/* ---------- Tu meta del mes (Encuentro) ---------- */
-#enc-meta { scroll-margin-top: 8px; }
-.mes { display: flex; flex-direction: column; gap: 12px; }
-.mes .sec-h { margin-top: 8px; }
-.mes-ruta { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; position: relative; }
-.mes-ruta::before { content: ""; position: absolute; top: 15px; left: 12.5%; right: 12.5%; height: 2px; background: var(--line); }
-.mes-ruta li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
-.mr-n { width: 28px; height: 32px; clip-path: var(--hex); background: var(--line); color: var(--muted); display: grid; place-items: center; font: 700 12px/1 var(--disp); }
-.mes-ruta li.ok .mr-n { background: var(--ink); color: var(--polen); }
-.mes-ruta li.now .mr-n { background: var(--polen); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
-.mes-ruta b { font: 600 12px/1.2 var(--ui); }
-.mes-ruta small { font-size: 11px; color: var(--muted); }
-.mes-ruta li:not(.now):not(.ok) b { color: var(--muted); font-weight: 400; }
-.mi-meta { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 24px; background: var(--ink); color: var(--surface); }
-.mi-meta.nueva { background: var(--surface); color: var(--ink); box-shadow: var(--soft); }
-.mi-meta label { display: flex; flex-direction: column; gap: 4px; }
-.mi-meta label b { font: 700 20px/1.15 var(--disp); letter-spacing: -.02em; }
-.mi-meta label span { font-size: 14px; color: var(--muted); line-height: 1.35; }
-.meta-ideas { display: flex; flex-wrap: wrap; gap: 8px; }
-.meta-ideas .chip { min-height: 36px; }
-.mm-top { display: flex; justify-content: space-between; align-items: center; }
-.mi-meta .k { color: var(--polen); }
-.mm-texto { font: 700 22px/1.15 var(--disp); letter-spacing: -.025em; }
-.mm-ultimo { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.35; color: rgba(255, 255, 255, .82); }
-.mm-ultimo svg { flex: none; margin-top: 2px; color: var(--polen); }
-.mm-ultimo small { color: rgba(255, 255, 255, .56); }
-.mm-ultimo.vacio { color: rgba(255, 255, 255, .56); }
-.mi-meta .btn.primary { box-shadow: none; }
-.mm-acc { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.mm-acc button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); font: 600 13px/1.1 var(--ui); transition: transform .15s var(--ease), background .15s; }
-.mm-acc button:active { transform: scale(.96); }
-.mm-acc button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: none; }
-.mm-acc button.ok[aria-pressed="true"] { background: var(--green); color: var(--surface); }
-.metas { display: flex; flex-direction: column; gap: 8px; }
-.meta-card { display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 14px 16px; border-radius: 20px; background: var(--surface); box-shadow: var(--soft); text-align: left; transition: transform .15s var(--ease); }
-.meta-card:active { transform: scale(.985); }
-.meta-card .who-t > span { font-size: 12px; color: var(--ink); font-weight: 600; }
-.meta-card .who-t > span.ok { color: var(--green); }
-.mc-texto { font: 700 17px/1.25 var(--disp); letter-spacing: -.02em; }
-.mc-ultimo { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.35; }
-.mc-ultimo svg { flex: none; margin-top: 2px; }
-.muestra { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--ink); font-size: 14px; line-height: 1.35; }
-.muestra .stack { flex: none; }
+/* ---------- Talleres y quiénes van (Encuentro) ---------- */
+#enc-talleres { scroll-margin-top: 8px; }
+.talleres, .van { display: flex; flex-direction: column; gap: 8px; }
+.talleres .sec-h, .van .sec-h { margin-top: 8px; }
+.tall-pista, .van-pista { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 4px -16px 0; padding: 2px 16px 4px; scroll-padding-inline: 16px; scrollbar-width: none; }
+.tall-pista::-webkit-scrollbar, .van-pista::-webkit-scrollbar { display: none; }
+.tall-card { flex: 0 0 256px; scroll-snap-align: start; display: flex; flex-direction: column; border-radius: 20px; background: var(--surface); box-shadow: var(--soft); overflow: hidden; }
+.tall-card.ink { background: var(--ink); color: var(--surface); box-shadow: none; }
+.tall-abrir { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 16px 8px; text-align: left; transition: transform .15s var(--ease); }
+.tall-abrir:active { transform: scale(.98); }
+.tall-top { display: flex; align-items: center; gap: 8px; width: 100%; }
+.tall-ic { width: 32px; height: 36px; clip-path: var(--hex); background: var(--polen); color: var(--ink); display: grid; place-items: center; flex: none; }
+.tall-cat { font: 600 11px/1 var(--ui); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.tall-card.ink .tall-cat { color: rgba(255, 255, 255, .64); }
+.tall-top .ejemplo { margin-left: auto; }
+.tall-t { font: 700 19px/1.15 var(--disp); letter-spacing: -.025em; }
+.tall-meta { font-size: 13px; color: var(--muted); }
+.tall-card.ink .tall-meta { color: rgba(255, 255, 255, .7); }
+.tall-dicta { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--ui); margin-top: auto; }
+.tall-card.ink .tall-dicta .hexav { background: var(--polen); color: var(--ink); }
+.tall-foot { display: flex; align-items: center; gap: 8px; padding: 8px 16px 16px; }
+.tall-foot .accion { margin-left: auto; }
+.tall-card.ink .accion { background: var(--polen); color: var(--ink); }
+.tall-card.ink .accion.hecho { background: none; color: var(--surface); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4); }
+.van-card { flex: 0 0 136px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px; border-radius: 18px; background: var(--surface); box-shadow: var(--soft); text-align: left; transition: transform .15s var(--ease); }
+.van-card:active { transform: scale(.97); }
+.van-card .hexav { margin-bottom: 4px; }
+.van-card b { font: 600 15px/1.2 var(--ui); }
+.van-card .ejemplo { margin-left: 4px; }
+.van-card span { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.van-card em { margin-top: auto; padding: 4px 8px; border-radius: 999px; background: var(--app-bg); font: 600 11px/1.2 var(--ui); font-style: normal; }
 
 /* ---------- Bienvenida como historias ---------- */
 .intro-pista { position: relative; display: block; overflow: hidden; scroll-snap-type: none; touch-action: pan-y; user-select: none; -webkit-user-select: none; }

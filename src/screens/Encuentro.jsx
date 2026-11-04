@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useColmena } from '../lib/store'
-import { fechaLarga, firstName, hace, initials } from '../lib/format'
-import { panalSemana, semanaDelMes, PANAL } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Header, Titulo, Panal, useToast } from '../components/ui'
+import { fechaLarga } from '../lib/format'
+import { Icon, Hex, Ejemplo, Header, Titulo, useToast } from '../components/ui'
 import { RetoCard } from './Muro'
 import Convocatorias from './Convocatorias'
-import TuMes from './Metas'
+import Talleres, { QuienesVan } from './Talleres'
 
 export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
   const c = useColmena()
@@ -14,52 +13,21 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
     <>
       <Header right={headerRight} />
       <div className="body fade">
-        <Titulo title="Encuentro" sub="Ponte una meta, cuenta cómo vas y muéstrala en el encuentro del mes." />
+        <Titulo title="Encuentro" sub="El encuentro del mes, talleres y oportunidades para tu emprendimiento." />
         <nav className="enc-saltos" aria-label="Secciones de Encuentro">
-          {[['enc-ticket', 'Encuentro', 'cal'], ['enc-meta', 'Tu meta', 'trend'], ['enc-ferias', 'Ferias y convocatorias', 'bag'], ['enc-reto', 'Reto', 'spark'], ['enc-panal', 'Panal', 'hand']].map(([id, t, ic]) => (
+          {[['enc-ticket', 'Encuentro', 'cal'], ['enc-talleres', 'Talleres', 'bulb'], ['enc-ferias', 'Ferias y convocatorias', 'bag'], ['enc-reto', 'Reto', 'spark']].map(([id, t, ic]) => (
             <button key={id} type="button" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><Icon n={ic} s={15} />{t}</button>
           ))}
         </nav>
         <div id="enc-ticket"><Ticket pedirPerfil={pedirPerfil} /></div>
-        <div id="enc-meta"><TuMes nav={nav} pedirPerfil={pedirPerfil} /></div>
+        <QuienesVan nav={nav} />
+        <div id="enc-talleres"><Talleres pedirPerfil={pedirPerfil} /></div>
         <div id="enc-ferias"><Convocatorias /></div>
         <div id="enc-reto" />
         <RetoCard irTab={irTab} pedirPerfil={pedirPerfil} completo />
         <Propuestas nav={nav} pedirPerfil={pedirPerfil} />
-        <div id="enc-panal"><PanalGrande irTab={irTab} /></div>
       </div>
     </>
-  )
-}
-
-function PanalGrande({ irTab }) {
-  const c = useColmena()
-  const { manos, llenas, ejemplos } = panalSemana(c)
-  const celdas = manos.slice(0, PANAL).map((m) => initials(c.perfil(m.ayuda)?.nombre || ''))
-  return (
-    <section className="panal-card full">
-      <span className="k">El panal · semana {semanaDelMes()}</span>
-      <Panal celdas={celdas} size={26} />
-      <b className="big center"><em>{llenas}</em> de {PANAL} ayudas esta semana</b>
-      {ejemplos > 0 && <span className="ej-note center">{ejemplos} {ejemplos === 1 ? 'es' : 'son'} de ejemplo</span>}
-      <p className="center">Cada ayuda confirmada llena una celda. El panal se reinicia cada lunes.</p>
-      {manos.length > 0 && (
-        <div className="ultimas">
-          <span className="k">Últimas ayudas</span>
-          {manos.slice(0, 3).map((m) => {
-            const a = c.perfil(m.ayuda), b = c.perfil(m.recibe)
-            return (
-              <div key={m.publicacion_id + m.perfil_id} className="mano">
-                <span className="pair"><Hex p={a} w={22} fs={8} /><i /><Hex p={b} w={22} fs={8} /></span>
-                <p><b>{firstName(a?.nombre)}</b> ayudó a <b>{firstName(b?.nombre)}</b>{m.post.categorias[0] ? ` · ${m.post.categorias[0]}` : ''}{m.post.es_ejemplo && <Ejemplo p={{ es_ejemplo: true }} />}</p>
-                <small>{hace(m.resuelta_at)}</small>
-              </div>
-            )
-          })}
-        </div>
-      )}
-      <button type="button" className="btn primary full" onClick={() => irTab('muro')}>Ver a quién ayudar</button>
-    </section>
   )
 }
 
