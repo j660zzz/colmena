@@ -13,7 +13,7 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 
 ## 4 de noviembre de 2026 · Fiabilidad de los flujos (Codex)
 
-Mejoras autorizadas por Jhon tras la auditoría técnica, en `diseno/fiabilidad-flujos`. Pendiente de revisión; no fusionado ni publicado.
+Mejoras autorizadas por Jhon tras la auditoría técnica, en `diseno/fiabilidad-flujos`. **Fusionado y publicado** el 4 de noviembre de 2026 (PR #9) por pedido de Jhon. Antes de fusionar se volvieron a correr `scripts/qa-fiabilidad.cjs` (35 de 35) y `scripts/qa-pwa.cjs` (6 de 6) y se probó producción: bienvenida, muro, talleres, convocatorias y Beneficios cargan sin errores y el service worker queda activo. Para correr los scripts hace falta `COLMENA_CHROMIUM` apuntando a un Chromium disponible (por ejemplo `/opt/pw-browsers/chromium-1243/chrome-linux64/chrome` en la nube).
 - Carga independiente por pantalla, lecturas con plazo de 6 s y solicitudes deduplicadas; se reutilizan datos frescos un minuto. Error y vacío se muestran por separado; calculadora y fichas no dependen del éxito de Beneficios.
 - Borradores temporales de publicación y registro por pestaña; se conservan con Atrás y recarga. Búsquedas, filtros y posición de lectura se recuperan al volver de un carnet.
 - Borrado visible solo tras confirmación, enlaces directos a publicaciones y mensajes que distinguen guardado exitoso de lectura posterior fallida.
