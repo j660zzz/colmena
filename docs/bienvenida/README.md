@@ -10,7 +10,7 @@ Cinco pantallas que avanzan solas, como las historias de Instagram. En total son
 |---|---|---|
 | 1 | Qué es | Colmena conecta a estudiantes de DCV que emprenden: Muro, Encuentro, Beneficios |
 | 2 | El muro | Demo animada: Sara (Ejemplo) pide ayuda, alguien toca "Puedo ayudar" y se abre el chat. Luego Camila (Ejemplo) ofrece fotos y alguien toca "Me interesa" |
-| 3 | Encuentro | Meta en la semana 1, avances en las semanas 2 y 3 y muestra en el encuentro |
+| 3 | Encuentro | Talleres prácticos de ejemplo (reels, Claude Code, fotos) y una noche al mes para mostrar tu marca |
 | 4 | Beneficios | Cuántos son gratis y cuántos con descuento (cifras de la base) |
 | 5 | Carnet | Crear carnet en un minuto, sin contraseña. Nivel y cobro |
 

@@ -1,7 +1,7 @@
 # Base de datos — Supabase (proyecto `colmena`, región São Paulo)
 
 Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_migrations`):
-`esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`, `beneficios_investigacion_2026_11`, `beneficios_spotify_no_destacado`, `beneficios_spotify_destacado_otra_vez`, `textos_muro_pulido`, `cuentas_javeriana`, `convocatorias` y `metas_del_mes` (copia en `supabase/migraciones/`).
+`esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`, `beneficios_investigacion_2026_11`, `beneficios_spotify_no_destacado`, `beneficios_spotify_destacado_otra_vez`, `textos_muro_pulido`, `cuentas_javeriana`, `convocatorias`, `metas_del_mes` y `talleres` (este último retira las tablas de metas; copia en `supabase/migraciones/`).
 
 ## Tablas (lectura pública, sin escritura directa)
 | Tabla | Para qué |
@@ -18,7 +18,7 @@ Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_mi
 | `asistencias` | Quién se apuntó a qué encuentro. |
 | `beneficios` | Pestaña Beneficios. `tipo` = `digital` (lo que ya tienes por ser estudiante) o `aliado` (negocio en Cali). `oferta`, `detalle`, `como` (pasos), `requisito`, `link`, `fuente`, `verificado_en`, `orden`, `activo`, `es_ejemplo`. |
 | `convocatorias` | Ferias, eventos y convocatorias reales en Cali (pestaña Encuentro). `tipo` = `convocatoria`, `evento` o `feria`; `cierre` (plazo para postularse) y `fecha` (día del evento). La app oculta lo que ya cerró o pasó. Cada fila tiene `fuente` y `verificado_en`. |
-| `metas`, `avances` | Meta del mes de cada miembro (una por encuentro, con `muestra` y `cumplida`) y sus avances semanales (máximo 10). Ver `docs/encuentro/README.md`. |
+| `talleres`, `taller_interes` | Talleres prácticos (los de muestra tienen `es_ejemplo`) y quién marcó "Me interesa". Ver `docs/encuentro/README.md`. |
 | `cuentas` | Une un carnet con una cuenta Microsoft `@javerianacali.edu.co` para recuperarlo en otro dispositivo. Sin lectura desde el cliente. Ver `docs/cuenta/README.md`. |
 | `solicitudes_beneficio` | Propuestas de negocios que quieren ser aliados. Sin lectura pública: se revisan en el Table Editor. |
 
@@ -37,10 +37,10 @@ Todas reciben `p_id` y `p_clave` (los entrega `crear_perfil` y se guardan en el 
 - `alternar_me_sirve`, `alternar_ayuda`, `alternar_conexion`, `alternar_asistencia`
 - `unirse_reto(p_id, p_clave, p_reto, p_link)`, `salir_reto`, `alternar_voto_reto(p_id, p_clave, p_reto, p_participante)`
 - `proponer_beneficio(p_negocio, p_contacto, p_propuesta, p_id?, p_clave?)` — no exige carnet; máximo 20 propuestas por hora en total. También recibe las ferias y convocatorias que sugieren los miembros (el nombre empieza por `[Convocatoria]`).
-- `guardar_meta(p_id, p_clave, p_encuentro, p_texto)` · `contar_avance(…, p_texto, p_link)` · `alternar_muestra(…)` · `marcar_meta_cumplida(…, p_cumplida)`
+- `alternar_interes_taller(p_id, p_clave, p_taller)`
 - `vincular_cuenta(p_id, p_clave)` · `recuperar_carnet()` · `mi_cuenta(p_id, p_clave)` — requieren sesión de Supabase Auth con un correo `@javerianacali.edu.co`.
 
-Tiempo real activado en `publicaciones`, `ayudas`, `me_sirve`, `reto_participantes`, `reto_votos`, `asistencias`, `metas` y `avances`.
+Tiempo real activado en `publicaciones`, `ayudas`, `me_sirve`, `reto_participantes`, `reto_votos`, `asistencias` y `taller_interes`.
 
 ## Administración
 - **Reto de la semana**: Table Editor → `retos`. Para cambiarlo, crea una fila nueva con `numero` mayor, `titulo`, `descripcion`, `cierra_en` y `activo = true` (y pon `activo = false` en el anterior).

@@ -1,41 +1,33 @@
-# Encuentro: por qué funciona
+# Encuentro: talleres y una noche al mes para mostrar tu marca
 
-Fecha: 4 de noviembre de 2026. Pedido de Jhon: que Encuentro tenga un factor determinante, difícil de derrumbar, basado en cómo funcionan comunidades exitosas.
+Fecha: 4 de noviembre de 2026. Jhon descartó la meta del mes y el panal de Encuentro porque no los sentía relevantes para el público. Esta es la versión que los reemplaza.
 
-## El problema
-Un encuentro presencial mensual, solo, es un evento más: es fácil no ir y no deja nada entre un mes y otro. Además, en los eventos gratis no llega una parte grande de los inscritos. Los proveedores de software para eventos hablan de 30 % a 60 %, pero son cifras de vendedores, no estudios ([Ticket Spot](https://ticketspotapp.com/blog/automated-reminders-reduce-no-shows), [Eventtia](https://www.eventtia.com/?p=92920)).
+## Para quién es
+Estudiantes de DCV de 18 a 23 años que ya tienen o quieren tener un emprendimiento. Lo que más dicen necesitar no es motivación: son **habilidades prácticas** y **visibilidad**.
+- En una encuesta global de Samsung, casi 7 de cada 10 jóvenes de la generación Z dijeron que no tienen las habilidades para empezar su emprendimiento, y el 60 % que no tienen tiempo ([Samsung, 2024](https://news.samsung.com/us/new-samsung-study-for-nearly-70-percent-gen-z-side-hustlers-ai-critical-to-success)).
+- En el reporte de ZenBusiness 2026, los fundadores jóvenes usan la IA sobre todo para diseño y piezas creativas (31 %), finanzas (25 %) y contenido de marketing (24 %). El 70 % gasta más de la mitad de su publicidad en redes ([ZenBusiness, 2026](https://www.zenbusiness.com/media-assets/State_of_Entrepreneurship_Report_2026.pdf)).
+- Ambas son encuestas de empresas que venden productos o servicios: sirven como señal, no como prueba.
 
-## Lo que funciona en otras comunidades
-| Comunidad | Qué hace | Qué tomamos |
-|---|---|---|
-| **Dominican University of California** (estudio de Gail Matthews, 267 participantes) | Más del 70 % de quienes escribieron su meta y mandaron avances semanales a un amigo la lograron, contra 35 % de quienes no la escribieron ni la compartieron ([resumen oficial](https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf), [nota de prensa](https://scholar.dominican.edu/news-releases/3/)) | Escribir la meta, compartirla con otros miembros y contar el avance cada semana |
-| **Buildspace, Nights & Weekends** | Programa gratis de seis semanas: eliges una idea, la construyes con miles de personas, mandas actualizaciones y terminas en un demo day ([experiencia de un participante](https://prithvibharadwaj.substack.com/p/the-buildspace-experience), [otra](https://dev.to/adamelitzur/6-weeks-of-building-my-dream-with-buildspace-nights-weekends-3h6n)) | El mes como temporada: meta, avances y muestra final |
-| **CreativeMornings** | Desayuno gratis una vez al mes, con un tema mensual común para todas las ciudades. Lo organizan voluntarios y existe desde 2008 en Nueva York; hoy está en cientos de ciudades ([Orlando](https://creativemornings.com/cities/orl/about), [San Diego Sun](https://thesandiegosun.com/creative-mornings-san-diego/)) | Ritual fijo y un tema por encuentro ("Cómo ponerle precio a tu trabajo") |
-| **PechaKucha Night** | 20 imágenes de 20 segundos: presentaciones cortas y con ritmo. Nació en Tokio en 2003 y se hace en cientos de ciudades ([Klein Dytham](https://klein-dytham.com/pechakucha), [SD Architecture](https://sdarchitecture.org/programs/pechakucha)) | Cada persona tiene 3 minutos para mostrar su avance |
-| **Grupos de pares (mastermind)** | Grupos pequeños que se reúnen siempre y se piden cuentas. No hay estudios controlados; la evidencia es la de metas y rendición de cuentas ([SK Murphy](https://www.skmurphy.com/blog/2026/01/27/masterminds-help-founders-with-empathy-feedback-follow-through/)) | Ver las metas de otros miembros y su último avance |
+## Qué se construyó
+1. **Noche de marcas (Encuentro 01).** Cada marca se presenta en un minuto, hay un taller corto de reels con el celular y un rato de conexiones: quien necesita algo encuentra a quien lo hace. Se vota el taller del mes siguiente.
+2. **A quién vas a conocer.** Lista de quienes se inscribieron, con su marca y su habilidad. Toca para ver su carnet.
+3. **Talleres.** Cortos (45 min a 2 h), presenciales o virtuales y dictados por miembros:
+   - Reels con el celular
+   - Claude Code para tu primera página web
+   - Fotos de producto
+   - Un mes de contenido en una tarde
+   - IA para tu emprendimiento
+   - WhatsApp Business
 
-## Lo que se construyó: el mes en Colmena
-1. **Semana 1. Escribe tu meta.** Una frase: "Conseguir mi primer cliente". Queda visible para los demás miembros.
-2. **Semanas 2 y 3. Cuenta tu avance.** Una frase y, si quieres, un link. Cada avance aparece en tu tarjeta de meta.
-3. **Encuentro. Muéstralo.** Te apuntas a mostrar tu avance y tienes 3 minutos. La app muestra quién se apuntó.
-4. **Cumplirla suma 2 puntos a tu nivel**, igual que las demás acciones.
-
-Así, Encuentro deja de ser solo una fecha: es el cierre de un mes en el que cada persona avanzó en algo concreto. Las demás piezas lo alimentan:
-- El **Muro** es donde pides ayuda para tu meta.
-- Las **ferias y convocatorias** son lugares para usar lo que lograste.
-- El **reto** practica una habilidad.
-- El **panal** cuenta las ayudas.
-
-## Por qué es difícil de derrumbar (argumentos para los jurados)
-- **Hay evidencia:** escribir la meta y reportar avances tiene respaldo en un estudio publicado por la universidad, no es una suposición del proyecto.
-- **No es nuevo para la gente:** el formato de temporada con muestra final ya funciona con jóvenes en Buildspace, y el ritual mensual funciona en CreativeMornings.
-- **Responde al problema de asistencia:** quien tiene una meta escrita y se apuntó a mostrarla tiene una razón concreta para ir.
-- **Usa lo que ya existe:** carnet, nivel, muro y encuentro. No es una función aislada.
-- **Cuesta muy poco:** una frase por semana. Está pensado para estudiantes con poco tiempo.
+   Los seis son **de ejemplo** y se ven con la etiqueta "Ejemplo". Con "Me interesa" se registra qué taller quieren los miembros, y esa cifra sí es real: sirve para decidir cuál programar primero.
+4. **Dicta un taller.** Cualquier miembro puede proponer uno. La propuesta llega al buzón `solicitudes_beneficio` con el nombre empezando por `[Taller]`. Enseñar también sirve a quien enseña; los estudios que se citan sobre esto (Chase et al., 2009) no se verificaron directamente, así que no se usan como cifra.
+5. **Ferias y convocatorias** reales en Cali (ver `docs/convocatorias/README.md`) y el **reto de la semana**.
 
 ## Datos
-Migración `supabase/migraciones/20261104_metas_del_mes.sql`. Tablas `metas` (una por miembro y encuentro) y `avances` (máximo 10 por meta). Lectura pública y escritura solo por RPC: `guardar_meta`, `contar_avance`, `alternar_muestra` y `marcar_meta_cumplida`. Tres metas de ejemplo pertenecen a perfiles de ejemplo y se ven con la etiqueta "Ejemplo".
+Migración `supabase/migraciones/20261104_talleres.sql`:
+- Retira las tablas `metas` y `avances`, que no tenían datos reales.
+- Crea `talleres` (con `es_ejemplo`) y `taller_interes`, con la función `alternar_interes_taller`.
+- Cambia el título, la agenda y el "qué llevar" del Encuentro 01.
 
-## Pendiente
-- Recordatorio semanal para contar el avance: por ahora la app lo pide al entrar a Encuentro. Una notificación push necesitaría un servicio aparte.
-- Medir en la validación cuántos miembros escriben su meta, cuántos cuentan avances y cuántos la cumplen.
+## Capturas
+`encuentro-1.png` y `encuentro-2.png` (390 × 844).
