@@ -52,9 +52,9 @@ export default function Miembros({ nav, headerRight }) {
         <section className="m-necesitas" aria-label="Filtrar por lo que necesitas">
           <span className="k">¿Qué necesitas?</span>
           <div className="m-cats">
-            {cats.map(([x, n]) => (
+            {cats.map(([x]) => (
               <button key={x} type="button" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>
-                {x}<small>{n}</small>
+                {x}
               </button>
             ))}
           </div>
@@ -82,7 +82,7 @@ export default function Miembros({ nav, headerRight }) {
 
         {!filtrando && disponibles.length > 0 && (
           <section className="m-disp" aria-label="Disponibles para proyectos">
-            <div className="sec-h"><h3>Disponibles ahora</h3><span className="meta">{otros.filter((m) => m.disponible).length} con cupo</span></div>
+            <div className="sec-h"><h3>Disponibles ahora</h3></div>
             <div className="m-disp-pista">
               {disponibles.map((m, i) => (
                 <button key={m.id} type="button" className={'m-dcard' + (i % 2 ? ' claro' : '')} onClick={() => nav({ t: 'carnet', id: m.id })}>
@@ -99,7 +99,7 @@ export default function Miembros({ nav, headerRight }) {
 
         <div className="sec-h">
           <h3>{filtrando ? `${lista.length} ${lista.length === 1 ? 'resultado' : 'resultados'}` : 'Todos los miembros'}</h3>
-          {filtrando ? <button type="button" className="ver" onClick={limpiar}>Limpiar</button> : <span className="meta">{otros.length}</span>}
+          {filtrando ? <button type="button" className="ver" onClick={limpiar}>Limpiar</button> : null}
         </div>
 
         {lista.length === 0 ? (

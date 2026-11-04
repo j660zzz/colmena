@@ -4,13 +4,12 @@ import { fechaLarga, firstName, hace, initials } from '../lib/format'
 import { panalSemana, semanaDelMes, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, Header, Titulo, Panal, useToast } from '../components/ui'
 import { RetoCard } from './Muro'
-import Convocatorias, { vigentes } from './Convocatorias'
+import Convocatorias from './Convocatorias'
 
 export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
   const c = useColmena()
   const semana = semanaDelMes()
   const ruta = [['Semana 1', 1], ['Semana 2', 2], ['Semana 3', 3], ['Encuentro', 4]]
-  const nConv = vigentes(c.convocatorias).length
 
   return (
     <>
@@ -18,7 +17,7 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
       <div className="body fade">
         <Titulo title="Encuentro" sub="El encuentro del mes, ferias y convocatorias en Cali, y el reto de la semana." />
         <nav className="enc-saltos" aria-label="Secciones de Encuentro">
-          {[['enc-ticket', 'Encuentro', 'cal'], ['enc-ferias', `Ferias y convocatorias${nConv ? ` · ${nConv}` : ''}`, 'bag'], ['enc-reto', 'Reto', 'spark'], ['enc-panal', 'Panal', 'hand']].map(([id, t, ic]) => (
+          {[['enc-ticket', 'Encuentro', 'cal'], ['enc-ferias', 'Ferias y convocatorias', 'bag'], ['enc-reto', 'Reto', 'spark'], ['enc-panal', 'Panal', 'hand']].map(([id, t, ic]) => (
             <button key={id} type="button" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><Icon n={ic} s={15} />{t}</button>
           ))}
         </nav>
@@ -110,7 +109,7 @@ function Propuestas({ nav, pedirPerfil }) {
           </div>
         </form>
       )}
-      <div className="sec-h"><h3>Propuestas del reto</h3><span className="meta">{conLink.length}</span></div>
+      <div className="sec-h"><h3>Propuestas del reto</h3></div>
       {conLink.length === 0 ? (
         <p className="soft">Aquí aparecen las propuestas cuando alguien sube su link. Los miembros votan con “Útil” y las tres más votadas se presentan en el encuentro.</p>
       ) : (

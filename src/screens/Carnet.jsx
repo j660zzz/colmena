@@ -86,7 +86,7 @@ export function Voces({ id, nav }) {
   if (!lista.length) return null
   return (
     <>
-      <div className="sec-h"><h3>Reseñas</h3><span className="meta">{lista.length}</span></div>
+      <div className="sec-h"><h3>Reseñas</h3></div>
       <div className="cards">
         {lista.map((r) => {
           const de = c.perfil(r.de_id)

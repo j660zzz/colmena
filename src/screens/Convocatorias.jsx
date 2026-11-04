@@ -28,7 +28,7 @@ export default function Convocatorias() {
   const lista = vigentes(c.convocatorias)
   return (
     <section className="conv" aria-label="Ferias y convocatorias">
-      <div className="sec-h"><h3>Ferias y convocatorias</h3><span className="meta">{lista.length} en Cali</span></div>
+      <div className="sec-h"><h3>Ferias y convocatorias</h3></div>
       <p className="soft">Lugares para vender, mostrar tu trabajo o conseguir un proyecto. Revisamos cada uno en su fuente.</p>
       {lista.length === 0 ? (
         <p className="nota">No hay ferias ni convocatorias abiertas por ahora. Revisamos la lista cada mes.</p>

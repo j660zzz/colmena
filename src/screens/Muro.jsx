@@ -15,7 +15,6 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
   const activas = useMemo(() => c.publicaciones.filter((p) => activa(p)), [c.publicaciones])
   const lista = activas.filter((p) => (tipo === 'todo' || p.tipo === tipo) && (!cat || p.categorias.includes(cat)))
     .sort((a, b) => (!!a.resuelta_at - !!b.resuelta_at))
-  const cuenta = (t) => activas.filter((p) => (t === 'todo' || p.tipo === t) && (!cat || p.categorias.includes(cat))).length
   const teNecesitan = c.yo ? quienesTeNecesitan(c, c.yo) : []
   const irLista = () => setTimeout(() => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
   const porCat = CATS.map((x) => [x, activas.filter((p) => p.categorias.includes(x)).length])
@@ -44,7 +43,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         <div className="muro-bar" id="lista">
           <div className="tabs-t" role="tablist" aria-label="Tipo de publicación">
             {[['todo', 'Todo'], ['need', 'Piden'], ['offer', 'Ofrecen']].map(([k, t]) => (
-              <button key={k} type="button" role="tab" aria-selected={tipo === k} onClick={() => setTipo(k)}>{t}<small>{cuenta(k)}</small></button>
+              <button key={k} type="button" role="tab" aria-selected={tipo === k} onClick={() => setTipo(k)}>{t}</button>
             ))}
           </div>
           {cat
