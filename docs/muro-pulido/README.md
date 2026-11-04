@@ -1,6 +1,6 @@
 # Muro pulido
 
-Rama `diseno/muro-pulido`, sobre `datos/beneficios-investigacion` (PR #7). Fecha: 4 de noviembre de 2026.
+Rama `diseno/muro-pulido`, sobre `datos/beneficios-investigacion` (PR #7). PR de este trabajo: https://github.com/j660zzz/colmena/pull/8. Fecha: 4 de noviembre de 2026.
 Capturas a 390 × 844, `deviceScaleFactor` 2: `antes/` es la versión de prueba del PR #7, `despues/` es esta rama. `comparacion-*.png` las pone lado a lado (antes a la izquierda). Las vistas con sesión usan un perfil de ejemplo con todas las RPC interceptadas: no se escribió nada en Supabase.
 
 ## Qué cambió y por qué
