@@ -83,7 +83,7 @@ function celdaInterior(grosor, aire) {
     return (50 + r * Math.cos(a)).toFixed(2) + ',' + (50 + r * Math.sin(a)).toFixed(2)
   }).join(' ')
 }
-export function Celda({ s = 64, grosor = 7, aire = 5, className = '', children }) {
+export function Celda({ s = 64, grosor = 4.5, aire = 4.5, className = '', children }) {
   const h = Math.round(s * 94 / 84)
   return (
     <span className={'celda ' + className} style={{ width: s, height: h }} aria-hidden="true">
