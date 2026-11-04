@@ -11,6 +11,15 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 4 de noviembre de 2026 · Inicio atrapante, destacados y cupones (Claude)
+
+Misma rama y PR (`diseno/home-destacados`, sin fusionar). Detalle, razonamiento y capturas en `docs/home-destacados/README.md`.
+- "DCV" fuera de la interfaz (bienvenida, estado del carnet "Activa", textos de compartir). **Pendiente de Jhon:** el spec de marca aún dice "Activa · DCV"; no se editó.
+- Perfil de prueba "jhon" (carnet 101) borrado con migración de solo datos `supabase/migraciones/20261104_borrar_perfil_prueba_jhon.sql`: 1 perfil y 1 publicación borrados. La base queda con 8 perfiles, todos de ejemplo.
+- Aliados como cupones con carnet mini ("Mostrar mi carnet") e invitación a sumar un negocio. Fila de destacados tipo historias con visor a pantalla completa (reto/destacado, descuentos, talleres, convocatorias que cierran pronto, beneficios), visto/no visto en el navegador. Encabezado con "Disponibles ahora", tarjeta del destacado con los pasos y vitrinas intercaladas entre publicaciones.
+- Uso de `--mono` corregido fuera del carnet y la calculadora (ver README). Decisión abierta: el reloj de "Mostrar mi carnet" sigue en mono.
+- Verificado: build, 14 pruebas de reglas, QA de home ampliado, `qa-visor` nuevo, 35 de fiabilidad y 6 de PWA.
+
 ## 4 de noviembre de 2026 · Home y destacados (Codex)
 
 Rama `diseno/home-destacados`, desde `main` actualizado. Composición aprobada por Jhon: destacado, aliados y novedades antes de publicar y del flujo. Portada y Movimiento reemplazados para evitar duplicaciones; aliados también al principio de Beneficios. Los tres negocios siguen como Ejemplo, con aviso explícito de que no son descuentos disponibles.
