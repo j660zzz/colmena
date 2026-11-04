@@ -3,7 +3,7 @@ import { useEstadoVista } from '../lib/vista'
 import { useColmena } from '../lib/store'
 import { carnetId } from '../lib/format'
 import { normal } from '../lib/logic'
-import { Icon, Hex, CeldaAbierta, Ejemplo, Sheet, Empty, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, Sheet, Empty, useToast } from '../components/ui'
 
 const fecha = (d) => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
 
@@ -299,14 +299,6 @@ export function Aliados({ nav, pedirPerfil, limite = 0, invitar = false, onVerTo
         })}
       </div>
     )}
-    <button type="button" className="cmini" onClick={mostrar}>
-      <span className="cmini-hex">{c.yo ? <Hex p={c.yo} w={40} fs={14} /> : <CeldaAbierta s={28} />}</span>
-      <span className="cmini-t">
-        <b>{c.yo ? c.yo.nombre : 'Usa los descuentos'}</b>
-        <small className={c.yo ? 'mono' : ''}>{c.yo ? carnetId(c.yo.carnet) : 'Necesitas un carnet.'}</small>
-      </span>
-      <span className="cmini-cta">{c.yo ? 'Mostrar' : 'Crear carnet'}</span>
-    </button>
     {invitar && (
       <button type="button" className="invita" onClick={() => setProponer(true)}>
         <span className="invita-ic"><Icon n="plus" s={18} w={2.2} /></span>

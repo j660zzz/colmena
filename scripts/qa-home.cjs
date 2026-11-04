@@ -95,7 +95,6 @@ const folder = path.join(__dirname, '../docs/home-destacados')
       )
       check('Sin la palabra DCV en el inicio', !/\bDCV\b/.test(await p.locator('.body').innerText()))
       check('Invitación para que un negocio se sume', (await allies.getByRole('button', { name: /¿Tienes un negocio\?/ }).count()) === 1)
-      check('Carnet mini lleva a crear o mostrar el carnet', (await allies.locator('.cmini').getByText(/Crear carnet|Mostrar/).count()) === 1)
       // Destacados: anillos y visor
       const fila = p.getByRole('navigation', { name: 'Destacados', exact: true })
       const nAnillos = await fila.getByRole('button').count()

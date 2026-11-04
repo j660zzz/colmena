@@ -16,7 +16,7 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 Misma rama y PR (`diseno/home-destacados`, sin fusionar). Detalle, razonamiento y capturas en `docs/home-destacados/README.md`.
 - "DCV" fuera de la interfaz (bienvenida, estado del carnet "Activa", textos de compartir). **Pendiente de Jhon:** el spec de marca aún dice "Activa · DCV"; no se editó.
 - Perfil de prueba "jhon" (carnet 101) borrado con migración de solo datos `supabase/migraciones/20261104_borrar_perfil_prueba_jhon.sql`: 1 perfil y 1 publicación borrados. La base queda con 8 perfiles, todos de ejemplo.
-- Aliados como cupones con carnet mini ("Mostrar mi carnet") e invitación a sumar un negocio. Fila de destacados tipo historias con visor a pantalla completa (reto/destacado, descuentos, talleres, convocatorias que cierran pronto, beneficios), visto/no visto en el navegador. Encabezado con "Disponibles ahora", tarjeta del destacado con los pasos y vitrinas intercaladas entre publicaciones.
+- Aliados como cupones ("Mostrar mi carnet" en el detalle de cada uno) e invitación a sumar un negocio. Fila de destacados tipo historias con visor a pantalla completa (reto/destacado, descuentos, talleres, convocatorias que cierran pronto, beneficios), visto/no visto en el navegador. Encabezado con "Disponibles ahora", tarjeta del destacado con los pasos y vitrinas intercaladas entre publicaciones.
 - Uso de `--mono` corregido fuera del carnet y la calculadora (ver README). Decisión abierta: el reloj de "Mostrar mi carnet" sigue en mono.
 - Verificado: build, 14 pruebas de reglas, QA de home ampliado, `qa-visor` nuevo, 35 de fiabilidad y 6 de PWA.
 
