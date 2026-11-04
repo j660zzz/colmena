@@ -101,11 +101,12 @@ export function activoSemana(c, id) {
 // Qué tan completo está un carnet (lo ve solo el dueño)
 export function completitud(p) {
   const pasos = [
-    { ok: !!p.nombre, v: 20, t: 'Tu nombre' },
-    { ok: p.categorias?.length > 0, v: 20, t: 'Elige tus categorías' },
+    { ok: !!p.nombre, v: 15, t: 'Tu nombre' },
+    { ok: p.categorias?.length > 0, v: 15, t: 'Elige tus categorías' },
     { ok: !!p.tiene_whatsapp, v: 15, t: 'Agrega tu WhatsApp' },
     { ok: !!p.rol, v: 15, t: 'Agrega a qué te dedicas' },
-    { ok: !!p.marca, v: 15, t: 'Agrega tu marca' },
+    { ok: !!p.marca, v: 10, t: 'Agrega tu marca' }
+    , { ok: !!p.bio, v: 15, t: 'Escribe sobre ti' },
     { ok: p.habilidades?.length > 0, v: 15, t: 'Agrega tus habilidades' }
   ]
   return { pct: pasos.reduce((s, x) => s + (x.ok ? x.v : 0), 0), faltan: pasos.filter((x) => !x.ok) }

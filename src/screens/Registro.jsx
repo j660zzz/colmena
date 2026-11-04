@@ -8,7 +8,8 @@ import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../component
 const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
 const soloDigitos = (v) => v.replace(/\D/g, '')
 export const waValido = (v) => /^3\d{9}$/.test(soloDigitos(v).replace(/^57(?=3\d{9}$)/, ''))
-const fmtWa = (v) => { const d = soloDigitos(v).slice(0, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ') }
+// Si pegan el número con +57, se quita el indicativo antes de formatear
+const fmtWa = (v) => { let d = soloDigitos(v); if (d.length > 10 && d.startsWith('57')) d = d.slice(2); d = d.slice(0, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ') }
 
 export function CarnetCard({ p, numero, nota }) {
   return (
@@ -201,7 +202,8 @@ export function Editar({ onBack }) {
   const b = c.yo
   const [f, setF] = useState({
     nombre: b?.nombre || '', marca: b?.marca || '', rol: b?.rol || '', categorias: b?.categorias || [],
-    habilidades: (b?.habilidades || []).join(', '), instagram: b?.instagram || '', whatsapp: ''
+    habilidades: (b?.habilidades || []).join(', '), instagram: b?.instagram || '', whatsapp: '',
+    bio: b?.bio || '', disponible: b?.disponible ?? true, intercambio: b?.intercambio || '', portafolio: b?.portafolio || ''
   })
   const [enviando, setEnviando] = useState(false)
   const [err, setErr] = useState('')
@@ -209,7 +211,8 @@ export function Editar({ onBack }) {
   if (!b) return null
   const set = (k) => (e) => setF({ ...f, [k]: k === 'whatsapp' ? fmtWa(e.target.value) : e.target.value })
   const toggle = (x) => setF({ ...f, categorias: f.categorias.includes(x) ? f.categorias.filter((y) => y !== x) : f.categorias.length < 3 ? [...f.categorias, x] : f.categorias })
-  const ok = f.nombre.trim().length >= 2 && (!f.whatsapp || waValido(f.whatsapp))
+  const portOk = !f.portafolio.trim() || /^https?:\/\/\S+\.\S+/.test(f.portafolio.trim())
+  const ok = f.nombre.trim().length >= 2 && (!f.whatsapp || waValido(f.whatsapp)) && portOk
 
   const guardar = async (e) => {
     e.preventDefault(); if (!ok) return
@@ -242,7 +245,31 @@ export function Editar({ onBack }) {
             <span className="lbl">Categorías <small>(hasta 3)</small></span>
             <div className="chips wrap">{CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={f.categorias.includes(x)} onClick={() => toggle(x)}>{x}</button>)}</div>
           </div>
-          <div className="field"><label htmlFor="e-h">Habilidades</label><div className="inp"><input id="e-h" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas" /></div></div>
+          <div className="field"><label htmlFor="e-h">Habilidades</label><div className="inp"><input id="e-h" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separadas por comas" /></div></div>
+          <div className="field">
+            <label htmlFor="e-b">Sobre ti</label>
+            <div className="ta"><textarea id="e-b" maxLength={280} value={f.bio} onChange={set('bio')} placeholder="Qué haces, para quién y cómo trabajas. Dos o tres líneas." /><span className="counter">{f.bio.length}/280</span></div>
+          </div>
+          <div className="field">
+            <span className="lbl">Disponibilidad</span>
+            <div className="segbar" role="group" aria-label="Disponibilidad">
+              <button type="button" aria-pressed={f.disponible} onClick={() => setF({ ...f, disponible: true })}>Disponible</button>
+              <button type="button" aria-pressed={!f.disponible} onClick={() => setF({ ...f, disponible: false })}>Sin cupo</button>
+            </div>
+          </div>
+          <div className="field">
+            <span className="lbl">¿Cómo prefieres trabajar?</span>
+            <div className="segbar" role="group" aria-label="Forma de pago">
+              {[['dinero', 'Dinero'], ['trueque', 'Intercambio'], ['ambos', 'Ambos']].map(([k, t]) => (
+                <button key={k} type="button" aria-pressed={f.intercambio === k} onClick={() => setF({ ...f, intercambio: f.intercambio === k ? '' : k })}>{t}</button>
+              ))}
+            </div>
+          </div>
+          <div className="field">
+            <label htmlFor="e-p">Link de portafolio</label>
+            <div className="inp"><input id="e-p" type="url" inputMode="url" autoCapitalize="none" maxLength={200} value={f.portafolio} onChange={set('portafolio')} placeholder="https://www.behance.net/tu-usuario" /></div>
+            {!portOk && <span className="hint">El link debe empezar por https://</span>}
+          </div>
           {err && <p className="err" role="alert">{err}</p>}
           <button type="submit" className="btn primary full big" disabled={!ok || enviando}>{enviando ? 'Guardando…' : 'Guardar cambios'}</button>
           <div className="center"><button type="button" className="linkbtn danger" onClick={borrar}>Borrar mi perfil y mis datos</button></div>

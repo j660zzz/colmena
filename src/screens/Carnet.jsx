@@ -1,7 +1,7 @@
 import { useColmena } from '../lib/store'
 import { BADGES } from '../data/contenido'
-import { firstName, igUrl, hace } from '../lib/format'
-import { manosDadas, completitud, waLink } from '../lib/logic'
+import { firstName, igUrl, hace, mesDesde } from '../lib/format'
+import { manosDadas, completitud, waLink, activa } from '../lib/logic'
 import { Icon, Hex, Ejemplo, SubHeader, Empty, Stars, useToast } from '../components/ui'
 import { CarnetCard } from './Registro'
 
@@ -67,14 +67,22 @@ export function Voces({ id, nav }) {
   )
 }
 
+const INTERCAMBIO = {
+  dinero: { t: 'Cobra en dinero', d: 'Trabaja por un precio acordado.' },
+  trueque: { t: 'Prefiere intercambio', d: 'Cambia su trabajo por el de otro miembro.' },
+  ambos: { t: 'Dinero o intercambio', d: 'Acepta las dos formas, según el proyecto.' }
+}
+const hostDe = (url) => { try { return new URL(url).hostname.replace(/^www\./, '') } catch { return url } }
+
 export default function Carnet({ id, onBack, nav, pedirPerfil }) {
   const c = useColmena()
   const toast = useToast()
   const m = c.perfil(id)
   if (!m) return <><SubHeader title="Carnet de miembro" onBack={onBack} /><div className="body"><Empty title="Este miembro ya no está" /></div></>
-  if (c.yo && m.id === c.yo.id) return <><SubHeader title="Carnet de miembro" onBack={onBack} /><div className="body"><Empty icon="card" title="Este es tu carnet">Míralo completo en la pestaña Carnet.</Empty></div></>
+  const propio = c.yo && m.id === c.yo.id
 
   const s = statsDe(c, m.id)
+  const activasDe = c.publicaciones.filter((p) => p.autor_id === m.id && activa(p))
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${m.id}`
     try {
@@ -91,54 +99,129 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
       else toast(`${firstName(m.nombre)} todavía no agregó su WhatsApp.`)
     } catch (e) { toast(e.message, true) }
   })
+  const inter = INTERCAMBIO[m.intercambio]
 
   return (
     <>
-      <SubHeader title="Carnet de miembro" onBack={onBack}
+      <SubHeader title={propio ? 'Así ven tu carnet' : 'Carnet de miembro'} onBack={onBack}
         right={<button type="button" className="iconbtn" onClick={compartir} aria-label="Compartir carnet"><Icon n="share" s={20} /></button>} />
-      <div className="body fade with-sticky">
+      <div className={'body fade' + (propio ? '' : ' with-sticky')}>
+        {propio && (
+          <div className="vista-propia">
+            <p>Esta es la vista que tienen otros miembros de tu carnet.</p>
+            <button type="button" className="btn ink sm" onClick={() => nav({ t: 'editar' })}><Icon n="edit" s={15} />Editar</button>
+          </div>
+        )}
         <CarnetCard p={m} numero={m.carnet} />
+
+        <div className="perfil-meta">
+          <span className={'disp ' + (m.disponible ? 'on' : 'off')}><i />{m.disponible ? 'Disponible para proyectos' : 'Sin cupo por ahora'}</span>
+          <span className="desde">Miembro desde {mesDesde(m.created_at)}</span>
+        </div>
+
         <div className="stats">
-          <div><b>{s.manos}</b><span>Ayudas dadas</span></div>
-          <div><b>{s.publicaciones}</b><span>{s.publicaciones === 1 ? 'Publicación' : 'Publicaciones'}</span></div>
-          <div><b>{s.promedio ? s.promedio.toFixed(1) : '—'}</b><span>{s.resenas ? `${s.resenas} ${s.resenas === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas'}</span></div>
+          <div><b>{s.manos}</b><span>{s.manos === 1 ? 'Ayuda dada' : 'Ayudas dadas'}</span></div>
+          <div><b className="rating">{s.promedio ? <><Icon n="star" s={18} w={2} />{s.promedio.toFixed(1)}</> : '—'}</b><span>{s.resenas ? `${s.resenas} ${s.resenas === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas'}</span></div>
+          <div><b>{activasDe.length}</b><span>{activasDe.length === 1 ? 'Publicación activa' : 'Publicaciones activas'}</span></div>
         </div>
         {m.es_ejemplo && <p className="nota">Este es un perfil de ejemplo para mostrar cómo funciona Colmena. No es una persona real.</p>}
 
-        {(m.habilidades.length > 0 || m.categorias.length > 0) && (
-          <>
-            <div className="sec-h"><h3>Habilidades</h3></div>
-            <div className="post-tags">{[...m.categorias, ...m.habilidades].map((x) => <span key={x} className="tag">{x}</span>)}</div>
-          </>
+        {(m.bio || propio) && (
+          <section className="perfil-sec">
+            <h3>{propio ? 'Sobre ti' : `Sobre ${firstName(m.nombre)}`}</h3>
+            {m.bio ? <p className="bio">{m.bio}</p> : <p className="soft">Cuenta en dos líneas qué haces y para quién. Lo agregas en Editar.</p>}
+          </section>
         )}
-        {s.manos === 0 && s.resenas === 0 && !m.es_ejemplo && (
+
+        {(m.habilidades.length > 0 || m.categorias.length > 0) && (
+          <section className="perfil-sec">
+            <h3>Lo que ofrece</h3>
+            {m.habilidades.length > 0 && <div className="post-tags">{m.habilidades.map((x) => <span key={x} className="tag strong">{x}</span>)}</div>}
+            {m.categorias.length > 0 && <p className="cats-line">Categorías: {m.categorias.join(' · ')}</p>}
+          </section>
+        )}
+
+        {inter && (
+          <section className="perfil-sec">
+            <h3>Cómo trabaja</h3>
+            <div className="inter" role="list">
+              {Object.keys(INTERCAMBIO).map((k) => (
+                <span key={k} role="listitem" className={k === m.intercambio ? 'on' : ''}>{k === 'dinero' ? 'Dinero' : k === 'trueque' ? 'Intercambio' : 'Ambos'}</span>
+              ))}
+            </div>
+            <p className="soft"><b>{inter.t}.</b> {inter.d}</p>
+          </section>
+        )}
+
+        {(m.portafolio || m.instagram || m.es_ejemplo) && (
+          <section className="perfil-sec">
+            <h3>Portafolio</h3>
+            {m.portafolio && (
+              <a className="link-card" href={m.portafolio} target="_blank" rel="noopener noreferrer">
+                <span className="lc-ic"><Icon n="link" s={18} /></span>
+                <span className="lc-t"><b>Ver portafolio</b><small>{hostDe(m.portafolio)}</small></span>
+                <Icon n="ext" s={16} />
+              </a>
+            )}
+            {m.instagram && (
+              <a className="link-card" href={igUrl(m.instagram)} target="_blank" rel="noopener noreferrer">
+                <span className="lc-ic"><Icon n="ig" s={18} /></span>
+                <span className="lc-t"><b>@{m.instagram}</b><small>Instagram</small></span>
+                <Icon n="ext" s={16} />
+              </a>
+            )}
+            {m.es_ejemplo && !m.portafolio && !m.instagram && (
+              <p className="soft">En un perfil real, aquí aparecen sus links de Behance, Instagram o Google Drive.</p>
+            )}
+          </section>
+        )}
+
+        {activasDe.length > 0 && (
+          <section className="perfil-sec">
+            <h3>Publicaciones activas</h3>
+            <div className="cards">
+              {activasDe.map((p) => (
+                <div key={p.id} className="mini-post">
+                  <span className={'pill ' + p.tipo}>{p.tipo === 'need' ? 'Necesito' : 'Ofrezco'}</span>
+                  <p>{p.texto}</p>
+                  <small>{hace(p.created_at)}{p.categorias.length ? ` · ${p.categorias.join(', ')}` : ''}</small>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {s.manos === 0 && s.resenas === 0 && !m.es_ejemplo && !propio && (
           <div className="nuevo"><Icon n="spark" s={18} /><p><b>{firstName(m.nombre)} es nuevo en Colmena.</b></p></div>
         )}
 
         <Insignias s={s} />
         <Voces id={m.id} nav={nav} />
 
-        <div className="contact-card">
-          <Icon n="wa" s={22} />
-          <div>
-            <span className="k">WhatsApp</span>
-            {m.es_ejemplo
-              ? <b>Perfil de ejemplo</b>
-              : c.yo
-                ? <b>{m.tiene_whatsapp ? 'Disponible para miembros' : 'No lo ha agregado'}</b>
-                : <b className="mono"><Icon n="lock" s={14} /> +57 3•• ••• ••••</b>}
-            <span>{m.es_ejemplo
-              ? 'Con un miembro real, este botón abre WhatsApp con un mensaje listo. El número solo lo ven otros miembros.'
-              : c.yo ? 'Al tocar Escribir se abre el chat de WhatsApp.' : 'Crea tu carnet para ver su número.'}</span>
+        {!propio && (
+          <div className="contact-card">
+            <Icon n="wa" s={22} />
+            <div>
+              <span className="k">WhatsApp</span>
+              {m.es_ejemplo
+                ? <b>Perfil de ejemplo</b>
+                : c.yo
+                  ? <b>{m.tiene_whatsapp ? 'Disponible para miembros' : 'No lo ha agregado'}</b>
+                  : <b className="mono"><Icon n="lock" s={14} /> +57 3•• ••• ••••</b>}
+              <span>{m.es_ejemplo
+                ? 'Con un miembro real, este botón abre WhatsApp con un mensaje listo. El número solo lo ven otros miembros.'
+                : c.yo ? 'Al tocar Escribir se abre el chat de WhatsApp.' : 'Crea tu carnet para ver su número.'}</span>
+            </div>
           </div>
+        )}
+      </div>
+      {!propio && (
+        <div className="sticky">
+          <button type="button" className="btn primary full big" onClick={escribir}>
+            <Icon n={c.yo ? 'wa' : 'lock'} s={18} />{c.yo ? `Escribirle a ${firstName(m.nombre)}` : 'Crear carnet para escribirle'}
+          </button>
         </div>
-      </div>
-      <div className="sticky">
-        <button type="button" className="btn primary full big" onClick={escribir}>
-          <Icon n={c.yo ? 'wa' : 'lock'} s={18} />{c.yo ? `Escribirle a ${firstName(m.nombre)}` : 'Crear carnet para escribirle'}
-        </button>
-      </div>
+      )}
     </>
   )
 }
-

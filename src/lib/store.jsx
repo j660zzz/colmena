@@ -6,7 +6,7 @@ import { AVATAR_COLORS } from './format'
 const Ctx = createContext(null)
 export const useColmena = () => useContext(Ctx)
 
-const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,tiene_whatsapp,created_at'
+const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,tiene_whatsapp,created_at,bio,disponible,intercambio,portafolio'
 
 async function q(promise) {
   const { data, error } = await promise
@@ -140,7 +140,8 @@ export function ColmenaProvider({ children }) {
     async actualizarPerfil(f) {
       await rpc('actualizar_perfil', {
         p_nombre: f.nombre, p_marca: f.marca, p_rol: f.rol, p_categorias: f.categorias,
-        p_habilidades: f.habilidades, p_instagram: f.instagram, p_whatsapp: f.whatsapp || null
+        p_habilidades: f.habilidades, p_instagram: f.instagram, p_whatsapp: f.whatsapp || null,
+        p_bio: f.bio ?? null, p_disponible: f.disponible ?? null, p_intercambio: f.intercambio ?? null, p_portafolio: f.portafolio ?? null
       })
       await cargar.perfiles()
     },

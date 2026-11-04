@@ -559,3 +559,30 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .cats-list button { display: flex; justify-content: space-between; align-items: center; min-height: 52px; border-bottom: 1px solid var(--line); font: 600 16px/1 var(--ui); text-align: left; }
 .cats-list button small { font: 400 13px/1 var(--ui); color: var(--muted); }
 .cats-list button:disabled { opacity: .45; }
+
+/* ---------- Carnet de miembro ampliado ---------- */
+.center-self { align-self: center; }
+.vista-propia { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--surface); border-radius: 16px; padding: 12px 14px; box-shadow: var(--soft); }
+.vista-propia p { font-size: 14px; color: var(--muted); }
+.perfil-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: -4px; }
+.disp { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font: 600 13px/1 var(--ui); }
+.disp i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.disp.on { background: var(--green-soft); color: var(--green); }
+.disp.off { background: var(--line); color: var(--muted); }
+.desde { font-size: 13px; color: var(--muted); }
+.stats b.rating { display: inline-flex; align-items: center; gap: 4px; }
+.perfil-sec { display: flex; flex-direction: column; gap: 10px; }
+.perfil-sec h3 { font-size: 19px; }
+.bio { font-size: 16px; line-height: 1.55; }
+.tag.strong { background: var(--ink); color: var(--surface); padding: 7px 12px; font-size: 13px; }
+.cats-line { font-size: 13px; color: var(--muted); }
+.inter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface); box-shadow: var(--soft); }
+.inter span { display: grid; place-items: center; min-height: 38px; border-radius: 10px; font: 600 14px/1 var(--ui); color: var(--muted); }
+.inter span.on { background: var(--ink); color: var(--surface); }
+.link-card { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: 16px; padding: 12px 14px; box-shadow: var(--soft); min-height: 60px; }
+.lc-ic { width: 36px; height: 40px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; flex: none; }
+.lc-t { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lc-t b { font: 600 15px/1.2 var(--ui); }
+.lc-t small { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-post small { font-size: 13px; color: var(--muted); }
+.form .ta textarea { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }

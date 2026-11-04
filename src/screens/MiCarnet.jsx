@@ -60,6 +60,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           <button type="button" className="btn ink" onClick={compartir}><Icon n="share" s={17} />Compartir mi carnet</button>
           <button type="button" className="btn ghost" onClick={() => nav({ t: 'editar' })}><Icon n="edit" s={17} />Editar</button>
         </div>
+        <button type="button" className="linkbtn center-self" onClick={() => nav({ t: 'carnet', id: yo.id })}>Ver mi carnet como lo ven otros →</button>
 
         {confirmar.map((x) => {
           const post = c.publicaciones.find((p) => p.id === x.publicacion_id)
