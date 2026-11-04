@@ -45,6 +45,14 @@ function Shell() {
   const [ayuda, setAyuda] = useState(null)
   const pendiente = useRef(null)
 
+  // Resultado de volver de iniciar sesión con el correo Javeriana
+  useEffect(() => {
+    if (!c.avisoCuenta) return
+    toast(c.avisoCuenta.msg, c.avisoCuenta.error)
+    if (!c.avisoCuenta.error) { marcarIntroVista(); setIntro(false); setTab('carnet'); setPila([]) }
+    c.limpiarAvisoCuenta()
+  }, [c.avisoCuenta]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const nav = useCallback((s) => { setPila((p) => [...p, s]); document.querySelector('.body')?.scrollTo(0, 0) }, [])
   const atras = useCallback(() => setPila((p) => p.slice(0, -1)), [])
   const reemplazar = useCallback((s) => setPila((p) => [...p.slice(0, -1), s]), [])

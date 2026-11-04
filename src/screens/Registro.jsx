@@ -4,6 +4,7 @@ import { CATS, SUGERENCIAS } from '../data/contenido'
 import { carnetId } from '../lib/format'
 import { completitud, manosDadas } from '../lib/logic'
 import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
+import { GuardarCarnet, RecuperarCarnet } from '../components/Cuenta'
 import { COBRO, CobroIconos, CobroInsignia, QUE_ES_INTERCAMBIAR } from '../components/Cobro'
 
 const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
@@ -105,6 +106,7 @@ export default function Registro({ motivo, onBack, onListo }) {
         <CarnetCard p={f} nota="Vista previa" estado="Por crear" />
         <p className="step-t">Paso {paso} de 3 · {titulos[paso]}</p>
         {paso === 1 && motivo && <p className="soft">{motivo}</p>}
+        {paso === 1 && <RecuperarCarnet />}
         <div className="form">
           {paso === 1 && (
             <>
@@ -184,7 +186,7 @@ export default function Registro({ motivo, onBack, onListo }) {
             {enviando ? 'Creando tu carnet…' : paso < 3 ? 'Siguiente' : 'Crear carnet'}
           </button>
           {paso === 2 && f.whatsapp && !waValido(f.whatsapp) && <p className="fine center">Escribe un celular colombiano de 10 dígitos.</p>}
-          <p className="fine center">No necesitas correo ni contraseña.</p>
+          <p className="fine center">No necesitas contraseña.</p>
         </div>
       </form>
     </>
@@ -216,6 +218,7 @@ export function CarnetListo({ onMuro, onSeguir }) {
           <span className="ehex"><Icon n="card" s={20} w={2} /></span>
           <span>Nueva insignia: <b>Miembro de Colmena</b></span>
         </div>
+        <GuardarCarnet />
         <div className="pct-card">
           <b>Tu carnet ya va al {pct}%</b>
           <div className="prog"><i style={{ width: pct + '%' }} /></div>

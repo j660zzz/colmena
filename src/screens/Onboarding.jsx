@@ -165,7 +165,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           </div>
           <span className="eyebrow a-up" style={{ '--d': 3 }}>Tu carnet</span>
           <h1 className="intro-h a-up" style={{ '--d': 4 }}>Tu carnet es tu perfil en Colmena.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Muestra lo que sabes hacer y si cobras o intercambias. Lo necesitas para publicar y escribirles a otros miembros. No pide correo ni contraseña.</p>
+          <p className="intro-p a-up" style={{ '--d': 5 }}>Muestra lo que sabes hacer y si cobras o intercambias. Lo necesitas para publicar y escribirles a otros miembros. No pide contraseña y lo guardas con tu correo Javeriana.</p>
           <p className="intro-nivel a-up" style={{ '--d': 6 }}><Icon n="trend" s={18} /><span><b>Tu nivel</b> sube cuando ayudas, participas en retos y vas a los encuentros.</span></p>
         </section>
       </div>

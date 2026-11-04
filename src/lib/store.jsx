@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { supabase } from './supabase'
+import { supabase, SUPABASE_URL, SUPABASE_KEY } from './supabase'
 import { leerSesion, guardarSesion, borrarSesion } from './session'
 import { AVATAR_COLORS } from './format'
 
@@ -15,7 +15,19 @@ const MENSAJES = {
   'Solo se califica una mano confirmada.': 'Solo puedes calificar una ayuda confirmada.',
   'No puedes darte la mano a ti mismo.': 'No puedes confirmar una ayuda contigo.',
   'Ese eres tú.': 'Esta publicación es tuya.',
-  'Estado no válido': 'No se pudo guardar. Inténtalo otra vez.'
+  'Estado no válido': 'No se pudo guardar. Inténtalo otra vez.',
+  'Ese correo ya guarda otro carnet.': 'Ese correo ya tiene otro carnet guardado. Entra con otro correo Javeriana.'
+}
+
+// Guardar el carnet con el correo Javeriana (cuenta Microsoft). Antes de salir hacia Microsoft se anota
+// qué se quería hacer; al volver, se hace y se cierra la sesión de Auth.
+const K_CUENTA = 'colmena.cuenta.pendiente'
+const DOMINIO = '@javerianacali.edu.co'
+async function microsoftActivo() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY } })
+    return !!(await r.json())?.external?.azure
+  } catch { return false }
 }
 
 async function q(promise) {
@@ -39,6 +51,8 @@ export function ColmenaProvider({ children }) {
   const [resenas, setResenas] = useState([])
   const [beneficios, setBeneficios] = useState([])
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
+  const [cuenta, setCuenta] = useState(null)
+  const [avisoCuenta, setAvisoCuenta] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [errorRed, setErrorRed] = useState(null)
   const perfilesRef = useRef(perfiles)
@@ -139,7 +153,76 @@ export function ColmenaProvider({ children }) {
   }
   useEffect(() => { cargarPendientes() }, [sesion]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Con qué correo está guardado el carnet de este dispositivo
+  async function cargarCuenta() {
+    const s = sesionRef.current
+    if (!s) { setCuenta(null); return }
+    const { data, error } = await supabase.rpc('mi_cuenta', { p_id: s.id, p_clave: s.clave })
+    if (!error) setCuenta(data || null)
+  }
+  useEffect(() => { cargarCuenta() }, [sesion]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Al volver de Microsoft: vincular o recuperar, según lo que se pidió antes de salir
+  useEffect(() => {
+    let pend = null
+    try { pend = localStorage.getItem(K_CUENTA) } catch { /* sin almacenamiento */ }
+    if (!pend) return
+    const params = new URLSearchParams(location.search + location.hash.replace(/^#/, '&'))
+    const limpiar = () => {
+      try { localStorage.removeItem(K_CUENTA) } catch { /* nada */ }
+      history.replaceState(history.state, '', location.pathname)
+    }
+    ;(async () => {
+      if (params.get('error')) {
+        limpiar()
+        setAvisoCuenta({ msg: 'No se pudo iniciar sesión con tu correo Javeriana. Inténtalo otra vez.', error: true })
+        return
+      }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      try {
+        if (!(session.user?.email || '').toLowerCase().endsWith(DOMINIO)) {
+          setAvisoCuenta({ msg: `Entraste con ${session.user?.email || 'otra cuenta'}. Usa tu correo ${DOMINIO}.`, error: true })
+        } else if (pend === 'recuperar') {
+          const { data, error } = await supabase.rpc('recuperar_carnet')
+          if (error) throw new Error(MENSAJES[error.message] || error.message)
+          if (!data) setAvisoCuenta({ msg: 'Ese correo no tiene un carnet guardado. Crea uno nuevo.', error: true })
+          else {
+            const s = { id: data.id, clave: data.clave }
+            guardarSesion(s); sesionRef.current = s
+            await cargar.perfiles()
+            setSesion(s)
+            setAvisoCuenta({ msg: 'Recuperaste tu carnet.' })
+          }
+        } else {
+          const r = await rpc('vincular_cuenta', {})
+          setCuenta(r?.correo || null)
+          setAvisoCuenta({ msg: 'Tu carnet quedó guardado con tu correo Javeriana.' })
+        }
+      } catch (e) {
+        setAvisoCuenta({ msg: e.message, error: true })
+      } finally {
+        limpiar()
+        await supabase.auth.signOut().catch(() => {})
+      }
+    })()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const acciones = {
+    // modo: 'vincular' (guardar el carnet de este dispositivo) o 'recuperar' (traerlo a este dispositivo)
+    async entrarConJaveriana(modo) {
+      if (!(await microsoftActivo())) {
+        throw new Error(modo === 'recuperar'
+          ? 'Recuperar con el correo Javeriana todavía no está activo.'
+          : 'Guardar con el correo Javeriana todavía no está activo. Mientras tanto, tu carnet queda guardado en este navegador.')
+      }
+      try { localStorage.setItem(K_CUENTA, modo) } catch { throw new Error('Tu navegador no deja guardar datos. Sal del modo privado e inténtalo otra vez.') }
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: { scopes: 'email', redirectTo: location.origin + '/', queryParams: { domain_hint: DOMINIO.slice(1), prompt: 'select_account' } }
+      })
+      if (error) { try { localStorage.removeItem(K_CUENTA) } catch { /* nada */ } throw new Error('No se pudo abrir el inicio de sesión. Revisa tu conexión e inténtalo otra vez.') }
+    },
     async crearPerfil(f) {
       const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]
       const { data, error } = await supabase.rpc('crear_perfil', {
@@ -238,6 +321,7 @@ export function ColmenaProvider({ children }) {
   const valor = {
     sesion, yo, beneficios, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
+    cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
     cargando, errorRed, recargar: cargarTodo, ...acciones,
     perfil: (id) => perfiles.find((p) => p.id === id)
   }

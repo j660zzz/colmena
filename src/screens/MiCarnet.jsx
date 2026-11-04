@@ -5,6 +5,7 @@ import { Icon, Hex, Ejemplo, Header, Titulo, useToast } from '../components/ui'
 import { CarnetCard } from './Registro'
 import { NivelCard } from '../components/Nivel'
 import { statsDe, Insignias, Voces } from './Carnet'
+import { GuardarCarnet, RecuperarCarnet } from '../components/Cuenta'
 
 export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
   const c = useColmena()
@@ -22,7 +23,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           </div>
           <div className="preview-t">
             <b>Así se verá tu carnet.</b>
-            <p>Es tu perfil en Colmena. No necesitas correo ni contraseña.</p>
+            <p>Es tu perfil en Colmena. No necesitas contraseña.</p>
           </div>
           <ul className="para-que">
             <li><i><Icon n="users" s={16} /></i><span><b>Te encuentran por lo que sabes</b>Apareces en Miembros con tus habilidades.</span></li>
@@ -31,6 +32,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           </ul>
           <button type="button" className="btn primary full big" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>
           <p className="fine center">Toma menos de un minuto.</p>
+          <RecuperarCarnet />
         </div>
       </>
     )
@@ -73,6 +75,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           <button type="button" className="btn ghost" onClick={() => nav({ t: 'editar' })}><Icon n="edit" s={17} />Editar</button>
         </div>
         <button type="button" className="linkbtn center-self" onClick={() => nav({ t: 'carnet', id: yo.id })}>Ver mi carnet como lo ven otros →</button>
+        <GuardarCarnet />
 
         <NivelCard id={yo.id} />
 
