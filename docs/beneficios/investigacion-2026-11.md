@@ -111,7 +111,7 @@ Los 3 aliados de ejemplo no se tocaron.
 | Google AI Plus | 16 | Un año gratis confirmado para Colombia, con fecha límite: el 31 de diciembre. Ojo: pide forma de pago y cobra al terminar si no cancelas |
 | Perfil de Negocio de Google | 15 | Gratis para siempre y ayuda a vender desde el primer día, tengas o no local |
 
-Nota para el código (zona del agente de diseño): en `PRIMERO`, de `src/screens/Beneficios.jsx`, conviene sacar Spotify de los destacados porque no ayuda a emprender.
+Spotify sigue en los destacados, al final del carrusel (decisión de Jhon, 2026-11-04): no ayuda a emprender, pero es un gancho que casi todos usan y el ahorro se entiende de inmediato.
 
 ## Categorías nuevas que se proponen
 
