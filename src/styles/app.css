@@ -1181,3 +1181,24 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .cuenta-ok { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 14px; background: var(--green-soft); color: var(--green); font-size: 14px; }
 .cuenta-ok b { font-weight: 600; overflow-wrap: anywhere; }
 .linkbtn.recuperar { align-self: center; text-align: center; font-size: 14px; min-height: 44px; }
+
+/* ---------- Portada del inicio ---------- */
+.portada { display: flex; flex-direction: column; gap: 16px; padding: 20px 16px 16px; border-radius: 24px; background: var(--ink); color: var(--surface); }
+.portada-top { display: flex; flex-direction: column; gap: 8px; }
+.portada h1 { font: 700 26px/1.08 var(--disp); letter-spacing: -.035em; }
+.portada-top p { font-size: 14px; color: rgba(255, 255, 255, .72); }
+.portada-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.portada-tiles button { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 112px; padding: 12px; border-radius: 16px; background: rgba(255, 255, 255, .08); text-align: left; transition: transform .15s var(--ease), background .15s; }
+.portada-tiles button:active { transform: scale(.96); background: rgba(255, 255, 255, .14); }
+.portada-tiles svg { color: var(--polen); margin-bottom: 4px; }
+.portada-tiles b { font: 700 28px/1 var(--disp); letter-spacing: -.04em; color: var(--polen); }
+.portada-tiles span { font: 600 13px/1.25 var(--ui); }
+.portada-tiles small { margin-top: auto; font-size: 12px; color: rgba(255, 255, 255, .64); }
+.portada .btn.primary { box-shadow: none; }
+.portada + .composer { margin-top: 8px; }
+.portada.mia { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0; background: none; color: var(--ink); }
+.portada.mia button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 80px; padding: 12px 14px; border-radius: 16px; background: var(--surface); box-shadow: var(--soft); text-align: left; transition: transform .15s var(--ease); }
+.portada.mia button:active { transform: scale(.97); }
+.portada.mia small { font: 600 11px/1.2 var(--ui); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.portada.mia b { font: 700 20px/1.15 var(--disp); letter-spacing: -.02em; }
+.portada.mia span { font-size: 13px; color: var(--muted); }

@@ -2,7 +2,7 @@ import { Fragment, useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
-import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
+import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, nivelDe, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
 import { CobroInsignia } from '../components/Cobro'
@@ -31,6 +31,8 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
             <Icon n="right" s={18} w={2} />
           </button>
         )}
+
+        <Portada irTab={irTab} pedirPerfil={pedirPerfil} activas={activas} verPiden={() => { setTipo('need'); setCat(null); irLista() }} />
 
         <button type="button" className="composer" onClick={() => abrirComposer()}>
           <span>¿Qué necesitas o qué ofreces?</span>
@@ -89,6 +91,61 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         </div>
       </div>
     </>
+  )
+}
+
+// Portada: qué hay hoy en Colmena, con cifras de la base. Para miembros, lo suyo.
+function Portada({ irTab, pedirPerfil, activas, verPiden }) {
+  const c = useColmena()
+  const piden = activas.filter((p) => p.tipo === 'need' && !p.resuelta_at)
+  const pidenEj = piden.filter((p) => c.perfil(p.autor_id)?.es_ejemplo).length
+  const nBen = c.beneficios.filter((b) => b.tipo === 'digital').length
+  const nGratis = c.beneficios.filter((b) => b.tipo === 'digital' && b.gratis).length
+  const e = c.encuentro
+  const r = c.reto
+  const retoAbierto = r && new Date(r.cierra_en).getTime() > Date.now()
+  const yo = c.yo
+  const nv = yo ? nivelDe(c, yo.id) : null
+  const mias = yo ? activas.filter((p) => p.autor_id === yo.id).map((p) => p.id) : []
+  const meEscribieron = yo ? c.ayudas.filter((a) => mias.includes(a.publicacion_id)).length : 0
+
+  const tiles = [
+    { k: 'piden', ic: 'hand', n: piden.length, t: piden.length === 1 ? 'persona pide ayuda' : 'personas piden ayuda', nota: pidenEj ? `${pidenEj} de ejemplo` : null, go: verPiden },
+    nBen > 0 && { k: 'ben', ic: 'gift', n: nBen, t: 'beneficios de estudiante', nota: nGratis ? `${nGratis} gratis` : null, go: () => irTab('herramientas') },
+    retoAbierto
+      ? { k: 'reto', ic: 'spark', n: null, t: 'Reto de la semana', nota: cierraEn(r.cierra_en), go: () => irTab('encuentro') }
+      : e && { k: 'enc', ic: 'cal', n: null, t: `Encuentro ${String(e.numero).padStart(2, '0')}`, nota: fechaLarga(e.fecha) || 'Fecha por confirmar', go: () => irTab('encuentro') }
+  ].filter(Boolean)
+
+  if (yo) {
+    return (
+      <section className="portada mia" aria-label="Lo tuyo">
+        <button type="button" onClick={() => irTab('carnet')}>
+          <small>Tu nivel</small><b>{nv.n} · {nv.t}</b><span>{nv.sig ? `Te ${nv.faltan === 1 ? 'falta 1 punto' : `faltan ${nv.faltan} puntos`}` : 'Nivel más alto'}</span>
+        </button>
+        <button type="button" onClick={() => irTab('carnet')}>
+          <small>Te escribieron</small><b>{meEscribieron}</b><span>{mias.length ? `En ${mias.length} ${mias.length === 1 ? 'publicación' : 'publicaciones'}` : 'Publica para recibir ayuda'}</span>
+        </button>
+      </section>
+    )
+  }
+  return (
+    <section className="portada" aria-label="Qué hay en Colmena">
+      <div className="portada-top">
+        <h1>Pide ayuda, ofrece lo que sabes y usa tus beneficios.</h1>
+        <p>Para estudiantes de DCV que emprenden. Gratis.</p>
+      </div>
+      <div className="portada-tiles">
+        {tiles.map((x) => (
+          <button key={x.k} type="button" onClick={x.go}>
+            <Icon n={x.ic} s={18} />
+            {x.n != null ? <b>{x.n}</b> : null}
+            <span>{x.t}</span>
+            {x.nota && <small>{x.nota}</small>}
+          </button>
+        ))}
+      </div>
+    </section>
   )
 }
 
