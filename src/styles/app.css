@@ -538,3 +538,8 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .ayuda dl > div.on { background: var(--polen); }
 .ayuda dt { font: 700 16px/1.2 var(--disp); margin-bottom: 4px; }
 .ayuda dd { margin: 0; font-size: 15px; line-height: 1.45; }
+
+.sheet, .sheet-content, .listo, .intro-slide { scrollbar-width: none; }
+.sheet::-webkit-scrollbar, .sheet-content::-webkit-scrollbar, .listo::-webkit-scrollbar, .intro-slide::-webkit-scrollbar { display: none; }
+.app *, .app { scrollbar-width: none; }
+.app *::-webkit-scrollbar { display: none; }

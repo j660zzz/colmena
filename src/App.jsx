@@ -71,10 +71,13 @@ function Shell() {
   useEffect(() => {
     const alVolver = () => {
       if (ignorar.current) { ignorar.current = false; return }
-      guardia.current = false
       const { pila: p, tab: t } = estado.current
+      const raizDespues = p.length ? (p.length === 1 && t === 'muro') : true
       if (p.length) setPila(p.slice(0, -1))
       else if (t !== 'muro') setTab('muro')
+      // Si todavía no estamos en el muro, se deja otra parada para el siguiente atrás
+      if (raizDespues) guardia.current = false
+      else history.pushState({ colmena: 1 }, '')
     }
     window.addEventListener('popstate', alVolver)
     return () => window.removeEventListener('popstate', alVolver)
