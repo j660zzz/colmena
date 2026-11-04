@@ -690,9 +690,6 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .nv-t b { font: 700 19px/1.15 var(--disp); }
 .nv-t small { font-size: 13px; color: var(--muted); }
 .nv-t .linkbtn { min-height: 32px; font-size: 14px; }
-.nivel-chip { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--ui); }
-.nivel-chip .celda-nivel line { stroke-width: 10; }
-.nivel-chip .celda-nivel text { font-size: 44px; }
 .m-nv { font: 600 11px/1 var(--ui); letter-spacing: .04em; text-transform: uppercase; background: var(--app-bg); border-radius: 6px; padding: 4px 6px; margin-right: 6px; }
 .como-subir { display: flex; flex-direction: column; gap: 12px; }
 .como-subir h2 { font-size: 26px; line-height: 1.1; }
@@ -729,3 +726,7 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .btile-o { font-size: 13px; line-height: 1.35; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .btile-f { margin-top: auto; padding-top: 6px; font: 600 11px/1.2 var(--ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .bgrid .btile { min-height: 214px; }
+
+.nivel-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 10px 4px 6px; border-radius: 999px; background: var(--surface); box-shadow: var(--soft); font: 600 13px/1 var(--ui); }
+.nivel-chip .celda-nivel line { stroke-width: 11; }
+.nivel-chip > svg:last-child { color: var(--muted); }

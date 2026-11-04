@@ -118,7 +118,7 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
         <div className="perfil-meta">
           <span className={'disp ' + (m.disponible ? 'on' : 'off')}><i />{m.disponible ? 'Disponible para proyectos' : 'Sin cupo por ahora'}</span>
           <span className="desde">Miembro desde {mesDesde(m.created_at)}</span>
-          <NivelChip id={m.id} />
+          <NivelChip id={m.id} nombre={propio ? null : firstName(m.nombre)} />
         </div>
 
         <div className="stats">
