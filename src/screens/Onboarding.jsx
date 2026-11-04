@@ -102,7 +102,7 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
   const yo = c.yo
   const pasos = [
     { t: 'Crea tu carnet', d: 'Tu perfil en Colmena.', ok: !!yo, go: () => pedirPerfil(null, () => {}), cta: 'Crear' },
-    { t: 'Publica lo que necesitas u ofreces', d: 'Lo que necesitas o lo que ofreces.', ok: !!yo && c.publicaciones.some((p) => p.autor_id === yo.id), go: () => abrirComposer(), cta: 'Publicar' },
+    { t: 'Publica lo que necesitas u ofreces', d: 'Una frase corta es suficiente.', ok: !!yo && c.publicaciones.some((p) => p.autor_id === yo.id), go: () => abrirComposer(), cta: 'Publicar' },
     { t: 'Responde una publicación', d: 'Toca “Puedo ayudar” en una de ellas.', ok: leer(K_PRACTICA) === '1' || (!!yo && c.ayudas.some((a) => a.perfil_id === yo.id)), go: () => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), cta: 'Ver el muro' },
     { t: 'Calcula cuánto cobrar', d: 'Usa la calculadora de precios.', ok: leer(K_CALC_ABIERTA) === '1', go: () => nav({ t: 'calc' }), cta: 'Abrir' }
   ]

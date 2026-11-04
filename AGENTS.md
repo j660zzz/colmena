@@ -49,6 +49,15 @@ El repo es público. No subas referencias, capturas ni recursos de otros diseña
 - No pongas cifras de miembros, asistentes o encuentros pasados que no salgan de la base de datos.
 - Español de Colombia, tono cercano y directo, tuteo.
 
+## Voz y textos
+Escribir como escriben las apps grandes en español (Mercado Pago, Google/Material): claro, corto y útil.
+- Tuteo siempre, tono cordial y neutro. Nada de jerga ni regionalismos forzados ("me le mido", "una chimba", "sin cobrar un ojo", "embalarse").
+- Decir qué hace cada cosa, no frases de eslogan. El eslogan va en piezas de marca, no en la interfaz.
+- Vocabulario fijo: **ayuda** (no "mano"), **Participar** en el reto, **Útil** (no "Me sirve"), **Crear carnet**, **miembros** (no "la colmena" como sujeto).
+- Errores: qué pasó y qué hacer ("No se pudo conectar. Revisa tu conexión."). Sin bromas.
+- Botones con verbo: Publicar, Participar, Calcular, Guardar cambios.
+- Cero datos sin fuente (nada de "evita el 80 %").
+
 ## Datos (Supabase)
 - Lectura pública con la llave publicable; **toda escritura pasa por funciones RPC** que validan la clave del dispositivo (ver `supabase/README.md`).
 - No hay cuentas: al crear el carnet el servidor devuelve `{id, clave}` y se guarda en `localStorage` (`src/lib/session.js`).
