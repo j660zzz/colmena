@@ -1,0 +1,13 @@
+{
+  "runAt": "2026-11-04T22:45:45.673Z",
+  "passed": [
+    "PWA controlada por service worker",
+    "No recarga datos frescos al volver al primer plano",
+    "Una actualización no interrumpe el formulario",
+    "Error de conexión disponible antes de 8 segundos",
+    "Chunk de calculadora disponible sin conexión",
+    "Calculadora funciona sin conexión"
+  ],
+  "productionWrites": 0,
+  "interceptedRpc": 0
+}

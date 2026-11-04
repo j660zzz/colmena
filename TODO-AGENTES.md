@@ -2,6 +2,18 @@
 
 Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claude.
 
+## Home y destacados (Codex)
+- [x] Inicio con destacado, aliados y novedades antes del flujo; eliminar duplicación de Portada/Movimiento.
+- [x] Aliados al inicio de Beneficios, detalle existente y Mostrar mi carnet; mantener Ejemplo y aviso de muestra.
+- [x] Ganador por votos al cierre, exposición de 7 días e insignia/carnet/historial calculado, sin cambios de esquema.
+- [x] Premio en reto y bienvenida; capturas y pruebas antes/después del cierre sin escrituras reales.
+- [ ] Jhon: decidir elección por votos o confirmación manual (hoy por votos, según encargo).
+- [ ] Jhon: definir contenido del reto 2; no se creó en la base.
+- [x] Claude: quitar "DCV" de la interfaz, borrar el perfil de prueba, cupones de aliados, destacados tipo historias con visor, encabezado y tarjeta más ricos, vitrinas intercaladas y `--mono` corregido.
+- [ ] Jhon: actualizar `docs/marca/colmena-brand-spec.md` ("Activa · DCV" → "Activa").
+- [ ] Jhon: confirmar ventana de "Por cerrar" (21 días) y si el reloj de "Mostrar mi carnet" sigue en mono.
+- [x] PR #11 (`diseno/home-destacados`) aprobado por Jhon, fusionado y publicado el 4 de noviembre de 2026.
+
 ## Fiabilidad de los flujos (Codex, autorizada por Jhon)
 - [x] Carga por pantalla, límite de espera, recuperación y estados de error sin cifras no verificadas.
 - [x] Borradores de registro/publicación, Atrás coherente y conservación de búsquedas, filtros y lectura.

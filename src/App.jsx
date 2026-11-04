@@ -47,6 +47,7 @@ function Shell() {
   const c = useColmena()
   const toast = useToast()
   const [tab, setTab] = useState('muro')
+  const [destino, setDestino] = useState(null)
   const [pila, setPila] = useState(subInicial)
   const [composer, setComposer] = useState(null)
   const [intro, setIntro] = useState(() => !introVista() && !subInicial().length)
@@ -61,6 +62,17 @@ function Shell() {
   const sub = pila[pila.length - 1]
   useEffect(() => { c.asegurarDatos(sub?.t || tab) }, [tab, sub?.t, c.asegurarDatos])
 
+  useEffect(() => {
+    if (!destino || tab !== 'encuentro') return
+    const fuentes = destino === 'enc-reto' ? ['reto', 'participantes'] : destino === 'enc-talleres' ? ['talleres', 'interes'] : ['convocatorias']
+    if (!fuentes.every((n) => c.datos[n]?.disponible)) return
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(destino)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+      setDestino(null)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [destino, tab, c.datos])
+
   // Resultado de volver de iniciar sesión con el correo Javeriana
   useEffect(() => {
     if (!c.avisoCuenta) return
@@ -72,7 +84,7 @@ function Shell() {
   const nav = useCallback((s) => { setPila((p) => [...p, s]) }, [])
   const atras = useCallback(() => setPila((p) => p.slice(0, -1)), [])
   const reemplazar = useCallback((s) => setPila((p) => [...p.slice(0, -1), s]), [])
-  const irTab = useCallback((id) => { setTab(id); setPila([]) }, [])
+  const irTab = useCallback((id, seccion = null) => { setTab(id); setPila([]); setDestino(seccion) }, [])
 
   // Si no hay carnet, primero se saca y luego se sigue con lo que la persona quería hacer
   const pedirPerfil = useCallback((motivo, fn) => {

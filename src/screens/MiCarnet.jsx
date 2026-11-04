@@ -50,7 +50,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
 
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${yo.id}`
-    const data = { title: `${yo.nombre} en Colmena`, text: `Este es mi carnet en Colmena, la red de emprendedores de DCV · ${carnetId(yo.carnet)}`, url }
+    const data = { title: `${yo.nombre} en Colmena`, text: `Este es mi carnet en Colmena, la red de estudiantes que emprenden · ${carnetId(yo.carnet)}`, url }
     try {
       if (navigator.share) await navigator.share(data)
       else { await navigator.clipboard.writeText(`${data.text} ${url}`); toast('Enlace copiado') }

@@ -11,6 +11,24 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 4 de noviembre de 2026 · Inicio atrapante, destacados y cupones (Claude)
+
+Misma rama y PR (`diseno/home-destacados`). **Fusionado y publicado** el 4 de noviembre de 2026 (PR #11) por pedido de Jhon, tras aprobar el encabezado rediseñado. Detalle, razonamiento y capturas en `docs/home-destacados/README.md`.
+- "DCV" fuera de la interfaz (bienvenida, estado del carnet "Activa", textos de compartir). **Pendiente de Jhon:** el spec de marca aún dice "Activa · DCV"; no se editó.
+- Perfil de prueba "jhon" (carnet 101) borrado con migración de solo datos `supabase/migraciones/20261104_borrar_perfil_prueba_jhon.sql`: 1 perfil y 1 publicación borrados. La base queda con 8 perfiles, todos de ejemplo.
+- Aliados como cupones ("Mostrar mi carnet" en el detalle de cada uno) e invitación a sumar un negocio. Fila de destacados tipo historias con visor a pantalla completa (reto/destacado, descuentos, talleres, convocatorias que cierran pronto, beneficios), visto/no visto en el navegador. Encabezado con "Disponibles ahora", tarjeta del destacado con los pasos y vitrinas intercaladas entre publicaciones.
+- Uso de `--mono` corregido fuera del carnet y la calculadora (ver README). Decisión abierta: el reloj de "Mostrar mi carnet" sigue en mono.
+- Verificado: build, 14 pruebas de reglas, QA de home ampliado, `qa-visor` nuevo, 35 de fiabilidad y 6 de PWA.
+
+## 4 de noviembre de 2026 · Home y destacados (Codex)
+
+Rama `diseno/home-destacados`, desde `main` actualizado. Composición aprobada por Jhon: destacado, aliados y novedades antes de publicar y del flujo. Portada y Movimiento reemplazados para evitar duplicaciones; aliados también al principio de Beneficios. Los tres negocios siguen como Ejemplo, con aviso explícito de que no son descuentos disponibles.
+- Premio: lectura de retos incluyendo cerrados; activo = mayor número activo. Ganador por Útil al cierre entre propuestas con link, mínimo un voto, empate por primera participación. Exposición por 7 días desde el cierre del reto cerrado más reciente; insignia en carnet e historial calculado. No se crean retos ni se escribe en Supabase.
+- **Decisión abierta de Jhon:** mantener elección automática por votos o confirmación manual. Implementada por votos según el encargo, pendiente de esa decisión. **Reto 2:** contenido pendiente de Jhon; no creado.
+- Antes del cierre hay anuncio; después se identifica a Valentina/Tinta Viva como Ejemplo. Bienvenida y reto explican el premio.
+- Verificado: build, 8 pruebas de reglas, 17 comprobaciones de home y 35 de fiabilidad + 6 de PWA. Capturas 390 × 844 a escala 2, visitante/miembro y antes/después del cierre; sin escrituras reales.
+- Razonamiento, fuentes, capturas y límites en `docs/home-destacados/README.md`. Pendiente de revisión de PR contra main; no fusionar sin indicación de Jhon.
+
 ## 4 de noviembre de 2026 · Fiabilidad de los flujos (Codex)
 
 Mejoras autorizadas por Jhon tras la auditoría técnica, en `diseno/fiabilidad-flujos`. **Fusionado y publicado** el 4 de noviembre de 2026 (PR #9) por pedido de Jhon. Antes de fusionar se volvieron a correr `scripts/qa-fiabilidad.cjs` (35 de 35) y `scripts/qa-pwa.cjs` (6 de 6) y se probó producción: bienvenida, muro, talleres, convocatorias y Beneficios cargan sin errores y el service worker queda activo. Para correr los scripts hace falta `COLMENA_CHROMIUM` apuntando a un Chromium disponible (por ejemplo `/opt/pw-browsers/chromium-1243/chrome-linux64/chrome` en la nube).

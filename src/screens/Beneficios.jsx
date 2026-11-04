@@ -21,7 +21,7 @@ const TITULO = {
 const ICONO_CAT = { 'Apoyo para emprender': 'route', 'Diseño': 'spark', Web: 'link', Vender: 'trend', Productividad: 'note', Aprender: 'bulb', 'Audio y video': 'clock', Equipos: 'bag' }
 // Los primeros destacados son los que más le sirven a quien está empezando un emprendimiento
 const PRIMERO = ['Ruta de Emprendimiento Campus Nova', 'Matrícula mercantil sin costo', 'Google AI Plus para estudiantes', 'Suite de Adobe', 'Software de la universidad en la nube', 'Asesoría EmprendeLab', 'Perfil de Negocio de Google', 'Dominio web gratis', 'Framer', 'Microsoft 365']
-const rango = (b) => { const k = PRIMERO.indexOf(b.nombre); return k < 0 ? 99 : k }
+export const rango = (b) => { const k = PRIMERO.indexOf(b.nombre); return k < 0 ? 99 : k }
 
 // Logo de cada marca: el ícono de su sitio oficial, cargado en el navegador (no se guarda en el repo)
 // y en escala de grises para no salirse de la paleta. Lo institucional (Javeriana, Cámara, SENA) usa el
@@ -32,7 +32,7 @@ function dominioDe(b) {
   if (DOMINIO[b.nombre]) return DOMINIO[b.nombre]
   try { const h = new URL(b.link).hostname.replace(/^www\./, ''); return SIN_LOGO.test(h) ? null : h } catch { return null }
 }
-function Logo({ b, s = 40 }) {
+export function Logo({ b, s = 40 }) {
   const [fallo, setFallo] = useState(false)
   const d = b.tipo === 'digital' ? dominioDe(b) : null
   const ic = b.tipo === 'aliado' ? 'pin' : ICONO_CAT[b.categoria] || 'seal'
@@ -72,7 +72,6 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
 
   const digitales = c.beneficios.filter((b) => b.tipo === 'digital')
   const aliados = c.beneficios.filter((b) => b.tipo === 'aliado')
-  const reales = aliados.filter((b) => !b.es_ejemplo).length
   const destacados = digitales.filter((b) => b.destacado).sort((x, y) => rango(x) - rango(y))
   const nGratis = digitales.filter((b) => b.gratis).length
   const cats = CATS_B.filter((k) => digitales.some((b) => b.categoria === k))
@@ -112,6 +111,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
         </div>
       </div>
 
+      {tienda && <Aliados nav={nav} pedirPerfil={pedirPerfil} />}
       {tienda ? (
         <>
           {destacados.length > 0 && (
@@ -136,11 +136,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
             )
           })}
 
-          <section className="bfila">
-            <div className="sec-h"><h3>Aliados en Cali</h3>{!reales && <span className="meta">Muy pronto</span>}</div>
-            <p className="soft">Negocios que dan descuento a los miembros de Colmena. Para usarlos, muestra tu carnet.</p>
-            <div className="blista">{aliados.map(fila1)}</div>
-          </section>
+
         </>
       ) : lista.length === 0 ? (
         <Empty title="No encontramos ese beneficio">Prueba con otra palabra o mira todas las categorías.</Empty>
@@ -244,7 +240,7 @@ export function CarnetParaMostrar() {
   )
 }
 
-function Proponer({ onListo }) {
+export function Proponer({ onListo }) {
   const c = useColmena()
   const toast = useToast()
   const [f, setF] = useState({ negocio: '', contacto: '', propuesta: '' })
@@ -267,4 +263,54 @@ function Proponer({ onListo }) {
       <button type="submit" className="btn primary full big" disabled={!ok || enviando}>{enviando ? 'Enviando…' : 'Enviar propuesta'}</button>
     </form>
   )
+}
+
+// Descuentos de aliados con forma de cupón: el valor es el protagonista y el carnet es la llave.
+export function Aliados({ nav, pedirPerfil, limite = 0, invitar = false, onVerTodos }) {
+  const c = useColmena()
+  const [abierto, setAbierto] = useState(null)
+  const [proponer, setProponer] = useState(false)
+  const [mios, alternar] = useMios()
+  const todos = c.beneficios.filter((b) => b.tipo === 'aliado')
+  const lista = limite ? todos.slice(0, limite) : todos
+  if (!todos.length && !invitar) return null
+  const mostrar = () => pedirPerfil('Necesitas un carnet para mostrarlo.', () => nav({ t: 'mostrar' }))
+  return <section className="home-aliados" aria-label="Descuentos con tu carnet">
+    <div className="sec-h">
+      <h2>Descuentos con tu carnet</h2>
+      {onVerTodos && todos.length > lista.length && <button type="button" className="ver" onClick={onVerTodos}>Ver todos</button>}
+    </div>
+    <p className="soft home-aliados-sub">Muestra tu carnet al pagar en estos negocios.</p>
+    {lista.length > 0 && (
+      <div className="cupones">
+        {lista.map((b) => {
+          const v = b.etiqueta || b.oferta
+          return (
+            <button key={b.id} type="button" className="cupon" onClick={() => setAbierto(b)}>
+              <span className={'cupon-valor' + (v.length > 7 ? ' largo' : '')}><strong>{v}</strong></span>
+              <span className="cupon-cuerpo">
+                <b>{b.nombre}</b>
+                <span>{b.oferta}</span>
+                <small><Icon n="pin" s={13} />{b.zona || b.categoria}<Ejemplo p={b} /></small>
+              </span>
+              <Icon n="right" s={18} w={2} />
+            </button>
+          )
+        })}
+      </div>
+    )}
+    {invitar && (
+      <button type="button" className="invita" onClick={() => setProponer(true)}>
+        <span className="invita-ic"><Icon n="plus" s={18} w={2.2} /></span>
+        <span className="invita-t"><b>¿Tienes un negocio?</b><small>Propón un descuento para los miembros.</small></span>
+        <Icon n="right" s={18} w={2} />
+      </button>
+    )}
+    <Sheet open={!!abierto} onClose={() => setAbierto(null)} label="Detalle del aliado">
+      {abierto && <Detalle b={abierto} mios={mios} alternar={alternar} onCarnet={() => { setAbierto(null); mostrar() }} />}
+    </Sheet>
+    {invitar && <Sheet open={proponer} onClose={() => setProponer(false)} label="Proponer un beneficio">
+      {proponer && <Proponer onListo={() => setProponer(false)} />}
+    </Sheet>}
+  </section>
 }

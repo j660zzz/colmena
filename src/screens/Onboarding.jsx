@@ -190,7 +190,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
         <section className={'intro-slide' + on(0)} aria-label="Qué es Colmena" aria-hidden={i !== 0}>
           <div className="intro-hero a-up" style={{ '--d': 0 }}><PanalArma /></div>
           <span className="eyebrow a-up" style={{ '--d': 2 }}>Te damos la bienvenida</span>
-          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes de DCV que <mark className="hl">emprenden</mark>.</h1>
+          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes que <mark className="hl">emprenden</mark>.</h1>
           <ul className="intro-lista">
             <li className="a-up" style={{ '--d': 4 }}><i><Icon n="wall" s={16} /></i><div><b>Muro</b><span>Pide ayuda u ofrece lo que sabes hacer.</span></div></li>
             <li className="a-up" style={{ '--d': 5 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Talleres prácticos y una reunión al mes.</span></div></li>
@@ -213,7 +213,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
               <li key={t} className="a-left" style={{ '--d': 2 + k * 2 }}><i><Icon n={cat === 'Video' ? 'spark' : cat === 'Foto' ? 'ig' : 'bulb'} s={16} /></i><div><small>{cat} · Ejemplo</small><b>{t}</b></div></li>
             ))}
           </ol>
-          <p className="intro-p a-up" style={{ '--d': 8 }}>Talleres cortos con otros miembros y una noche al mes para mostrar tu marca.</p>
+          <p className="intro-p a-up" style={{ '--d': 8 }}>Participa en el reto: el perfil ganador aparece 7 días en el inicio y gana una insignia. También hay talleres y un encuentro al mes.</p>
         </section>
 
         <section className={'intro-slide' + on(3)} aria-label="Beneficios de estudiante" aria-hidden={i !== 3}>

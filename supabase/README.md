@@ -50,3 +50,4 @@ Tiempo real activado en `publicaciones`, `ayudas`, `me_sirve`, `reto_participant
 - **Propuestas de aliados**: Table Editor → `solicitudes_beneficio`.
 - **Ferias y convocatorias**: Table Editor → `convocatorias`. Revísalas cada mes junto con los beneficios. Para sumar una, crea una fila con `fuente` (la página donde lo verificaste), `verificado_en` y `cierre` o `fecha`. Lo vencido se oculta solo.
 - Moderar una publicación: Table Editor → `publicaciones` → borrar la fila.
+- **Datos, 4-nov-2026:** `supabase/migraciones/20261104_borrar_perfil_prueba_jhon.sql` borró el perfil de prueba "jhon" (solo datos, sin cambios de esquema).

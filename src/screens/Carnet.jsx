@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useColmena } from '../lib/store'
+import { ganadores } from '../lib/destacados'
 import { BADGES } from '../data/contenido'
 import { firstName, igUrl, hace, mesDesde } from '../lib/format'
 import { manosDadas, completitud, waLink, activa } from '../lib/logic'
@@ -12,6 +13,8 @@ export function statsDe(c, id) {
   const p = c.perfil(id)
   const recibidas = c.resenas.filter((r) => r.para_id === id)
   return {
+    destacados: ['reto', 'participantes', 'votos'].every((k) => c.datos[k]?.disponible) ? ganadores(c.retos, c.participantes, c.votos).filter((g) => g.perfil_id === id) : [],
+    ejemplo: p?.es_ejemplo,
     publicaciones: c.publicaciones.filter((x) => x.autor_id === id).length,
     manos: manosDadas(c, id),
     encuentros: c.asistencias.filter((x) => x.perfil_id === id).length,
@@ -54,6 +57,7 @@ export function Insignias({ s, propio = false }) {
   return (
     <>
       <div className="sec-h"><h3>Insignias</h3><span className="meta">{ganadas.length} de {BADGES.length}</span></div>
+      {s.destacados?.length > 0 && <div className="home-historial">{s.destacados.map((g) => <div key={g.reto.id} className="home-insignia"><Icon n="star" s={24} /><div><b>Destacado de la semana</b><span>{g.reto.titulo}</span><small>{new Date(g.reto.cierra_en).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}{s.ejemplo ? ' · Ejemplo' : ''}</small></div></div>)}</div>}
       <div className="badges">
         {visibles.map((b) => {
           const on = b.ok(s)
