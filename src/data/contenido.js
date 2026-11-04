@@ -1,4 +1,4 @@
-export const CATS = ['Marca', 'Diseño', 'Foto', 'Video', 'Ilustración', 'Producción', 'Moda', 'Comida']
+export const CATS = ['Marca', 'Diseño', 'Redes sociales', 'Web/UX', 'Foto', 'Video', 'Ilustración', 'Producción', 'Moda', 'Comida', 'Otro']
 export const TOOLCATS = ['Precio', 'Ventas', 'Legal', 'Marca']
 
 // Insignias calculadas con actividad real del perfil (ver statsDe en Carnet.jsx)

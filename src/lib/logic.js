@@ -117,4 +117,7 @@ export function semanaDelMes(d = new Date()) {
   return Math.min(3, Math.ceil(dia / 7))
 }
 
+// Para buscar sin importar tildes ni mayúsculas: "diseno" encuentra "Diseño"
+export const normal = (t) => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
 export const waLink = (num, texto) => `https://wa.me/${num}${texto ? '?text=' + encodeURIComponent(texto) : ''}`

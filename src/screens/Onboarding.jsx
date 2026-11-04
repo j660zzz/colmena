@@ -47,7 +47,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <div className="intro-art"><Panal celdas={DEMO} size={24} /></div>
           <span className="eyebrow">Te damos la bienvenida</span>
           <h1 className="intro-h">Ayuda entre emprendedores de DCV.</h1>
-          <p className="intro-p">Colmena conecta a estudiantes de Diseño de la Javeriana que tienen un emprendimiento. Pides ayuda, ofreces lo que sabes y hablan por WhatsApp. Es gratis.</p>
+          <p className="intro-p">Colmena conecta a estudiantes de Diseño de la Javeriana que tienen un emprendimiento. Pides ayuda, ofreces lo que sabes y hablan por WhatsApp. También reúne los beneficios que ya tienes por ser estudiante. Es gratis.</p>
         </section>
 
         <section className="intro-slide">
@@ -94,6 +94,7 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
   const c = useColmena()
   const [oculto, setOculto] = useState(() => leer(K_PASOS) === '1')
   const [, refrescar] = useState(0)
+  const [todos, setTodos] = useState(false)
   useEffect(() => {
     const f = () => refrescar((n) => n + 1)
     window.addEventListener('colmena-pasos', f)
@@ -114,15 +115,12 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
   return (
     <section className="pasos" aria-label="Tus primeros pasos">
       <div className="pasos-top">
-        <div>
-          <span className="k">Tus primeros pasos</span>
-          <b>{hechos} de {pasos.length}</b>
-        </div>
+        <span className="k">Primeros pasos · {hechos} de {pasos.length}</span>
         <button type="button" className="linkbtn" onClick={ocultar}>Ocultar</button>
       </div>
       <div className="prog"><i style={{ width: `${hechos / pasos.length * 100}%` }} /></div>
       <ol>
-        {pasos.map((p, k) => (
+        {pasos.map((p, k) => (todos || k === siguiente) && (
           <li key={p.t} className={p.ok ? 'ok' : k === siguiente ? 'now' : ''}>
             <span className="paso-n">{p.ok ? <Icon n="check" s={14} w={3} /> : k + 1}</span>
             <div><b>{p.t}</b>{!p.ok && <span>{p.d}</span>}</div>
@@ -130,6 +128,7 @@ export function PrimerosPasos({ irTab, nav, pedirPerfil, abrirComposer }) {
           </li>
         ))}
       </ol>
+      <button type="button" className="linkbtn" aria-expanded={todos} onClick={() => setTodos(!todos)}>{todos ? 'Ver menos' : 'Ver todos los pasos'}</button>
     </section>
   )
 }
@@ -142,6 +141,7 @@ export const TEMAS = {
   reto: { t: 'El reto de la semana', d: 'Un ejercicio corto con un caso real. Te inscribes, subes tu propuesta como link y los miembros votan con “Útil”.' },
   sirve: { t: 'Útil', d: 'Marca una publicación o propuesta que te parece valiosa. Le muestra a quien la publicó que su aporte sirve.' },
   carnet: { t: 'Tu carnet', d: 'Tu perfil en Colmena: quién eres, a qué te dedicas y cuántas veces has ayudado. Tu WhatsApp solo lo ven otros miembros.' },
+  beneficios: { t: 'Beneficios', d: 'Software y suscripciones que ya tienes gratis o con descuento por ser estudiante de la Javeriana, y negocios de Cali que dan descuento al mostrar tu carnet.' },
   ejemplo: { t: 'Contenido de ejemplo', d: 'Lo marcado como “Ejemplo” es contenido de muestra para que veas cómo funciona. No son personas reales.' }
 }
 

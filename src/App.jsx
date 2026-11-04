@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useColmena } from './lib/store'
-import { Icon, Hex, ToastProvider, Sheet, useToast } from './components/ui'
+import { Icon, Hex, ToastProvider, Sheet, SubHeader, useToast } from './components/ui'
 import Muro, { Composer } from './screens/Muro'
 import Publicado from './screens/Publicado'
 import Miembros from './screens/Miembros'
@@ -11,12 +11,13 @@ import Encuentro from './screens/Encuentro'
 import Herramientas, { Ficha, Calculadora } from './screens/Herramientas'
 import Registro, { CarnetListo, Editar } from './screens/Registro'
 import { Bienvenida, Ayuda, introVista, marcarIntroVista } from './screens/Onboarding'
+import { CarnetParaMostrar } from './screens/Beneficios'
 
 const TABS = [
   { id: 'muro', label: 'Muro', ic: 'wall' },
   { id: 'miembros', label: 'Miembros', ic: 'users' },
   { id: 'encuentro', label: 'Encuentro', ic: 'cal' },
-  { id: 'herramientas', label: 'Herramientas', ic: 'tools' },
+  { id: 'herramientas', label: 'Beneficios', ic: 'bag' },
   { id: 'carnet', label: 'Carnet', ic: 'card' }
 ]
 
@@ -108,7 +109,7 @@ function Shell() {
   const comun = { nav, atras, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }
   const sub = pila[pila.length - 1]
   let pantalla
-  const seguir = () => { const fn = pendiente.current; pendiente.current = null; setPila([]); setTab('muro'); if (fn) setTimeout(fn, 0) }
+  const seguir = () => { const fn = pendiente.current; pendiente.current = null; setPila([]); if (fn) setTimeout(fn, 0) }
   if (sub?.t === 'registro') pantalla = <Registro motivo={sub.motivo} onBack={() => { pendiente.current = null; atras() }} onListo={() => reemplazar({ t: 'listo' })} />
   else if (sub?.t === 'listo') pantalla = <CarnetListo onMuro={() => { pendiente.current = null; setPila([]); setTab('muro') }} onSeguir={pendiente.current ? seguir : null} />
   else if (sub?.t === 'editar') pantalla = <Editar onBack={atras} />
@@ -116,6 +117,7 @@ function Shell() {
   else if (sub?.t === 'publicado') pantalla = <Publicado postId={sub.postId} onBack={atras} {...comun} />
   else if (sub?.t === 'calificar') pantalla = <Calificar postId={sub.postId} otroId={sub.otro} onBack={atras} />
   else if (sub?.t === 'calc') pantalla = <Calculadora onBack={atras} abrirComposer={abrirComposer} />
+  else if (sub?.t === 'mostrar') pantalla = <><SubHeader title="Tu carnet" onBack={atras} /><div className="body fade"><CarnetParaMostrar /></div></>
   else if (sub?.t === 'ficha') pantalla = <Ficha id={sub.id} onBack={atras} />
   else if (tab === 'muro') pantalla = <Muro {...comun} />
   else if (tab === 'miembros') pantalla = <Miembros {...comun} />

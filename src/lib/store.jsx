@@ -27,6 +27,7 @@ export function ColmenaProvider({ children }) {
   const [participantes, setParticipantes] = useState([])
   const [votos, setVotos] = useState([])
   const [resenas, setResenas] = useState([])
+  const [beneficios, setBeneficios] = useState([])
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
   const [cargando, setCargando] = useState(true)
   const [errorRed, setErrorRed] = useState(null)
@@ -47,6 +48,7 @@ export function ColmenaProvider({ children }) {
     participantes: async () => setParticipantes(await q(supabase.from('reto_participantes').select('*').order('created_at', { ascending: true }))),
     votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
     resenas: async () => setResenas(await q(supabase.rpc('resenas_publicas'))),
+    beneficios: async () => setBeneficios(await q(supabase.from('beneficios').select('*').order('tipo').order('orden'))),
     encuentro: async () => {
       const rows = await q(supabase.from('encuentros').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
       setEncuentro(rows[0] || null)
@@ -137,6 +139,11 @@ export function ColmenaProvider({ children }) {
       setSesion(s)
       return data
     },
+    async proponerBeneficio(negocio, contacto, propuesta) {
+      const s = sesionRef.current
+      const { error } = await supabase.rpc('proponer_beneficio', { p_negocio: negocio, p_contacto: contacto, p_propuesta: propuesta, p_id: s?.id || null, p_clave: s?.clave || null })
+      if (error) throw new Error(error.message?.includes('solicitudes') ? error.message : 'No se pudo enviar. Revisa los datos e intenta de nuevo.')
+    },
     async actualizarPerfil(f) {
       await rpc('actualizar_perfil', {
         p_nombre: f.nombre, p_marca: f.marca, p_rol: f.rol, p_categorias: f.categorias,
@@ -188,6 +195,10 @@ export function ColmenaProvider({ children }) {
       await cargar.votos()
       return r
     },
+    async marcarResuelta(id, resuelta = true) {
+      setPublicaciones((l) => l.map((p) => p.id === id ? { ...p, resuelta_at: resuelta ? new Date().toISOString() : null } : p))
+      try { await rpc('marcar_resuelta', { p_post: id, p_resuelta: resuelta }) } catch (e) { cargar.publicaciones(); throw e }
+    },
     async borrarPublicacion(id) {
       setPublicaciones((l) => l.filter((p) => p.id !== id))
       await rpc('borrar_publicacion', { p_post: id })
@@ -210,7 +221,7 @@ export function ColmenaProvider({ children }) {
   }
 
   const valor = {
-    sesion, yo, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
+    sesion, yo, beneficios, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
     cargando, errorRed, recargar: cargarTodo, ...acciones,
     perfil: (id) => perfiles.find((p) => p.id === id)

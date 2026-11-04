@@ -586,3 +586,76 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .lc-t small { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mini-post small { font-size: 13px; color: var(--muted); }
 .form .ta textarea { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+
+/* ---------- Muro: arriba más corto ---------- */
+.como-in { display: inline; font: inherit; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; padding: 0; min-height: 0; }
+.aviso-prueba { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; border-radius: 14px; }
+.aviso-prueba p { flex: 1; font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.aviso-prueba .ej-pill { padding: 3px 8px; font-size: 10px; }
+.pasos { padding: 14px 16px; gap: 10px; }
+.pasos-top { align-items: center; }
+.pasos .linkbtn { align-self: flex-start; font-size: 13px; min-height: 32px; }
+
+/* ---------- Publicación propia y resuelta ---------- */
+.pill.ok { background: rgba(15, 122, 102, .12); color: var(--green); display: inline-flex; gap: 4px; align-items: center; }
+.post.resuelta .post-lead, .post.resuelta .post-body { color: var(--muted); }
+.post-foot .mine { margin-left: 0; width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.mine-r { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; font: 600 14px/1 var(--ui); min-height: 32px; }
+.mine-acc { display: flex; align-items: center; gap: 8px; }
+.mine-acc .iconbtn { margin-left: auto; }
+.post-foot > .fine { margin-left: auto; }
+
+/* ---------- Miembros: lista tranquila ---------- */
+.member { border: 0; box-shadow: var(--soft); grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 14px; }
+.minfo { padding-right: 0; gap: 3px; }
+.minfo b { font-size: 17px; }
+.m-skills { font-weight: 400 !important; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block !important; }
+.m-ayudas { font-size: 12px; }
+.member > svg { color: var(--muted); }
+.sec-h h3 .meta { font: 400 15px/1 var(--ui); color: var(--muted); }
+
+/* ---------- Beneficios ---------- */
+.mov-facts.claro { color: rgba(255, 255, 255, .78); }
+.ben-hero { background: var(--ink); color: var(--surface); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.ben-hero .k { color: var(--polen); }
+.ben-hero h3 { font-size: 24px; line-height: 1.12; letter-spacing: -.02em; }
+.ben-hero p { font-size: 14px; line-height: 1.45; color: rgba(255, 255, 255, .78); }
+.ben-list { background: var(--surface); border-radius: 20px; box-shadow: var(--soft); overflow: hidden; }
+.ben { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; text-align: left; min-height: 64px; }
+.ben + .ben { border-top: 1px solid var(--line); }
+.ben > svg { color: var(--muted); flex: none; }
+.ben-ic { width: 40px; height: 44px; clip-path: var(--hex); background: var(--app-bg); color: var(--ink); display: grid; place-items: center; font: 700 14px/1 var(--disp); flex: none; }
+.ben-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ben-t b { font: 600 16px/1.2 var(--ui); }
+.ben-t span { font-size: 13px; line-height: 1.35; color: var(--muted); }
+.aliados { display: flex; gap: 12px; overflow-x: auto; margin-inline: -16px; padding: 2px 16px 4px; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; }
+.aliado { flex: 0 0 72%; scroll-snap-align: start; background: var(--surface); box-shadow: var(--soft); border-radius: 20px; padding: 16px; text-align: left; display: flex; flex-direction: column; gap: 8px; min-height: 140px; }
+.aliado b { font: 700 19px/1.15 var(--disp); letter-spacing: -.01em; }
+.al-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.al-n { margin-top: auto; font-size: 13px; color: var(--muted); }
+.sumate { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border-radius: 18px; background: var(--polen); color: var(--ink); min-height: 64px; }
+.sumate > span { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.sumate b { font: 600 15px/1.25 var(--ui); }
+.sumate small { font-size: 13px; line-height: 1.35; }
+.ben-det { display: flex; flex-direction: column; gap: 12px; }
+.ben-det > .tag { align-self: flex-start; }
+.ben-det h2 { font-size: 26px; line-height: 1.1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ben-det h3 { font-size: 17px; margin-top: 4px; }
+.ben-det p { font-size: 15px; line-height: 1.5; }
+.ben-oferta { font: 600 17px/1.35 var(--ui) !important; }
+.ben-pasos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ben-pasos li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; font-size: 15px; line-height: 1.45; }
+.ben-pasos i { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--polen); display: grid; place-items: center; font: 600 13px/1 var(--ui); font-style: normal; }
+.ben-det .fine a { text-decoration: underline; text-underline-offset: 2px; }
+.mostrar { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; background: var(--ink); color: var(--surface); border-radius: 24px; padding: 28px 20px; }
+.mostrar .k { color: var(--polen); }
+.mostrar h2 { font-size: 28px; line-height: 1.1; }
+.mostrar .mono { color: var(--polen); font-size: 15px; }
+.mostrar .soft { color: rgba(255, 255, 255, .78); font-size: 14px; max-width: 30ch; }
+.reloj { display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(255, 255, 255, .08); border-radius: 18px; padding: 16px; width: 100%; }
+.reloj b { font-size: 34px; letter-spacing: .02em; color: var(--surface); }
+.reloj > span:last-child { font-size: 14px; color: rgba(255, 255, 255, .78); text-transform: capitalize; }
+.vivo { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1 var(--ui); letter-spacing: .08em; text-transform: uppercase; color: var(--polen); }
+.vivo i { width: 8px; height: 8px; border-radius: 50%; background: var(--polen); animation: vivo 1.4s ease-in-out infinite; }
+@keyframes vivo { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .vivo i { animation: none; } }

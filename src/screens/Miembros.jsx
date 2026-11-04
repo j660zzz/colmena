@@ -2,14 +2,15 @@ import { useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { firstName } from '../lib/format'
-import { activa, activoSemana, manosDadas, quienesPueden } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Header, Empty, Mark } from '../components/ui'
+import { activa, activoSemana, manosDadas, quienesPueden, normal } from '../lib/logic'
+import { Icon, Hex, Ejemplo, Header, Empty, Mark, Sheet } from '../components/ui'
 
 export default function Miembros({ nav, headerRight }) {
   const c = useColmena()
   const [q, setQ] = useState('')
   const [cat, setCat] = useState(null)
   const buscador = useRef(null)
+  const [verCats, setVerCats] = useState(false)
 
   const ordenados = useMemo(() => [...c.perfiles].sort((a, b) =>
     (a.es_ejemplo - b.es_ejemplo) || (manosDadas(c, b.id) - manosDadas(c, a.id)) || (new Date(b.created_at) - new Date(a.created_at))), [c.perfiles, c.ayudas]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -17,8 +18,8 @@ export default function Miembros({ nav, headerRight }) {
   const lista = ordenados.filter((m) => {
     if (c.yo && m.id === c.yo.id) return false
     if (cat && !m.categorias.includes(cat)) return false
-    const t = q.trim().toLowerCase()
-    return !t || [m.nombre, m.marca, m.rol, ...m.habilidades, ...m.categorias].join(' ').toLowerCase().includes(t)
+    const t = normal(q.trim())
+    return !t || normal([m.nombre, m.marca, m.rol, m.bio, ...m.habilidades, ...m.categorias].join(' ')).includes(t)
   })
   const activos = c.perfiles.filter((m) => !m.es_ejemplo && activoSemana(c, m.id)).length
 
@@ -45,18 +46,36 @@ export default function Miembros({ nav, headerRight }) {
                   <Hex p={m} w={44} h={48} fs={16} />
                   <b>{firstName(m.nombre)}</b>
                   <span className="tag dark">{m.habilidades[0] || m.categorias[0]}</span>
-                  {m.es_ejemplo ? <small>Ejemplo</small> : <small>{manosDadas(c, m.id)} {manosDadas(c, m.id) === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>}
+                  {m.es_ejemplo ? <small>Ejemplo</small> : manosDadas(c, m.id) > 0 && <small>{manosDadas(c, m.id)} {manosDadas(c, m.id) === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>}
                 </button>
               ))}
             </div>
           </>
         )}
 
-        <div className="chips" role="group" aria-label="Filtrar por categoría">
-          <button type="button" className="chip" aria-pressed={!cat} onClick={() => setCat(null)}>Todos</button>
-          {CATS.map((x) => <button key={x} type="button" className="chip" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>{x}</button>)}
+        <div className="sec-h">
+          <h3>{cat ? cat : 'Todos'}<span className="meta"> · {lista.length}</span></h3>
+          {cat
+            ? <button type="button" className="cat-btn on" onClick={() => setCat(null)} aria-label={`Quitar filtro ${cat}`}>{cat}<Icon n="x" s={14} w={2.2} /></button>
+            : <button type="button" className="cat-btn" onClick={() => setVerCats(true)}>Filtrar<Icon n="right" s={14} w={2} /></button>}
         </div>
-        <p className="eyebrow">{lista.length} {lista.length === 1 ? 'miembro' : 'miembros'}{activos > 0 ? ` · ${activos} ${activos === 1 ? 'activo' : 'activos'} esta semana` : ''}</p>
+        {activos > 0 && <p className="fine">{activos} {activos === 1 ? 'miembro activo' : 'miembros activos'} esta semana</p>}
+        <Sheet open={verCats} onClose={() => setVerCats(false)} label="Filtrar miembros por categoría">
+          <div className="cats-sheet">
+            <h2>¿Qué estás buscando?</h2>
+            <p className="soft">Muestra solo los miembros que saben de una categoría.</p>
+            <div className="cats-list">
+              {CATS.map((x) => {
+                const n = c.perfiles.filter((m) => m.categorias.includes(x) && !(c.yo && m.id === c.yo.id)).length
+                return (
+                  <button key={x} type="button" disabled={n === 0} onClick={() => { setCat(x); setVerCats(false) }}>
+                    <span>{x}</span><small>{n === 0 ? 'Nadie todavía' : `${n} ${n === 1 ? 'miembro' : 'miembros'}`}</small>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </Sheet>
 
         {lista.length === 0 ? (
           <Empty title="Sin resultados">
@@ -74,11 +93,11 @@ export default function Miembros({ nav, headerRight }) {
                     <b>{m.nombre}<Ejemplo p={m} /></b>
                     <span>{[m.rol, m.marca].filter(Boolean).join(' · ') || 'Miembro de Colmena'}</span>
                     {(m.habilidades.length > 0 || m.categorias.length > 0) && (
-                      <span className="post-tags">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 2).map((s) => <span key={s} className="tag">{s}</span>)}</span>
+                      <small className="m-skills">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 3).join(' · ')}</small>
                     )}
-                    <small><Icon n="hand" s={14} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>
+                    {n > 0 && <small className="m-ayudas"><Icon n="hand" s={13} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</small>}
                   </span>
-                  <span className="vc">Ver carnet</span>
+                  <Icon n="right" s={18} />
                 </button>
               )
             })}

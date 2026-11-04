@@ -13,6 +13,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
 
   const activas = useMemo(() => c.publicaciones.filter((p) => activa(p)), [c.publicaciones])
   const lista = activas.filter((p) => (tipo === 'todo' || p.tipo === tipo) && (!cat || p.categorias.includes(cat)))
+    .sort((a, b) => (!!a.resuelta_at - !!b.resuelta_at))
   const cuenta = (t) => activas.filter((p) => (t === 'todo' || p.tipo === t) && (!cat || p.categorias.includes(cat))).length
   const teNecesitan = c.yo ? quienesTeNecesitan(c, c.yo) : []
   const irLista = () => setTimeout(() => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
@@ -32,17 +33,15 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         ) : (
           <h1 className="headline">Ayuda entre <Mark>emprendedores</Mark> de DCV.</h1>
         )}
-        <p className="lede">Publica lo que necesitas o lo que sabes hacer. Quien pueda ayudarte te escribe por WhatsApp.</p>
-        <button type="button" className="como" onClick={() => abrirAyuda()}><Icon n="bulb" s={16} />¿Cómo funciona?</button>
-
-        <PrimerosPasos irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirComposer={abrirComposer} />
-
-        <AvisoPrueba />
+        <p className="lede">Publica lo que necesitas o lo que sabes hacer. Quien pueda ayudarte te escribe por WhatsApp. <button type="button" className="como-in" onClick={() => abrirAyuda()}>¿Cómo funciona?</button></p>
 
         <button type="button" className="composer" onClick={() => abrirComposer()}>
           <span>¿Qué necesitas o qué ofreces?</span>
           <span className="plus"><Icon n="plus" s={18} w={2.4} /></span>
         </button>
+
+        <AvisoPrueba />
+        <PrimerosPasos irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirComposer={abrirComposer} />
 
         <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirAyuda={abrirAyuda} />
 
@@ -111,7 +110,16 @@ function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
   const van = e ? c.asistencias.filter((a) => a.encuentro_id === e.id).map((a) => c.perfil(a.perfil_id)).filter(Boolean) : []
   const ejVan = van.filter((p) => p.es_ejemplo).length
 
+  const nBen = c.beneficios.filter((b) => b.tipo === 'digital').length
   const slides = [
+    nBen > 0 && (
+      <article key="beneficios" className="mov ink">
+        <div className="mov-top"><span className="k">Con tu correo Javeriana</span></div>
+        <h3>Tienes {nBen} beneficios de estudiante que quizás no estás usando.</h3>
+        <p className="mov-facts claro">Office, Adobe, Figma, Spotify y más, gratis o con descuento.</p>
+        <button type="button" className="go" onClick={() => irTab('herramientas')}>Ver beneficios <Icon n="right" s={15} w={2.2} /></button>
+      </article>
+    ),
     r && (
       <article key="reto" className="mov polen">
         <div className="mov-top"><span className="k">Reto de la semana <QueEs onClick={() => abrirAyuda('reto')} /></span><span className="cd">{cierraEn(r.cierra_en)}</span></div>
@@ -188,9 +196,8 @@ function AvisoPrueba() {
   const cerrar = () => { try { localStorage.setItem(AVISO, '1') } catch { /* sin almacenamiento */ } setVisto(true) }
   return (
     <aside className="aviso-prueba" aria-label="Prototipo en prueba">
-      <span className="ej-pill">Prototipo en prueba</span>
-      <p>Lo marcado como <b>Ejemplo</b> es contenido de muestra. No son personas reales.</p>
-      <button type="button" className="linkbtn" onClick={cerrar}>Entendido</button>
+      <p><span className="ej-pill">Prueba</span>Lo marcado como <b>Ejemplo</b> no son personas reales.</p>
+      <button type="button" className="iconbtn" onClick={cerrar} aria-label="Cerrar aviso"><Icon n="x" s={16} /></button>
     </aside>
   )
 }
@@ -243,6 +250,7 @@ export function Post({ post, nav, pedirPerfil }) {
   const cta = post.tipo === 'need' ? 'Puedo ayudar' : 'Me interesa'
   const [titular, cuerpo] = dividirTexto(post.texto)
   const vence = quedan(post.vence_en)
+  const resuelta = !!post.resuelta_at
 
   const escribir = () => pedirPerfil('Necesitas un carnet para escribirle. Así sabe quién eres.', async () => {
     if (autor?.es_ejemplo) { marcarPractica(); toast('Esta publicación es de ejemplo. Con una persona real se abre WhatsApp con un mensaje listo.'); return }
@@ -259,13 +267,24 @@ export function Post({ post, nav, pedirPerfil }) {
     try { await c.alternarMeSirve(post.id) } catch (e) { toast(e.message, true) }
   })
 
+  const compartir = () => {
+    const url = `${location.origin}/?carnet=${post.autor_id}`
+    const txt = post.tipo === 'need'
+      ? `Estoy buscando ayuda con esto: “${post.texto}”. Si sabes de alguien, mi publicación está en Colmena: ${url}`
+      : `Ofrezco esto: “${post.texto}”. Escríbeme por Colmena: ${url}`
+    window.open(waLink('', txt), '_blank', 'noopener')
+  }
+  const alternarResuelta = async () => {
+    try { await c.marcarResuelta(post.id, !resuelta); toast(resuelta ? 'Publicación activa otra vez' : 'Marcada como resuelta') } catch (e) { toast(e.message, true) }
+  }
+
   const borrar = async () => {
     if (!confirm('¿Borrar esta publicación?')) return
     try { await c.borrarPublicacion(post.id); toast('Publicación borrada') } catch (e) { toast(e.message, true) }
   }
 
   return (
-    <article className="post">
+    <article className={'post' + (resuelta ? ' resuelta' : '')}>
       <div className="post-top">
         <button type="button" className="who" onClick={() => autor && nav({ t: 'carnet', id: autor.id })}>
           <Hex p={autor} w={40} h={44} fs={14} />
@@ -277,18 +296,19 @@ export function Post({ post, nav, pedirPerfil }) {
       </div>
       <div className="post-meta">
         <span className={'pill ' + post.tipo}>{post.tipo === 'need' ? 'Necesito' : 'Ofrezco'}</span>
+        {resuelta && <span className="pill ok"><Icon n="check" s={12} w={3} />Resuelta</span>}
         <span className="when">{hace(post.created_at)}</span>
       </div>
       <p className="post-lead">{titular}</p>
       {cuerpo && <p className="post-body">{cuerpo}</p>}
       <div className="post-tags">
         {post.categorias.map((t) => <span key={t} className="tag">{t}</span>)}
-        {vence && <span className="vence"><Icon n="hour" s={13} />{vence}</span>}
+        {vence && !resuelta && <span className="vence"><Icon n="hour" s={13} />{vence}</span>}
       </div>
       <div className="post-foot">
-        <button type="button" className="sirve" aria-pressed={!!meSirveYa} onClick={toggleSirve} disabled={mio}>
+        {!mio && <button type="button" className="sirve" aria-pressed={!!meSirveYa} onClick={toggleSirve}>
           <Icon n="thumb" s={16} w={meSirveYa ? 2.2 : 1.7} />Útil{sirve.length > 0 && <b>{sirve.length}</b>}
-        </button>
+        </button>}
         {escribieron.length > 0 && !mio && (
           <span className="wrote">
             <span className="stack">{escribieron.slice(0, 3).map((a) => <Hex key={a.perfil_id} p={c.perfil(a.perfil_id)} w={20} fs={8} />)}</span>
@@ -296,12 +316,18 @@ export function Post({ post, nav, pedirPerfil }) {
           </span>
         )}
         {mio ? (
-          <span className="mine">
-            <button type="button" className="btn dark sm" onClick={() => nav({ t: 'publicado', postId: post.id })}>
-              {escribieron.length ? `${escribieron.length} ${escribieron.length === 1 ? 'te escribió' : 'te escribieron'}` : 'Sin respuestas todavía'}
+          <div className="mine">
+            <button type="button" className="mine-r" onClick={() => nav({ t: 'publicado', postId: post.id })}>
+              {escribieron.length ? `${escribieron.length} ${escribieron.length === 1 ? 'te escribió' : 'te escribieron'}` : 'Sin respuestas todavía'}<Icon n="right" s={14} w={2} />
             </button>
-            <button type="button" className="iconbtn" onClick={borrar} aria-label="Borrar publicación"><Icon n="trash" s={18} /></button>
-          </span>
+            <div className="mine-acc">
+              {!resuelta && <button type="button" className="btn ghost sm" onClick={compartir}><Icon n="wa" s={16} />Compartir</button>}
+              <button type="button" className={'btn sm ' + (resuelta ? 'ghost' : 'dark')} onClick={alternarResuelta}>{resuelta ? 'Reabrir' : <><Icon n="check" s={15} w={2.4} />Resuelta</>}</button>
+              <button type="button" className="iconbtn" onClick={borrar} aria-label="Borrar publicación"><Icon n="trash" s={18} /></button>
+            </div>
+          </div>
+        ) : resuelta ? (
+          <span className="fine">Ya lo resolvió</span>
         ) : (
           <button type="button" className={'btn sm ' + (yaEscribi ? 'dark' : 'primary')} onClick={escribir}>
             <Icon n="wa" s={17} />{yaEscribi ? 'Escribir otra vez' : cta}

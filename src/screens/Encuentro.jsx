@@ -14,6 +14,7 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
     <>
       <Header title="Encuentro" sub="El reto, el panal y el encuentro del mes" right={headerRight} />
       <div className="body fade">
+        <Ticket pedirPerfil={pedirPerfil} />
         <div className="route" aria-label={`Vas en la semana ${semana} del mes`}>
           {ruta.map(([t, i]) => (
             <div key={t} className={'node' + (i < semana ? ' done' : i === semana ? ' now' : '') + (i === 4 ? ' end' : '')}>
@@ -25,10 +26,9 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
         </div>
         <p className="fine center">Tres semanas en la app y un encuentro presencial al final del mes.</p>
 
-        <PanalGrande irTab={irTab} />
         <RetoCard irTab={irTab} pedirPerfil={pedirPerfil} completo />
         <Propuestas nav={nav} pedirPerfil={pedirPerfil} />
-        <Ticket pedirPerfil={pedirPerfil} />
+        <PanalGrande irTab={irTab} />
       </div>
     </>
   )

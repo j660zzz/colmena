@@ -3,13 +3,14 @@ import { TOOLS, TOOLCATS } from '../data/contenido'
 import { cop } from '../lib/format'
 import { Icon, Header, SubHeader, useToast } from '../components/ui'
 import { marcarCalcAbierta } from './Onboarding'
+import { SeccionBeneficios } from './Beneficios'
 
 const K_LEIDAS = 'colmena.leidas.v1'
 const leidas = () => { try { return JSON.parse(localStorage.getItem(K_LEIDAS) || '[]') } catch { return [] } }
 const marcarLeida = (id) => { try { const l = leidas(); if (!l.includes(id)) localStorage.setItem(K_LEIDAS, JSON.stringify([...l, id])) } catch { /* nada */ } }
 const ICONO = { Precio: 'note', Ventas: 'trend', Legal: 'seal', Marca: 'spark' }
 
-export default function Herramientas({ nav, headerRight }) {
+export default function Herramientas({ nav, headerRight, pedirPerfil }) {
   const [cat, setCat] = useState(null)
   const ya = leidas()
   const lista = cat ? TOOLS.filter((t) => t.cat === cat) : TOOLS
@@ -17,8 +18,11 @@ export default function Herramientas({ nav, headerRight }) {
   const n = TOOLS.filter((t) => ya.includes(t.id)).length
   return (
     <>
-      <Header title="Herramientas" sub="Guías y plantillas para tu emprendimiento" right={headerRight} />
+      <Header title="Beneficios" sub="Descuentos, aliados y herramientas para tu emprendimiento" right={headerRight} />
       <div className="body fade">
+        <SeccionBeneficios pedirPerfil={pedirPerfil} nav={nav} />
+
+        <div className="sec-h"><h3>Herramientas</h3></div>
         <button type="button" className="feature" onClick={() => nav({ t: 'calc' })}>
           <span className="dollar" aria-hidden="true">$</span>
           <span className="k">Calculadora</span>
