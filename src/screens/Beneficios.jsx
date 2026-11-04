@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useEstadoVista } from '../lib/vista'
 import { useColmena } from '../lib/store'
 import { carnetId } from '../lib/format'
 import { normal } from '../lib/logic'
@@ -64,8 +65,8 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
   const c = useColmena()
   const [abierto, setAbierto] = useState(null)
   const [proponer, setProponer] = useState(false)
-  const [filtro, setFiltro] = useState('todo')
-  const [q, setQ] = useState('')
+  const [filtro, setFiltro] = useEstadoVista('beneficios.filtro', 'todo')
+  const [q, setQ] = useEstadoVista('beneficios.q', '')
   const [mios, alternarMio] = useMios()
   const arriba = useRef(null)
 

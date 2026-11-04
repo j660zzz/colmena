@@ -24,6 +24,11 @@ if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
   let recargado = false
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (recargado) return
+    // No interrumpir una edición ni una escritura pendiente con una recarga.
+    if (document.querySelector('form, dialog[open]')) {
+      window.dispatchEvent(new Event('colmena-actualizacion'))
+      return
+    }
     recargado = true
     window.location.reload()
   })

@@ -16,7 +16,7 @@ export default function Talleres({ pedirPerfil }) {
   return (
     <section className="talleres" aria-label="Talleres">
       <div className="sec-h"><h3>Talleres</h3><button type="button" className="ver" onClick={() => setDictar(true)}>Dicta uno</button></div>
-      <p className="soft">Aprende lo que tu emprendimiento necesita, con otros miembros.</p>
+      <p className="soft">Aprende lo que tu emprendimiento necesita, con otros miembros. Toca Me interesa para ayudarnos a elegir qué taller programar.</p>
       <div className="tall-pista">
         {c.talleres.map((t, i) => <TallerCard key={t.id} t={t} i={i} onClick={() => setAbierto(t)} pedirPerfil={pedirPerfil} />)}
       </div>

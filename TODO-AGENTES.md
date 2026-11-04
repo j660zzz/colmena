@@ -2,6 +2,16 @@
 
 Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claude.
 
+## Fiabilidad de los flujos (Codex, autorizada por Jhon)
+- [x] Carga por pantalla, límite de espera, recuperación y estados de error sin cifras no verificadas.
+- [x] Borradores de registro/publicación, Atrás coherente y conservación de búsquedas, filtros y lectura.
+- [x] Borrado confirmado, enlaces directos a publicaciones y confirmaciones independientes de las recargas de datos.
+- [x] Foco y movimiento reducido en bienvenida; controles revisados de 44 px; textos de calculadora y registro.
+- [x] Pantallas diferidas y PWA utilizable sin conexión para herramientas locales; proteger edición ante actualización.
+- [x] Build y QA con 41 comprobaciones correctas y capturas a 390 × 844. Detalle: `docs/fiabilidad-flujos/README.md`.
+- [ ] Revisión de Jhon y PR contra `main`; no fusionar sin su indicación.
+- [ ] Comprobar estos flujos en iPhone/Android físicos con teclado virtual y lector de pantalla; sin escrituras de prueba en producción.
+
 ## Diseño (Antigravity / Gemini)
 - [x] Bienvenida: animación de entrada de las celdas, respetando `prefers-reduced-motion` (Claude, rediseño de la bienvenida tipo pase desbloqueado).
 - [ ] Muro: microinteracción al tocar "Puedo ayudar" (la celda se llena). Hecho por Claude en `diseno/muro-pulido`: la publicación nueva entra desde arriba, "Útil" se rellena al marcarlo y las hojas suben con movimiento corto.

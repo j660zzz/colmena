@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS, SUGERENCIAS } from '../data/contenido'
 import { carnetId } from '../lib/format'
 import { completitud, manosDadas } from '../lib/logic'
 import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
 import { GuardarCarnet, RecuperarCarnet } from '../components/Cuenta'
+import { leerBorrador, guardarBorrador, borrarBorrador } from '../lib/vista'
 import { COBRO, CobroIconos, CobroInsignia, QUE_ES_INTERCAMBIAR } from '../components/Cobro'
 
 const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
@@ -58,12 +59,29 @@ export function CarnetCard({ p, numero, nota, estado }) {
   )
 }
 
-export default function Registro({ motivo, onBack, onListo }) {
+export default function Registro({ motivo, onBack, onListo, registroAtras }) {
   const c = useColmena()
-  const [paso, setPaso] = useState(1)
-  const [f, setF] = useState({ nombre: '', marca: '', rol: '', whatsapp: '', instagram: '', categorias: [], habilidades: [] })
+  const clave = 'colmena.borrador.registro.v1'
+  const [borrador] = useState(() => leerBorrador(clave, {}))
+  const [paso, setPaso] = useState(() => Math.max(1, Math.min(3, borrador.paso || 1)))
+  const formulario = useRef(null)
+  const [f, setF] = useState(() => ({ nombre: '', marca: '', rol: '', whatsapp: '', instagram: '', categorias: [], habilidades: [], ...borrador.f }))
   const [nueva, setNueva] = useState('')
-  const [acepto, setAcepto] = useState(false)
+  const [acepto, setAcepto] = useState(borrador.acepto || false)
+  useEffect(() => { guardarBorrador(clave, { paso, f, acepto }) }, [paso, f, acepto])
+  useEffect(() => {
+    if (!registroAtras) return
+    registroAtras.current = () => {
+      if (paso <= 1) return false
+      setPaso((p) => p - 1)
+      return true
+    }
+    return () => { registroAtras.current = null }
+  }, [paso, registroAtras])
+  useEffect(() => {
+    const el = formulario.current
+    if (el) { el.scrollTop = 0; el.querySelector('input, button')?.focus({ preventScroll: true }) }
+  }, [paso])
   const [enviando, setEnviando] = useState(false)
   const [err, setErr] = useState('')
   const set = (k) => (e) => setF({ ...f, [k]: k === 'whatsapp' ? fmtWa(e.target.value) : e.target.value })
@@ -92,6 +110,7 @@ export default function Registro({ motivo, onBack, onListo }) {
         ...f, instagram: limpiarIg(f.instagram),
         habilidades: f.habilidades
       })
+      borrarBorrador(clave)
       onListo()
     } catch (x) { setErr(x.message) } finally { setEnviando(false) }
   }
@@ -102,7 +121,7 @@ export default function Registro({ motivo, onBack, onListo }) {
     <>
       <SubHeader title="Crea tu carnet" onBack={paso > 1 ? () => setPaso(paso - 1) : onBack} />
       <div className="steps-bar" aria-hidden="true">{[1, 2, 3].map((i) => <i key={i} className={i <= paso ? 'on' : ''} />)}</div>
-      <form className="body fade" onSubmit={siguiente}>
+      <form ref={formulario} className="body fade" onSubmit={siguiente}>
         <CarnetCard p={f} nota="Vista previa" estado="Por crear" />
         <p className="step-t">Paso {paso} de 3 · {titulos[paso]}</p>
         {paso === 1 && motivo && <p className="soft">{motivo}</p>}
@@ -138,7 +157,7 @@ export default function Registro({ motivo, onBack, onListo }) {
               <label className="consent">
                 <input type="checkbox" checked={acepto} onChange={(e) => setAcepto(e.target.checked)} />
                 <span>
-                  Acepto que mi nombre, marca, rol, habilidades y WhatsApp sean visibles para los miembros de Colmena.
+                  Acepto que mi nombre, marca, rol y habilidades sean públicos. Mi WhatsApp solo se comparte con otros miembros de Colmena.
                   Prototipo académico del Proyecto de Grado de Diseño de Comunicación Visual, Pontificia Universidad Javeriana Cali.
                   Mis datos se usan solo dentro de la app y para analizar su uso de forma agregada, conforme a la <u>Ley 1581 de 2012</u>.
                   Puedo borrar mi perfil cuando quiera desde mi carnet.
@@ -197,7 +216,7 @@ export function CarnetListo({ onMuro, onSeguir }) {
   const c = useColmena()
   const toast = useToast()
   const yo = c.yo
-  if (!yo) return null
+  if (!yo) return <div className="body"><h1>Tu carnet se creó</h1><p>No pudimos actualizar tus datos. Tu carnet está guardado en este navegador.</p><button className="btn ink" onClick={() => c.reintentar(['perfiles'])}>Reintentar</button></div>
   const { pct, faltan } = completitud(yo)
   const compartir = async () => {
     const url = `${location.origin}/?carnet=${yo.id}`

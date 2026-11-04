@@ -71,14 +71,15 @@ function Cuenta({ n, activo }) {
 }
 
 // Demo del muro: alguien pide, otro toca "Puedo ayudar" y se abre el chat; luego lo mismo con Ofrezco
-function DemoMuro({ activo, pausa }) {
+function DemoMuro({ activo, pausa, quieto }) {
   const [paso, setPaso] = useState(0)
   useEffect(() => {
     if (!activo) { setPaso(0); return }
+    if (quieto) { setPaso(0); return }
     if (pausa) return
     const t = setTimeout(() => setPaso((p) => (p + 1) % 6), paso === 5 ? 1800 : 1400)
     return () => clearTimeout(t)
-  }, [activo, pausa, paso])
+  }, [activo, pausa, paso, quieto])
   const ofrezco = paso >= 3
   const fase = paso % 3 // 0: publicación, 1: toca el botón, 2: chat
   const x = ofrezco
@@ -103,7 +104,37 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
   const [i, setI] = useState(0)
   const [pausa, setPausa] = useState(false)
   const [quieto] = useState(() => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false } })
+  const dialogo = useRef(null)
   const toque = useRef({ x: 0, t: 0 })
+  // El fondo no recibe foco ni toques mientras se muestra la bienvenida.
+  useEffect(() => {
+    const el = dialogo.current
+    const anterior = document.activeElement
+    const originales = new Map()
+    const aislar = () => {
+      for (const hermano of el.parentElement.children) {
+        if (hermano === el) continue
+        if (!originales.has(hermano)) originales.set(hermano, hermano.inert)
+        hermano.inert = true
+      }
+    }
+    aislar()
+    const observer = new MutationObserver(aislar)
+    observer.observe(el.parentElement, { childList: true })
+    el.querySelector('button')?.focus({ preventScroll: true })
+    return () => {
+      observer.disconnect()
+      originales.forEach((valor, hermano) => { hermano.inert = valor })
+      if (anterior?.isConnected) anterior.focus({ preventScroll: true })
+    }
+  }, [])
+  const confinarFoco = (e) => {
+    if (e.key !== 'Tab') return
+    const botones = [...dialogo.current.querySelectorAll('button, a[href]')].filter((el) => el.checkVisibility() && !el.disabled)
+    const primero = botones[0], ultimo = botones[botones.length - 1]
+    if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo?.focus() }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero?.focus() }
+  }
   const total = SLIDES.length
   const ultimo = i === total - 1
   const actual = SLIDES[i]
@@ -144,7 +175,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
   const on = (k) => (i === k ? ' on' : '')
 
   return (
-    <div className={'intro' + (actual.oscura ? ' oscura' : '') + (pausa ? ' pausa' : '')} role="dialog" aria-modal="true" aria-label="Bienvenida a Colmena">
+    <div ref={dialogo} onKeyDown={confinarFoco} className={'intro' + (actual.oscura ? ' oscura' : '') + (pausa ? ' pausa' : '')} role="dialog" aria-modal="true" aria-label="Bienvenida a Colmena">
       <div className="intro-top">
         <div className="intro-prog" aria-hidden="true">
           {SLIDES.map((x, k) => <i key={x.k} className={k < i ? 'ok' : k === i ? 'on' : ''} style={{ '--dur': `${x.dur || 300}ms` }} />)}
@@ -170,7 +201,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
         <section className={'intro-slide' + on(1)} aria-label="Cómo funciona el muro" aria-hidden={i !== 1}>
           <span className="eyebrow a-up" style={{ '--d': 0 }}>El muro</span>
           <h1 className="intro-h a-up" style={{ '--d': 1 }}>Pide ayuda u ofrece lo que sabes.</h1>
-          <DemoMuro activo={i === 1} pausa={pausa} />
+          <DemoMuro activo={i === 1} pausa={pausa} quieto={quieto} />
           <p className="intro-p a-up" style={{ '--d': 3 }}>Tocas <b>Puedo ayudar</b> o <b>Me interesa</b> y se abre WhatsApp con el mensaje listo. Sin comisiones.</p>
         </section>
 
@@ -221,7 +252,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
             <span className="mono">COL-····</span>
           </div>
           <span className="eyebrow a-up" style={{ '--d': 3 }}>Tu carnet</span>
-          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Crea tu carnet en un minuto.</h1>
+          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Crea tu carnet en 3 pasos.</h1>
           <p className="intro-p a-up" style={{ '--d': 5 }}>Con él publicas, escribes a otros miembros y subes de nivel cuando ayudas. Sin contraseña.</p>
         </section>
       </div>

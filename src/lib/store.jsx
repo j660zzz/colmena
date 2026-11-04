@@ -25,15 +25,33 @@ const K_CUENTA = 'colmena.cuenta.pendiente'
 const DOMINIO = '@javerianacali.edu.co'
 async function microsoftActivo() {
   try {
-    const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY } })
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY }, signal: AbortSignal.timeout(6000) })
+    if (!r.ok) throw new Error('configuración no disponible')
     return !!(await r.json())?.external?.azure
-  } catch { return false }
+  } catch { throw new Error('No pudimos comprobar el inicio de sesión. Revisa tu conexión e inténtalo otra vez.') }
 }
 
+const GRUPOS = {
+  muro: ['perfiles', 'publicaciones', 'ayudas', 'meSirve', 'beneficios', 'reto', 'encuentro', 'talleres', 'asistencias', 'participantes'],
+  miembros: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
+  encuentro: ['perfiles', 'encuentro', 'asistencias', 'talleres', 'interes', 'convocatorias', 'reto', 'participantes', 'votos'],
+  herramientas: ['beneficios'],
+  carnet: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
+  calc: [], ficha: [], registro: [], listo: ['perfiles'], editar: ['perfiles'],
+  publicado: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas'],
+  publicacion: ['perfiles', 'publicaciones', 'ayudas', 'meSirve'],
+  mostrar: ['perfiles'], calificar: ['perfiles', 'publicaciones', 'resenas']
+}
+const VIGENCIA = 60000
+
 async function q(promise) {
-  const { data, error } = await promise
-  if (error) throw error
-  return data
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 6000)
+  try {
+    const { data, error } = await promise.retry(false).abortSignal(controller.signal)
+    if (error) throw error
+    return data
+  } finally { clearTimeout(timer) }
 }
 
 export function ColmenaProvider({ children }) {
@@ -56,12 +74,16 @@ export function ColmenaProvider({ children }) {
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
   const [cuenta, setCuenta] = useState(null)
   const [avisoCuenta, setAvisoCuenta] = useState(null)
-  const [cargando, setCargando] = useState(true)
-  const [errorRed, setErrorRed] = useState(null)
+  const [datos, setDatos] = useState({})
+  const datosRef = useRef({})
+  const solicitudes = useRef(new Map())
+  const activos = useRef([])
+  const montado = useRef(true)
+  const cargando = !datos.perfiles?.disponible
   const perfilesRef = useRef(perfiles)
   perfilesRef.current = perfiles
 
-  const cargar = {
+  const fuentes = {
     perfiles: async () => setPerfiles(await q(supabase.from('perfiles').select(PERFIL_COLS).order('created_at', { ascending: false }))),
     publicaciones: async () => setPublicaciones(await q(supabase.from('publicaciones').select('*').order('created_at', { ascending: false }).limit(300))),
     ayudas: async () => setAyudas(await q(supabase.from('ayudas').select('*'))),
@@ -85,20 +107,42 @@ export function ColmenaProvider({ children }) {
     }
   }
 
-  // Carga todo; si algo falla (red del celular que se despierta, por ejemplo) reintenta solo lo que falló
-  const cargarTodo = useCallback(async () => {
-    let pendientes = Object.entries(cargar)
-    for (let intento = 0; intento < 3 && pendientes.length; intento++) {
-      if (intento) await new Promise((r) => setTimeout(r, 1200 * intento))
-      const res = await Promise.allSettled(pendientes.map(([, f]) => f()))
-      res.forEach((r, i) => { if (r.status === 'rejected') console.warn('Colmena: falló', pendientes[i][0], r.reason) })
-      pendientes = pendientes.filter((_, i) => res[i].status === 'rejected')
+  // Cada fuente se resuelve por separado; las lecturas se deduplican y tienen plazo.
+  const cargar = Object.fromEntries(Object.entries(fuentes).map(([nombre, leer]) => [nombre, () => {
+    if (solicitudes.current.has(nombre)) return solicitudes.current.get(nombre)
+    const actualizar = (cambio) => {
+      if (!montado.current) return
+      datosRef.current = { ...datosRef.current, [nombre]: { ...datosRef.current[nombre], ...cambio } }
+      setDatos(datosRef.current)
     }
-    setErrorRed(pendientes.length ? 'No se pudo conectar. Revisa tu conexión.' : null)
-    setCargando(false)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    actualizar({ estado: 'cargando', intento: Date.now() })
+    const tarea = leer().then(() => actualizar({ estado: 'listo', disponible: true, fecha: Date.now() }))
+      .catch(() => actualizar({ estado: 'error' }))
+      .finally(() => solicitudes.current.delete(nombre))
+    solicitudes.current.set(nombre, tarea)
+    return tarea
+  }]))
 
-  useEffect(() => { cargarTodo() }, [cargarTodo])
+  const asegurarDatos = useCallback((pantalla) => {
+    activos.current = [...(GRUPOS[pantalla] || GRUPOS.muro)]
+    if (pantalla === 'muro' && sesionRef.current) activos.current.push('resenas')
+    activos.current.forEach((nombre) => {
+      const dato = datosRef.current[nombre]
+      if (!dato || (dato.estado !== 'error' && Date.now() - Math.max(dato.fecha || 0, dato.intento || 0) > VIGENCIA)) cargar[nombre]()
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const cargarTodo = useCallback(() => {
+    const fallidos = Object.keys(datosRef.current).filter((n) => datosRef.current[n].estado === 'error')
+    return Promise.all((fallidos.length ? fallidos : activos.current).map((nombre) => cargar[nombre]()))
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const reintentar = (nombres) => Promise.all(nombres.map((nombre) => cargar[nombre]()))
+  const errorRed = Object.values(datos).some((d) => d.estado === 'error' && d.disponible)
+    ? 'No pudimos actualizar algunos datos.' : null
+
+  useEffect(() => {
+    montado.current = true
+    return () => { montado.current = false }
+  }, [])
 
   // Si llega actividad de alguien que aún no está en la lista, se recargan los perfiles
   const asegurar = (id) => { if (id && !perfilesRef.current.some((x) => x.id === id)) cargar.perfiles() }
@@ -118,8 +162,16 @@ export function ColmenaProvider({ children }) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'asistencias' }, () => cargar.asistencias())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'taller_interes' }, (p) => { cargar.interes(); asegurar(p.new?.perfil_id) })
       .subscribe()
-    const t = setInterval(() => { cargar.perfiles(); cargar.resenas(); cargarPendientes() }, 45000)
-    const vis = () => { if (document.visibilityState === 'visible') cargarTodo() }
+    const refrescar = () => {
+      if (document.visibilityState !== 'visible') return
+      activos.current.forEach((nombre) => {
+        const dato = datosRef.current[nombre]
+        if (dato && Date.now() - Math.max(dato.fecha || 0, dato.intento || 0) > VIGENCIA) cargar[nombre]()
+      })
+      if (sesionRef.current) cargarPendientes()
+    }
+    const t = setInterval(refrescar, VIGENCIA)
+    const vis = refrescar
     document.addEventListener('visibilitychange', vis)
     return () => { supabase.removeChannel(ch); clearInterval(t); document.removeEventListener('visibilitychange', vis) }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -132,8 +184,8 @@ export function ColmenaProvider({ children }) {
 
   // Si el perfil guardado ya no existe en la base (lo borraron), se limpia la sesión
   useEffect(() => {
-    if (!cargando && sesion && perfiles.length && !yo) { borrarSesion(); setSesion(null) }
-  }, [cargando, sesion, perfiles, yo])
+    if (datos.perfiles?.estado === 'listo' && sesion && !yo) { borrarSesion(); setSesion(null) }
+  }, [datos.perfiles, sesion, perfiles, yo])
 
   const rpc = async (fn, args) => {
     const s = sesionRef.current
@@ -305,8 +357,8 @@ export function ColmenaProvider({ children }) {
       try { await rpc('marcar_resuelta', { p_post: id, p_resuelta: resuelta }) } catch (e) { cargar.publicaciones(); throw e }
     },
     async borrarPublicacion(id) {
-      setPublicaciones((l) => l.filter((p) => p.id !== id))
       await rpc('borrar_publicacion', { p_post: id })
+      setPublicaciones((l) => l.filter((p) => p.id !== id))
     },
     async alternarAyuda(postId) {
       const ya = ayudas.some((a) => a.publicacion_id === postId && a.perfil_id === sesionRef.current.id)
@@ -335,7 +387,12 @@ export function ColmenaProvider({ children }) {
     sesion, yo, beneficios, convocatorias, talleres, interes, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
     cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
-    cargando, errorRed, recargar: cargarTodo, ...acciones,
+    cargando, datos, asegurarDatos, reintentar, errorRed, recargar: cargarTodo, ...acciones,
+    cargarPublicacion: async (id) => {
+      const post = await q(supabase.from('publicaciones').select('*').eq('id', id).maybeSingle())
+      if (post) setPublicaciones((lista) => [...lista.filter((p) => p.id !== id), post])
+      return post
+    },
     perfil: (id) => perfiles.find((p) => p.id === id)
   }
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>

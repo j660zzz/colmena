@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { firstName } from '../lib/format'
 import { activa, activoSemana, manosDadas, quienesPueden, normal, nivelDe, puntosDe } from '../lib/logic'
 import { Icon, Hex, Ejemplo, Header, Titulo, Empty, Mark } from '../components/ui'
+import { useEstadoVista, useScrollVista } from '../lib/vista'
 import { statsDe } from './Carnet'
 import { CobroInsignia } from '../components/Cobro'
 
@@ -11,10 +12,11 @@ const MODOS = [['todos', 'Todos'], ['disponibles', 'Disponibles'], ['intercambio
 
 export default function Miembros({ nav, headerRight }) {
   const c = useColmena()
-  const [q, setQ] = useState('')
-  const [cat, setCat] = useState(null)
-  const [modo, setModo] = useState('todos')
+  const [q, setQ] = useEstadoVista('miembros.q', '')
+  const [cat, setCat] = useEstadoVista('miembros.cat', null)
+  const [modo, setModo] = useEstadoVista('miembros.modo', 'todos')
   const buscador = useRef(null)
+  const scroll = useScrollVista('miembros.scroll')
 
   const ordenados = useMemo(() => [...c.perfiles].sort((a, b) =>
     (a.es_ejemplo - b.es_ejemplo) || ((nivelDe(c, b.id).n >= 5) - (nivelDe(c, a.id).n >= 5)) || (puntosDe(c, b.id).total - puntosDe(c, a.id).total) || (new Date(b.created_at) - new Date(a.created_at))), [c.perfiles, c.ayudas, c.participantes, c.asistencias, c.resenas]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -41,7 +43,7 @@ export default function Miembros({ nav, headerRight }) {
   return (
     <>
       <Header right={headerRight} />
-      <div className="body fade">
+      <div className="body fade" ref={scroll}>
         <Titulo title="Miembros" sub="Encuentra a quien sabe lo que necesitas." />
         <div className="search">
           <Icon n="search" s={19} />

@@ -1,18 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import { useColmena } from './lib/store'
-import { Icon, Hex, ToastProvider, Sheet, SubHeader, useToast } from './components/ui'
-import Muro, { Composer } from './screens/Muro'
-import Publicado from './screens/Publicado'
-import Miembros from './screens/Miembros'
-import Carnet from './screens/Carnet'
-import MiCarnet from './screens/MiCarnet'
-import Calificar from './screens/Calificar'
-import Encuentro from './screens/Encuentro'
-import Herramientas, { Ficha, Calculadora } from './screens/Herramientas'
-import Registro, { CarnetListo, Editar } from './screens/Registro'
+import { Icon, Hex, ToastProvider, Sheet, SubHeader, Header, Empty, useToast } from './components/ui'
+import Muro, { Composer, Publicacion } from './screens/Muro'
 import { Bienvenida, Ayuda, introVista, marcarIntroVista } from './screens/Onboarding'
-import { CarnetParaMostrar } from './screens/Beneficios'
 import { AvisoNivel } from './components/Nivel'
+import { CargaPantalla, PantallaDatos } from './components/EstadoDatos'
+const Publicado = lazy(() => import('./screens/Publicado'))
+const Miembros = lazy(() => import('./screens/Miembros'))
+const Carnet = lazy(() => import('./screens/Carnet'))
+const MiCarnet = lazy(() => import('./screens/MiCarnet'))
+const Calificar = lazy(() => import('./screens/Calificar'))
+const Encuentro = lazy(() => import('./screens/Encuentro'))
+const Herramientas = lazy(() => import('./screens/Herramientas'))
+const Ficha = lazy(() => import('./screens/Herramientas').then((m) => ({ default: m.Ficha })))
+const Calculadora = lazy(() => import('./screens/Herramientas').then((m) => ({ default: m.Calculadora })))
+const Registro = lazy(() => import('./screens/Registro'))
+const CarnetListo = lazy(() => import('./screens/Registro').then((m) => ({ default: m.CarnetListo })))
+const Editar = lazy(() => import('./screens/Registro').then((m) => ({ default: m.Editar })))
+const CarnetParaMostrar = lazy(() => import('./screens/Beneficios').then((m) => ({ default: m.CarnetParaMostrar })))
 
 const TABS = [
   { id: 'muro', label: 'Muro', ic: 'wall' },
@@ -23,7 +28,10 @@ const TABS = [
 ]
 
 function subInicial() {
-  const id = new URLSearchParams(location.search).get('carnet')
+  const params = new URLSearchParams(location.search)
+  const post = params.get('publicacion')
+  if (post) return [{ t: 'publicacion', id: post }]
+  const id = params.get('carnet')
   return id ? [{ t: 'carnet', id }] : []
 }
 
@@ -44,6 +52,14 @@ function Shell() {
   const [intro, setIntro] = useState(() => !introVista() && !subInicial().length)
   const [ayuda, setAyuda] = useState(null)
   const pendiente = useRef(null)
+  const registroAtras = useRef(null)
+  useEffect(() => {
+    const avisar = () => toast('Hay una nueva versión. Recarga cuando termines de editar.')
+    window.addEventListener('colmena-actualizacion', avisar)
+    return () => window.removeEventListener('colmena-actualizacion', avisar)
+  }, [toast])
+  const sub = pila[pila.length - 1]
+  useEffect(() => { c.asegurarDatos(sub?.t || tab) }, [tab, sub?.t, c.asegurarDatos])
 
   // Resultado de volver de iniciar sesión con el correo Javeriana
   useEffect(() => {
@@ -53,10 +69,10 @@ function Shell() {
     c.limpiarAvisoCuenta()
   }, [c.avisoCuenta]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const nav = useCallback((s) => { setPila((p) => [...p, s]); document.querySelector('.body')?.scrollTo(0, 0) }, [])
+  const nav = useCallback((s) => { setPila((p) => [...p, s]) }, [])
   const atras = useCallback(() => setPila((p) => p.slice(0, -1)), [])
   const reemplazar = useCallback((s) => setPila((p) => [...p.slice(0, -1), s]), [])
-  const irTab = useCallback((id) => { setTab(id); setPila([]); document.querySelector('.body')?.scrollTo(0, 0) }, [])
+  const irTab = useCallback((id) => { setTab(id); setPila([]) }, [])
 
   // Si no hay carnet, primero se saca y luego se sigue con lo que la persona quería hacer
   const pedirPerfil = useCallback((motivo, fn) => {
@@ -66,22 +82,32 @@ function Shell() {
   }, [c.yo])
 
   const abrirComposer = useCallback((prev = {}) => {
-    pedirPerfil('Necesitas un carnet para publicar.', () => setComposer({ tipo: 'need', texto: '', ...prev }))
+    pedirPerfil('Necesitas un carnet para publicar.', () => setComposer(prev))
   }, [pedirPerfil])
 
   const abrirAyuda = useCallback((tema = null) => setAyuda({ tema }), [])
   const cerrarIntro = () => { marcarIntroVista(); setIntro(false) }
 
   // Botón atrás del celular: vuelve una pantalla dentro de la app en vez de cerrarla
-  const enRaiz = tab === 'muro' && pila.length === 0
+  const enRaiz = tab === 'muro' && pila.length === 0 && !composer && !ayuda
   const guardia = useRef(false)
   const ignorar = useRef(false)
   const estado = useRef({})
-  estado.current = { pila, tab }
+  estado.current = { pila, tab, composer, ayuda }
   useEffect(() => {
     const alVolver = () => {
       if (ignorar.current) { ignorar.current = false; return }
-      const { pila: p, tab: t } = estado.current
+      const { pila: p, tab: t, composer: co, ayuda: ay } = estado.current
+      if (co || ay) {
+        setComposer(null); setAyuda(null)
+        if (p.length || t !== 'muro') history.pushState({ colmena: 1 }, '')
+        else guardia.current = false
+        return
+      }
+      if (p[p.length - 1]?.t === 'registro' && registroAtras.current?.()) {
+        history.pushState({ colmena: 1 }, '')
+        return
+      }
       const raizDespues = p.length ? (p.length === 1 && t === 'muro') : true
       if (p.length) setPila(p.slice(0, -1))
       else if (t !== 'muro') setTab('muro')
@@ -98,25 +124,8 @@ function Shell() {
   }, [enRaiz])
   useEffect(() => {
     // Quitar ?carnet= de la dirección para que recargar no vuelva a abrir ese carnet
-    if (location.search.includes('carnet=')) history.replaceState(history.state, '', location.pathname)
-  }, [])
-
-  // Mientras carga se ve la forma de la pantalla (bloques planos que pulsan), no una pantalla vacía
-  if (c.cargando) {
-    return (
-      <div className="esqueleto" aria-busy="true" aria-label="Cargando Colmena">
-        <div className="sk-head"><i className="sk sk-logo" /><i className="sk sk-btn" /></div>
-        <i className="sk sk-composer" />
-        {[0, 1, 2].map((k) => (
-          <div key={k} className="sk-post" style={{ '--k': k }}>
-            <div className="sk-who"><i className="sk sk-av" /><span><i className="sk sk-l1" /><i className="sk sk-l2" /></span></div>
-            <i className="sk sk-t1" /><i className="sk sk-t2" />
-            <div className="sk-foot"><i className="sk sk-b1" /><i className="sk sk-b2" /></div>
-          </div>
-        ))}
-      </div>
-    )
-  }
+    if (location.search.includes('carnet=') || (location.search.includes('publicacion=') && sub?.t !== 'publicacion')) history.replaceState(history.state, '', location.pathname)
+  }, [sub?.t])
 
   const avisos = c.pendientes.confirmar.length + c.pendientes.calificar.filter((x) => !x.yo_califique).length
   const headerRight = c.yo
@@ -131,13 +140,13 @@ function Shell() {
     : <button type="button" className="enter" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>
 
   const comun = { nav, atras, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }
-  const sub = pila[pila.length - 1]
   let pantalla
   const seguir = () => { const fn = pendiente.current; pendiente.current = null; setPila([]); if (fn) setTimeout(fn, 0) }
-  if (sub?.t === 'registro') pantalla = <Registro motivo={sub.motivo} onBack={() => { pendiente.current = null; atras() }} onListo={() => reemplazar({ t: 'listo' })} />
+  if (sub?.t === 'registro') pantalla = <Registro registroAtras={registroAtras} motivo={sub.motivo} onBack={() => { pendiente.current = null; atras() }} onListo={() => reemplazar({ t: 'listo' })} />
   else if (sub?.t === 'listo') pantalla = <CarnetListo onMuro={() => { pendiente.current = null; setPila([]); setTab('muro') }} onSeguir={pendiente.current ? seguir : null} />
   else if (sub?.t === 'editar') pantalla = <Editar onBack={atras} />
   else if (sub?.t === 'carnet') pantalla = <Carnet id={sub.id} onBack={atras} {...comun} />
+  else if (sub?.t === 'publicacion') pantalla = <Publicacion id={sub.id} onBack={atras} {...comun} />
   else if (sub?.t === 'publicado') pantalla = <Publicado postId={sub.postId} onBack={atras} {...comun} />
   else if (sub?.t === 'calificar') pantalla = <Calificar postId={sub.postId} otroId={sub.otro} onBack={atras} />
   else if (sub?.t === 'calc') pantalla = <Calculadora onBack={atras} abrirComposer={abrirComposer} />
@@ -149,17 +158,27 @@ function Shell() {
   else if (tab === 'herramientas') pantalla = <Herramientas {...comun} />
   else pantalla = <MiCarnet {...comun} />
 
+  const fuente = sub?.t || tab
+  const necesarias = ['muro', 'publicacion', 'publicado'].includes(fuente) ? ['perfiles', 'publicaciones']
+    : ['miembros', 'carnet'].includes(fuente) ? ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones']
+      : ['editar', 'mostrar', 'listo'].includes(fuente) ? ['perfiles'] : []
   const sinTabs = ['registro', 'listo', 'editar', 'calificar'].includes(sub?.t)
 
   return (
     <>
       <AvisoNivel />
       {c.errorRed && (
-        <button type="button" className="network-banner" onClick={c.recargar}>
+        <button type="button" className="network-banner" onClick={() => c.recargar()}>
           {c.errorRed} Toca para reintentar.
         </button>
       )}
-      {pantalla}
+      <Fragment key={(sub?.t || tab) + (sub?.id || sub?.postId || '')}>
+        <CargaPantalla>
+          <Suspense fallback={<><Header right={headerRight} /><div className="body" role="status"><Empty title="Cargando…" /></div></>}>
+            <PantallaDatos nombres={necesarias} headerRight={headerRight}>{pantalla}</PantallaDatos>
+          </Suspense>
+        </CargaPantalla>
+      </Fragment>
       {!sinTabs && (
         <nav className="tabbar" aria-label="Navegación principal">
           {TABS.map((t) => {

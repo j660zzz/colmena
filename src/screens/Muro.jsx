@@ -1,16 +1,18 @@
-import { Fragment, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { hace, firstName, igUrl, fechaLarga } from '../lib/format'
 import { activa, quedan, cierraEn, quienesTeNecesitan, waLink, cuantosEjemplo, nivelDe } from '../lib/logic'
-import { Icon, Hex, Ejemplo, BrandHeader, Empty, Mark, Sheet, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, BrandHeader, SubHeader, Empty, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
 import { CobroInsignia } from '../components/Cobro'
+import { useEstadoVista, useScrollVista, leerBorrador, guardarBorrador, borrarBorrador } from '../lib/vista'
 
 export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }) {
   const c = useColmena()
-  const [tipo, setTipo] = useState('todo')
-  const [cat, setCat] = useState(null)
+  const [tipo, setTipo] = useEstadoVista('muro.tipo', 'todo')
+  const [cat, setCat] = useEstadoVista('muro.cat', null)
+  const scroll = useScrollVista('muro.scroll')
 
   const activas = useMemo(() => c.publicaciones.filter((p) => activa(p)), [c.publicaciones])
   const lista = activas.filter((p) => (tipo === 'todo' || p.tipo === tipo) && (!cat || p.categorias.includes(cat)))
@@ -23,7 +25,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
   return (
     <>
       <BrandHeader right={headerRight} />
-      <div className="body fade muro-body">
+      <div className="body fade muro-body" ref={scroll}>
         {teNecesitan.length > 0 && (
           <button type="button" className="te-necesitan" onClick={() => { setTipo('need'); setCat(null); irLista() }}>
             <b><Mark>{teNecesitan.length} {teNecesitan.length === 1 ? 'persona necesita' : 'personas necesitan'}</Mark> lo que sabes hacer.</b>
@@ -104,12 +106,13 @@ function Portada({ irTab, pedirPerfil, activas, verPiden }) {
   const r = c.reto
   const retoAbierto = r && new Date(r.cierra_en).getTime() > Date.now()
   const yo = c.yo
-  const nv = yo ? nivelDe(c, yo.id) : null
+  const actividadLista = ['ayudas', 'publicaciones', 'participantes', 'asistencias', 'resenas'].every((n) => c.datos[n]?.disponible)
+  const nv = yo && actividadLista ? nivelDe(c, yo.id) : null
   const mias = yo ? activas.filter((p) => p.autor_id === yo.id).map((p) => p.id) : []
   const meEscribieron = yo ? c.ayudas.filter((a) => mias.includes(a.publicacion_id)).length : 0
 
   const tiles = [
-    { k: 'piden', ic: 'hand', n: piden.length, t: piden.length === 1 ? 'persona pide ayuda' : 'personas piden ayuda', nota: pidenEj ? `${pidenEj} de ejemplo` : null, go: verPiden },
+    c.datos.publicaciones?.disponible && c.datos.perfiles?.disponible && { k: 'piden', ic: 'hand', n: piden.length, t: piden.length === 1 ? 'persona pide ayuda' : 'personas piden ayuda', nota: pidenEj ? `${pidenEj} de ejemplo` : null, go: verPiden },
     nBen > 0 && { k: 'ben', ic: 'gift', n: nBen, t: 'beneficios de estudiante', nota: nGratis ? `${nGratis} gratis` : null, go: () => irTab('herramientas') },
     retoAbierto
       ? { k: 'reto', ic: 'spark', n: null, t: 'Reto de la semana', nota: cierraEn(r.cierra_en), go: () => irTab('encuentro') }
@@ -120,10 +123,10 @@ function Portada({ irTab, pedirPerfil, activas, verPiden }) {
     return (
       <section className="portada mia" aria-label="Lo tuyo">
         <button type="button" onClick={() => irTab('carnet')}>
-          <small>Tu nivel</small><b>{nv.n} · {nv.t}</b><span>{nv.sig ? `Te ${nv.faltan === 1 ? 'falta 1 punto' : `faltan ${nv.faltan} puntos`}` : 'Nivel más alto'}</span>
+          <small>Tu nivel</small><b>{nv ? `${nv.n} · ${nv.t}` : 'Ver tu carnet'}</b><span>{nv ? (nv.sig ? `Te ${nv.faltan === 1 ? 'falta 1 punto' : `faltan ${nv.faltan} puntos`}` : 'Nivel más alto') : 'Consulta tu actividad'}</span>
         </button>
         <button type="button" onClick={() => irTab('carnet')}>
-          <small>Te escribieron</small><b>{meEscribieron}</b><span>{mias.length ? `En ${mias.length} ${mias.length === 1 ? 'publicación' : 'publicaciones'}` : 'Publica para recibir ayuda'}</span>
+          <small>Te escribieron</small>{c.datos.ayudas?.disponible && <b>{meEscribieron}</b>}<span>{mias.length ? `En ${mias.length} ${mias.length === 1 ? 'publicación' : 'publicaciones'}` : 'Publica para recibir ayuda'}</span>
         </button>
       </section>
     )
@@ -323,7 +326,7 @@ export function Post({ post, nav, pedirPerfil }) {
   })
 
   const compartir = () => {
-    const url = `${location.origin}/?carnet=${post.autor_id}`
+    const url = `${location.origin}/?publicacion=${post.id}`
     const txt = post.tipo === 'need'
       ? `Estoy buscando ayuda con esto: “${post.texto}”. Si sabes de alguien, mi publicación está en Colmena: ${url}`
       : `Ofrezco esto: “${post.texto}”. Escríbeme por Colmena: ${url}`
@@ -333,9 +336,12 @@ export function Post({ post, nav, pedirPerfil }) {
     try { await c.marcarResuelta(post.id, !resuelta); toast(resuelta ? 'Tu publicación está activa otra vez' : 'Marcaste la publicación como resuelta') } catch (e) { toast(e.message, true) }
   }
 
+  const [borrando, setBorrando] = useState(false)
   const borrar = async () => {
+    if (borrando) return
     if (!confirm('¿Borrar esta publicación?')) return
-    try { await c.borrarPublicacion(post.id); toast('Publicación borrada') } catch (e) { toast(e.message, true) }
+    setBorrando(true)
+    try { await c.borrarPublicacion(post.id); toast('Publicación borrada') } catch (e) { toast(e.message, true) } finally { setBorrando(false) }
   }
 
   const corta = !cuerpo && titular.length <= 70
@@ -382,7 +388,7 @@ export function Post({ post, nav, pedirPerfil }) {
             <div className="mine-acc">
               {!resuelta && <button type="button" className="accion" onClick={compartir}><Icon n="wa" s={16} />Compartir</button>}
               <button type="button" className="accion" onClick={alternarResuelta}>{resuelta ? 'Reabrir' : <><Icon n="check" s={15} w={2.4} />Marcar resuelta</>}</button>
-              <button type="button" className="iconbtn" onClick={borrar} aria-label="Borrar publicación"><Icon n="trash" s={18} /></button>
+              <button type="button" className="iconbtn" onClick={borrar} disabled={borrando} aria-label={borrando ? 'Borrando publicación' : 'Borrar publicación'}><Icon n="trash" s={18} /></button>
             </div>
           </div>
         ) : resuelta ? (
@@ -408,10 +414,13 @@ export function dividirTexto(t) {
 const LIMITE = 120
 export function Composer({ inicial, onDone }) {
   const c = useColmena()
-  const [tipo, setTipo] = useState(inicial.tipo || 'need')
-  const [texto, setTexto] = useState(inicial.texto || '')
-  const [cats, setCats] = useState(inicial.cats || [])
-  const [dias, setDias] = useState(3)
+  const clave = `colmena.borrador.publicacion.${c.sesion?.id || 'visitante'}`
+  const [borrador] = useState(() => leerBorrador(clave, {}))
+  const [tipo, setTipo] = useState(inicial.tipo || borrador.tipo || 'need')
+  const [texto, setTexto] = useState(inicial.texto ?? borrador.texto ?? '')
+  const [cats, setCats] = useState(inicial.cats ?? borrador.cats ?? [])
+  const [dias, setDias] = useState(borrador.dias || 3)
+  useEffect(() => { guardarBorrador(clave, { tipo, texto, cats, dias }) }, [clave, tipo, texto, cats, dias])
   const [enviando, setEnviando] = useState(false)
   const [err, setErr] = useState('')
   const toggle = (x) => setCats((l) => l.includes(x) ? l.filter((y) => y !== x) : l.length < 3 ? [...l, x] : l)
@@ -419,7 +428,7 @@ export function Composer({ inicial, onDone }) {
 
   const publicar = async () => {
     setErr(''); setEnviando(true)
-    try { const id = await c.publicar(tipo, texto.trim(), cats, dias); onDone(id) }
+    try { const id = await c.publicar(tipo, texto.trim(), cats, dias); borrarBorrador(clave); onDone(id) }
     catch (e) { setErr(e.message) } finally { setEnviando(false) }
   }
 
@@ -456,4 +465,22 @@ export function Composer({ inicial, onDone }) {
       {!valido && texto.trim().length >= 5 && <p className="fine center">Elige al menos una categoría.</p>}
     </>
   )
+}
+
+// Enlace compartido: conserva el contexto de la publicación, también para visitantes.
+export function Publicacion({ id, onBack, nav, pedirPerfil }) {
+  const c = useColmena()
+  const post = c.publicaciones.find((p) => p.id === id)
+  const [estado, setEstado] = useState(post ? 'listo' : 'cargando')
+  const cargar = async () => {
+    setEstado('cargando')
+    try { await c.cargarPublicacion(id); setEstado('listo') } catch { setEstado('error') }
+  }
+  useEffect(() => { if (!post) cargar() }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+  return <><SubHeader title="Publicación" onBack={onBack} /><div className="body fade">
+    {post && activa(post) ? <Post post={post} nav={nav} pedirPerfil={pedirPerfil} />
+      : estado === 'cargando' ? <Empty title="Cargando publicación…" />
+      : estado === 'error' ? <Empty title="No pudimos cargar esta publicación" action={<button className="btn ink" onClick={cargar}>Reintentar</button>}>Revisa tu conexión e inténtalo otra vez.</Empty>
+      : <Empty title="Esta publicación ya no está disponible">Puede haber vencido o su autor la borró.</Empty>}
+  </div></>
 }
