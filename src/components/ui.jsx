@@ -71,6 +71,31 @@ export function CeldaAbierta({ s = 24, color = 'var(--ink)' }) {
   )
 }
 
+/* ---------- Celda: el motivo del logo como contenedor ----------
+   Mismo trazo abierto que la celda abierta (coordenadas literales del símbolo, viewBox 8 3 84 94) y un
+   hexágono interior regular y concéntrico, separado del trazo por el mismo aire en los seis lados.
+   Se usa en los destacados, el visor, el ganador y la bienvenida para que todos tengan la misma forma. */
+const CELDA_ARO = 'M84.64 38 L84.64 30 L50 10 L15.36 30 L15.36 70 L50 90 L84.64 70 L84.64 62'
+function celdaInterior(grosor, aire) {
+  const r = (34.64 - grosor / 2 - aire) / 0.8660254
+  return [0, 1, 2, 3, 4, 5].map((i) => {
+    const a = (60 * i - 90) * Math.PI / 180
+    return (50 + r * Math.cos(a)).toFixed(2) + ',' + (50 + r * Math.sin(a)).toFixed(2)
+  }).join(' ')
+}
+export function Celda({ s = 64, grosor = 7, aire = 5, className = '', children }) {
+  const h = Math.round(s * 94 / 84)
+  return (
+    <span className={'celda ' + className} style={{ width: s, height: h }} aria-hidden="true">
+      <svg viewBox="8 3 84 94" width={s} height={h}>
+        <path d={CELDA_ARO} className="celda-aro" strokeWidth={grosor} pathLength="100" />
+        <polygon points={celdaInterior(grosor, aire)} className="celda-fondo" />
+      </svg>
+      {children != null && <span className="celda-c">{children}</span>}
+    </span>
+  )
+}
+
 /* ---------- Avatar hexagonal (v2.0: fondo Tinta #0F0F0D, iniciales Polen #FFF200) ---------- */
 export function Hex({ p, w = 40, h, fs, style }) {
   const hh = h || Math.round(w * 1.1)

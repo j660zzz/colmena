@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Icon, Hex, CeldaAbierta } from './ui'
+import { Icon, Celda, CeldaAbierta } from './ui'
+import { initials } from '../lib/format'
 import { cierraEn } from '../lib/logic'
 import { estaVisto, leerVistos, marcarVisto } from '../lib/historias'
 
 const quietoAhora = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false } }
 const DURACION = { ganador: 7000, reto: 7000, aliado: 6000, taller: 7000, conv: 6000, beneficio: 5000 }
-const ARO = '36,1.5 69.5,20.75 69.5,59.25 36,78.5 2.5,59.25 2.5,20.75'
 
 // Fila de anillos hexagonales. Sin datos no pinta nada: nunca estorba al resto del inicio.
 export function FilaDestacados({ anillos, onAbrir, vistos }) {
@@ -17,10 +17,7 @@ export function FilaDestacados({ anillos, onAbrir, vistos }) {
         return (
           <button key={a.id} type="button" className={'dest-item' + (visto ? ' visto' : '')} onClick={() => onAbrir(i)}
             aria-label={`${a.nombre}${visto ? '' : ', nuevo'}`}>
-            <span className="dest-hex">
-              <svg viewBox="0 0 72 80" aria-hidden="true"><polygon points={ARO} className="dest-aro" pathLength="100" /></svg>
-              <i><Icon n={a.icono} s={24} w={1.9} /></i>
-            </span>
+            <Celda s={64} className="dest-celda"><Icon n={a.icono} s={22} w={1.9} /></Celda>
             <span className="dest-n">{a.nombre}</span>
           </button>
         )
@@ -120,7 +117,9 @@ export function VisorDestacados({ anillos, inicial, onCerrar, onIr }) {
             </div>
           ) : (
             <>
-              {slide.k === 'ganador' ? <span className="visor-av"><Hex p={slide.perfil} w={104} /></span> : <span className="visor-ico"><Icon n={anillo.icono} s={34} w={1.8} /></span>}
+              {slide.k === 'ganador'
+                ? <Celda s={104} className="visor-celda ganador"><b>{initials(slide.perfil.nombre)}</b></Celda>
+                : <Celda s={96} className="visor-celda"><Icon n={anillo.icono} s={36} w={1.8} /></Celda>}
               {slide.valor ? <strong className="visor-valor">{slide.valor}</strong> : null}
               <h2>{slide.titulo}</h2>
               {slide.subtitulo && <span className="visor-sub">{slide.subtitulo}</span>}

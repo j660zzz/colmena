@@ -593,15 +593,10 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .intro-carnet-top { display: flex; align-items: center; gap: 6px; font: 700 15px/1 var(--disp); }
 .intro-carnet-top em { margin-left: auto; font: 600 10px/1 var(--ui); letter-spacing: .1em; text-transform: uppercase; font-style: normal; background: var(--ink); color: var(--polen); padding: 5px 7px; border-radius: 4px; }
 .intro-carnet-mid { display: flex; align-items: center; gap: 16px; }
-.intro-carnet-av { position: relative; width: 92px; height: 100px; display: grid; place-items: center; flex: none; }
-.intro-carnet-hex { width: 64px; height: 72px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; font: 700 20px/1 var(--disp); }
 .intro-carnet-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .intro-carnet-t b { font: 700 22px/1.1 var(--disp); letter-spacing: -.03em; }
 .intro-carnet-t span { font-size: 14px; }
 .intro-carnet-t small { margin-top: 6px; font: 600 11px/1.2 var(--ui); letter-spacing: .08em; text-transform: uppercase; }
-.nivel-dibuja { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.nivel-dibuja polygon { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 4 6; }
-.intro-slide.on .nivel-dibuja polygon { animation: dibuja 1.8s .7s cubic-bezier(.5, 0, .2, 1) both; }
 @keyframes dibuja { from { stroke-dasharray: .02 6; } to { stroke-dasharray: 4 6; } }
 .intro-carnet .mono { font-size: 18px; }
 
@@ -1143,7 +1138,6 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .intro-slide.on .a-up, .intro-slide.on .a-left, .intro-slide.on .a-right, .intro-slide.on .a-rise { animation-duration: .24s; animation-timing-function: var(--ease); animation-delay: calc(var(--d, 0) * 50ms); }
 .intro-slide.on .a-pop { animation-duration: .2s; animation-timing-function: var(--ease); animation-delay: calc(var(--d, 0) * 50ms); }
 .intro-slide.on .intro-panal .ph:not(.yo) { animation-duration: .2s, .25s; animation-timing-function: var(--ease), ease-out; animation-delay: calc(var(--d, 0) * 50ms), calc(var(--d, 0) * 50ms + 400ms); }
-.intro-slide.on .nivel-dibuja polygon { animation-duration: .6s; animation-delay: .3s; }
 @keyframes a-pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
 @keyframes a-left { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
 @keyframes a-right { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
@@ -1396,8 +1390,6 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .home-ganador { display: flex; gap: 12px; align-items: center; width: 100%; }
 .home-ganador > div:last-child { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .home-ganador h2 { overflow-wrap: anywhere; }
-.home-ganador .hexav { background: var(--ink); color: var(--polen); }
-.home-avatar { flex: none; padding: 2px; background: var(--surface); clip-path: var(--hex); }
 .home-ganador .ejemplo { align-self: flex-start; color: var(--surface); }
 .home-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
 .home-pista { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; margin: 0 -16px; padding: 4px 16px 8px; scrollbar-width: none; }
@@ -1439,20 +1431,12 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .dest-fila::-webkit-scrollbar { display: none; }
 .dest-item { flex: 1 0 70px; max-width: 88px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 0 4px; animation: a-up .22s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms); }
 .dest-item:nth-child(2) { --i: 1; } .dest-item:nth-child(3) { --i: 2; } .dest-item:nth-child(4) { --i: 3; } .dest-item:nth-child(5) { --i: 4; } .dest-item:nth-child(6) { --i: 5; }
-.dest-hex { position: relative; width: 64px; height: 72px; display: grid; place-items: center; transition: transform .15s var(--ease); }
-.dest-hex > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.dest-aro { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; stroke-dasharray: 100 100; animation: aro-dibuja .5s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms + 120ms); }
-@keyframes aro-dibuja { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-.dest-hex i { width: 54px; height: 61px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; }
-.dest-item.visto .dest-aro { stroke: var(--ink-4); stroke-width: 1.5; animation: none; }
-.dest-item.visto .dest-hex i { opacity: .88; }
-.dest-item:active .dest-hex { transform: scale(.93); }
+@keyframes aro-dibuja-viejo { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 .dest-n { font: 600 12px/1.2 var(--ui); text-align: center; max-width: 80px; }
 .dest-item.visto .dest-n { color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .dest-aro { animation: none; } }
 
 /* Premio: pasos en una línea y cuenta regresiva */
-.home-premio.con-ganador .home-avatar { animation: a-pop .24s var(--ease) both; }
 
 /* Tarjetas de la vitrina Esta semana */
 .home-mini { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; border-radius: 20px; padding: 16px; background: var(--surface); box-shadow: var(--soft); transition: transform .18s var(--ease); }
@@ -1540,10 +1524,6 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .visor-slide small { font-size: 13px; line-height: 1.4; opacity: .72; max-width: 36ch; }
 .visor-cierra { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; background: var(--ink); color: var(--surface); font: 600 13px/1 var(--ui); }
 .visor.oscura .visor-cierra { background: var(--surface); color: var(--ink); }
-.visor-av { display: inline-block; padding: 3px; background: var(--surface); clip-path: var(--hex); }
-.visor-av .hexav { background: var(--ink); color: var(--polen); }
-.visor-ico { width: 84px; height: 94px; clip-path: var(--hex); background: var(--ink); color: var(--surface); display: grid; place-items: center; margin-bottom: 8px; }
-.visor.oscura .visor-ico { background: var(--surface); color: var(--ink); }
 .visor-cupon { width: 100%; border-radius: 24px; background: var(--surface); color: var(--ink); overflow: hidden; box-shadow: var(--soft); }
 .vc-valor { position: relative; background: var(--ink); color: var(--surface); padding: 40px 24px; display: grid; place-items: center; }
 .vc-valor strong { font: 700 64px/1 var(--disp); letter-spacing: -.05em; text-align: center; overflow-wrap: anywhere; }
@@ -1557,4 +1537,39 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 .visor-foot { flex: none; padding: 8px 20px calc(16px + env(safe-area-inset-bottom, 0px)); }
 .visor.oscura .visor-foot .btn.primary { box-shadow: none; }
 .visor .iconbtn { margin-right: -10px; }
-@media (prefers-reduced-motion: reduce) { .dest-item, .visor-slide, .home-premio.con-ganador .home-avatar { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .dest-item, .visor-slide { animation: none; } }
+
+/* ================= Celda: el motivo del logo, igual en todos lados ================= */
+.celda { position: relative; display: inline-grid; place-items: center; flex: none; }
+.celda > svg { position: absolute; inset: 0; overflow: visible; }
+.celda-aro { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100 100; transition: stroke .2s var(--ease); }
+.celda-fondo { fill: var(--ink); transition: fill .2s var(--ease); }
+.celda-c { position: relative; display: grid; place-items: center; color: var(--polen); line-height: 1; }
+.celda-c b { font: 700 calc(var(--cs, 72px) * .3)/1 var(--disp); letter-spacing: -.03em; }
+@keyframes celda-dibuja { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+
+/* Destacados: el trazo se dibuja al entrar si hay algo nuevo; ya visto, queda en gris */
+.dest-celda .celda-aro { animation: celda-dibuja .5s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms + 120ms); }
+.dest-celda { transition: transform .15s var(--ease); }
+.dest-item:active .dest-celda { transform: scale(.93); }
+.dest-item.visto .dest-celda .celda-aro { stroke: var(--ink-4); animation: none; }
+
+/* Visor */
+.visor-celda { margin-bottom: 8px; }
+.visor.oscura .visor-celda .celda-aro { stroke: var(--surface); }
+.visor.oscura .visor-celda .celda-fondo { fill: var(--surface); }
+.visor.oscura .visor-celda .celda-c { color: var(--ink); }
+.visor-celda.ganador { --cs: 104px; }
+.visor.oscura .visor-celda.ganador .celda-aro, .visor.oscura .visor-celda.ganador .celda-fondo { stroke: var(--polen); fill: var(--polen); }
+.visor.oscura .visor-celda.ganador .celda-aro { fill: none; }
+
+/* Ganador en la tarjeta oscura: celda Polen, como una insignia ganada */
+.home-celda { --cs: 72px; animation: a-pop .24s var(--ease) both; }
+.home-celda .celda-aro { stroke: var(--polen); }
+.home-celda .celda-fondo { fill: var(--polen); }
+.home-celda .celda-c { color: var(--ink); }
+
+/* Bienvenida: la celda del carnet se cierra dibujándose */
+.intro-carnet-celda { --cs: 84px; }
+.intro-slide.on .intro-carnet-celda .celda-aro { animation: celda-dibuja .6s .3s var(--ease) both; }
+@media (prefers-reduced-motion: reduce) { .celda-aro, .home-celda { animation: none !important; } }

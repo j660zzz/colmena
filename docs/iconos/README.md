@@ -20,3 +20,11 @@ Kit propio, dibujado para Colmena. Todos viven en `I` dentro de `src/components/
 - Intercambia (`deal`) era un apretón de manos con muchos dedos: a 14–18 px se volvía una mancha y no hacía pareja con la moneda de Cobra. Ahora es la misma moneda con dos flechas que se cruzan. Se quitó su ajuste de escala.
 - Necesito (`hand`) tenía cuatro dedos muy juntos que se empastaban en la píldora de 13 px. Ahora son tres dedos y el pulgar, con más aire entre trazos.
 - `kit.html` y `kit.png` se regeneraron con los dibujos nuevos.
+
+## Celda (contenedor con la forma del logo)
+`Celda` en `src/components/ui.jsx` repite el símbolo como contenedor: el trazo abierto usa las coordenadas literales de la celda abierta (viewBox `8 3 84 94`, abertura en el lado derecho) y el hexágono interior es regular, concéntrico y separado del trazo por el mismo aire en los seis lados. Antes, el aro era un polígono SVG y el interior un `clip-path` CSS con otra proporción, por eso no se veían concéntricos; y el carnet de la bienvenida usaba un trazo con lados sueltos. Ahora se usa la misma forma en:
+- los destacados del inicio (Tinta; el trazo se dibuja al entrar y queda gris cuando ya se vio),
+- el visor (Tinta en pantallas claras, Blanco en oscuras),
+- el ganador de la semana (Polen, como insignia ganada) en la tarjeta del inicio y en el visor,
+- el carnet de la bienvenida ("Tú").
+Los avatares de miembros siguen siendo hexágonos sólidos, y el indicador de nivel (`CeldaNivel`) sigue cerrando un lado por nivel.

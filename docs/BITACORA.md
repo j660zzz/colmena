@@ -11,6 +11,10 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 4 de noviembre de 2026 · Íconos de manos y celda unificada (Claude)
+
+Rama `diseno/iconos-manos` (PR #12). Por pedido de Jhon: Intercambia pasa a ser la moneda con flechas (pareja de Cobra), Necesito queda con tres dedos y pulgar, y todos los hexágonos con trazo (destacados, visor, ganador y carnet de la bienvenida) usan el nuevo componente `Celda`, que repite la forma literal del logo con un interior concéntrico. Detalle en `docs/iconos/README.md`. Publicado por pedido de Jhon.
+
 ## 4 de noviembre de 2026 · Inicio atrapante, destacados y cupones (Claude)
 
 Misma rama y PR (`diseno/home-destacados`). **Fusionado y publicado** el 4 de noviembre de 2026 (PR #11) por pedido de Jhon, tras aprobar el encabezado rediseñado. Detalle, razonamiento y capturas en `docs/home-destacados/README.md`.
