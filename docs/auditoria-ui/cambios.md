@@ -2,6 +2,10 @@
 
 Fecha: 4 de noviembre de 2026. Base: `v0/onboarding` (`c6801b3`). Diagnóstico completo en `informe.md`; capturas del antes en `capturas/` y del después en `despues/`.
 
+## Versión de prueba
+
+PR [j660zzz/colmena#6](https://github.com/j660zzz/colmena/pull/6) · vista previa de Netlify: https://deploy-preview-6--colmena-dcv.netlify.app (para ver la bienvenida otra vez, borra los datos del sitio o abre en ventana privada).
+
 ## Cómo volver a la versión anterior
 
 La versión anterior está guardada en la rama **`respaldo/antes-de-mejoras-ui`** (commit `c6801b3`, idéntica a `v0/onboarding` antes de estos cambios).
