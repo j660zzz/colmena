@@ -5,6 +5,7 @@ import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
 import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
+import { CobroInsignia } from '../components/Cobro'
 
 export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }) {
   const c = useColmena()
@@ -82,7 +83,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         )}
         {lista.length === 0 && <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirAyuda={abrirAyuda} />}
         <div className="muro-fin">
-          <b>Viste todo lo que hay por ahora.</b>
+          <b>No hay más publicaciones por ahora.</b>
           <p>Las publicaciones se ocultan solas cuando vencen. <button type="button" className="como-in" onClick={() => abrirAyuda()}>¿Cómo funciona?</button></p>
           <button type="button" className="btn ink sm" onClick={() => abrirComposer()}><Icon n="plus" s={16} w={2.4} />Publicar</button>
         </div>
@@ -167,7 +168,7 @@ function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
     <article key="calc" className="mov white">
       <div className="mov-top"><span className="k">Herramienta</span></div>
       <h3>¿Cuánto deberías cobrar por lo que haces?</h3>
-      <p className="mov-facts">Materiales, horas y gastos fijos: la calculadora te da un precio en un minuto.</p>
+      <p className="mov-facts">Suma materiales, horas y gastos fijos, y te da un precio sugerido.</p>
       <div className="mov-foot"><span /><button type="button" className="btn ink sm" onClick={() => nav({ t: 'calc' })}>Calcular</button></div>
     </article>
   ].filter(Boolean)
@@ -199,7 +200,7 @@ function AvisoPrueba() {
   const cerrar = () => { try { localStorage.setItem(AVISO, '1') } catch { /* sin almacenamiento */ } setVisto(true) }
   return (
     <aside className="aviso-prueba" aria-label="Prototipo en prueba">
-      <p><span className="ej-pill">Prueba</span>Lo marcado como <b>Ejemplo</b> no son personas reales.</p>
+      <p><span className="ej-pill">Prueba</span>Lo marcado como <b>Ejemplo</b> es de muestra: no son personas reales.</p>
       <button type="button" className="iconbtn" onClick={cerrar} aria-label="Cerrar aviso"><Icon n="x" s={16} /></button>
     </aside>
   )
@@ -254,7 +255,9 @@ export function Post({ post, nav, pedirPerfil }) {
   const cta = post.tipo === 'need' ? 'Puedo ayudar' : 'Me interesa'
   const [titular, cuerpo] = dividirTexto(post.texto)
   const vence = quedan(post.vence_en)
-  const pronto = !!post.vence_en && new Date(post.vence_en).getTime() - Date.now() < 3 * 3600000
+  const restan = post.vence_en ? new Date(post.vence_en).getTime() - Date.now() : Infinity
+  const pronto = restan < 3 * 3600000
+  const hoy = restan < 24 * 3600000
   const resuelta = !!post.resuelta_at
 
   const escribir = () => pedirPerfil('Necesitas un carnet para escribirle. Así sabe quién eres.', async () => {
@@ -280,7 +283,7 @@ export function Post({ post, nav, pedirPerfil }) {
     window.open(waLink('', txt), '_blank', 'noopener')
   }
   const alternarResuelta = async () => {
-    try { await c.marcarResuelta(post.id, !resuelta); toast(resuelta ? 'Publicación activa otra vez' : 'Marcada como resuelta') } catch (e) { toast(e.message, true) }
+    try { await c.marcarResuelta(post.id, !resuelta); toast(resuelta ? 'Tu publicación está activa otra vez' : 'Marcaste la publicación como resuelta') } catch (e) { toast(e.message, true) }
   }
 
   const borrar = async () => {
@@ -288,36 +291,40 @@ export function Post({ post, nav, pedirPerfil }) {
     try { await c.borrarPublicacion(post.id); toast('Publicación borrada') } catch (e) { toast(e.message, true) }
   }
 
+  const corta = !cuerpo && titular.length <= 70
+  const recien = Date.now() - new Date(post.created_at).getTime() < 20000
+  const cls = ['post', post.tipo, corta && 'corta', resuelta && 'resuelta', recien && 'recien'].filter(Boolean).join(' ')
+
   return (
-    <article className={'post' + (resuelta ? ' resuelta' : '')}>
+    <article className={cls}>
       <div className="post-top">
         <button type="button" className="who" onClick={() => autor && nav({ t: 'carnet', id: autor.id })}>
-          <Hex p={autor} w={40} h={44} fs={14} />
+          <Hex p={autor} w={36} h={40} fs={13} />
           <span className="who-t">
             <b>{autor?.nombre || 'Miembro'}<Ejemplo p={autor} /></b>
-            <span>{[autor?.marca, autor?.rol].filter(Boolean).join(' · ') || 'Miembro de Colmena'}</span>
+            <span>{[hace(post.created_at), autor?.marca || autor?.rol].filter(Boolean).join(' · ')}</span>
           </span>
         </button>
-      </div>
-      <div className="post-meta">
-        <span className={'pill ' + post.tipo}>{post.tipo === 'need' ? 'Necesito' : 'Ofrezco'}</span>
-        {resuelta && <span className="pill ok"><Icon n="check" s={12} w={3} />Resuelta</span>}
-        <span className="when">{hace(post.created_at)}</span>
+        <span className="post-tipo">
+          {post.tipo === 'offer' && autor?.intercambio && <CobroInsignia modo={autor.intercambio} abrir solo />}
+          <span className={'pill ' + post.tipo}><Icon n={post.tipo === 'need' ? 'hand' : 'spark'} s={13} w={2} />{post.tipo === 'need' ? 'Necesito' : 'Ofrezco'}</span>
+        </span>
       </div>
       <p className="post-lead">{titular}</p>
       {cuerpo && <p className="post-body">{cuerpo}</p>}
-      <div className="post-tags">
-        {post.categorias.map((t) => <span key={t} className="tag">{t}</span>)}
-        {vence && !resuelta && <span className={'vence' + (pronto ? ' pronto' : '')}><Icon n="hour" s={13} />{vence}</span>}
-      </div>
+      <p className="post-info">
+        {resuelta
+          ? <span className="pill ok"><Icon n="check" s={12} w={3} />Resuelta</span>
+          : <>{post.categorias.join(' · ')}{vence && hoy && <span className={'vence' + (pronto ? ' pronto' : '')}><Icon n="hour" s={12} />{vence}</span>}</>}
+      </p>
       <div className="post-foot">
-        {!mio && <button type="button" className="sirve" aria-pressed={!!meSirveYa} onClick={toggleSirve}>
-          <Icon n="thumb" s={16} w={meSirveYa ? 2.2 : 1.7} />Útil{sirve.length > 0 && <b>{sirve.length}</b>}
+        {!mio && <button type="button" className="sirve" aria-pressed={!!meSirveYa} onClick={toggleSirve} aria-label={`Útil${sirve.length ? `, ${sirve.length}` : ''}`}>
+          <Icon n="thumb" s={18} w={meSirveYa ? 2.2 : 1.7} /><span>Útil</span>{sirve.length > 0 && <b>{sirve.length}</b>}
         </button>}
         {escribieron.length > 0 && !mio && (
-          <span className="wrote">
+          <span className="wrote" aria-label={`${escribieron.length} ${escribieron.length === 1 ? 'persona respondió' : 'personas respondieron'}`}>
             <span className="stack">{escribieron.slice(0, 3).map((a) => <Hex key={a.perfil_id} p={c.perfil(a.perfil_id)} w={20} fs={8} />)}</span>
-            {escribieron.length} {escribieron.length === 1 ? 'escribió' : 'escribieron'}
+            {escribieron.length}
           </span>
         )}
         {mio ? (
@@ -326,15 +333,15 @@ export function Post({ post, nav, pedirPerfil }) {
               {escribieron.length ? `${escribieron.length} ${escribieron.length === 1 ? 'te escribió' : 'te escribieron'}` : 'Sin respuestas todavía'}<Icon n="right" s={14} w={2} />
             </button>
             <div className="mine-acc">
-              {!resuelta && <button type="button" className="btn ghost sm" onClick={compartir}><Icon n="wa" s={16} />Compartir</button>}
-              <button type="button" className={'btn sm ' + (resuelta ? 'ghost' : 'dark')} onClick={alternarResuelta}>{resuelta ? 'Reabrir' : <><Icon n="check" s={15} w={2.4} />Resuelta</>}</button>
+              {!resuelta && <button type="button" className="accion" onClick={compartir}><Icon n="wa" s={16} />Compartir</button>}
+              <button type="button" className="accion" onClick={alternarResuelta}>{resuelta ? 'Reabrir' : <><Icon n="check" s={15} w={2.4} />Marcar resuelta</>}</button>
               <button type="button" className="iconbtn" onClick={borrar} aria-label="Borrar publicación"><Icon n="trash" s={18} /></button>
             </div>
           </div>
         ) : resuelta ? (
           <span className="fine">Ya se resolvió</span>
         ) : (
-          <button type="button" className={'btn sm ' + (yaEscribi ? 'ghost' : 'dark')} onClick={escribir}>
+          <button type="button" className={'accion principal' + (yaEscribi ? ' hecho' : '')} onClick={escribir}>
             <Icon n="wa" s={17} />{yaEscribi ? 'Escribir otra vez' : cta}
           </button>
         )}
@@ -397,7 +404,7 @@ export function Composer({ inicial, onDone }) {
       <p className="note"><Icon n="wa" s={16} /><Icon n="lock" s={14} />Te escriben por WhatsApp. Solo otros miembros ven tu número.</p>
       {err && <p className="err" role="alert">{err}</p>}
       <button type="button" className="btn primary full big" disabled={!valido || enviando} onClick={publicar}>
-        {enviando ? 'Publicando…' : 'Publicar en el muro'}
+        {enviando ? 'Publicando…' : 'Publicar'}
       </button>
       {!valido && texto.trim().length >= 5 && <p className="fine center">Elige al menos una categoría.</p>}
     </>
