@@ -3,7 +3,7 @@ import { useEstadoVista } from '../lib/vista'
 import { useColmena } from '../lib/store'
 import { carnetId } from '../lib/format'
 import { normal } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Sheet, Empty, useToast } from '../components/ui'
+import { Icon, Hex, CeldaAbierta, Ejemplo, Sheet, Empty, useToast } from '../components/ui'
 
 const fecha = (d) => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
 
@@ -21,7 +21,7 @@ const TITULO = {
 const ICONO_CAT = { 'Apoyo para emprender': 'route', 'Diseño': 'spark', Web: 'link', Vender: 'trend', Productividad: 'note', Aprender: 'bulb', 'Audio y video': 'clock', Equipos: 'bag' }
 // Los primeros destacados son los que más le sirven a quien está empezando un emprendimiento
 const PRIMERO = ['Ruta de Emprendimiento Campus Nova', 'Matrícula mercantil sin costo', 'Google AI Plus para estudiantes', 'Suite de Adobe', 'Software de la universidad en la nube', 'Asesoría EmprendeLab', 'Perfil de Negocio de Google', 'Dominio web gratis', 'Framer', 'Microsoft 365']
-const rango = (b) => { const k = PRIMERO.indexOf(b.nombre); return k < 0 ? 99 : k }
+export const rango = (b) => { const k = PRIMERO.indexOf(b.nombre); return k < 0 ? 99 : k }
 
 // Logo de cada marca: el ícono de su sitio oficial, cargado en el navegador (no se guarda en el repo)
 // y en escala de grises para no salirse de la paleta. Lo institucional (Javeriana, Cámara, SENA) usa el
@@ -240,7 +240,7 @@ export function CarnetParaMostrar() {
   )
 }
 
-function Proponer({ onListo }) {
+export function Proponer({ onListo }) {
   const c = useColmena()
   const toast = useToast()
   const [f, setF] = useState({ negocio: '', contacto: '', propuesta: '' })
@@ -265,24 +265,57 @@ function Proponer({ onListo }) {
   )
 }
 
-export function Aliados({ nav, pedirPerfil }) {
+// Descuentos de aliados con forma de cupón: el valor es el protagonista y el carnet es la llave.
+export function Aliados({ nav, pedirPerfil, limite = 0, invitar = false, onVerTodos }) {
   const c = useColmena()
   const [abierto, setAbierto] = useState(null)
+  const [proponer, setProponer] = useState(false)
   const [mios, alternar] = useMios()
-  const lista = c.beneficios.filter((b) => b.tipo === 'aliado')
-  if (!lista.length) return null
-  return <section className="home-aliados" aria-label="Aliados en Cali">
-    <div className="sec-h"><h2>Tu carnet en Cali</h2><Icon n="card" s={22} /></div>
-    <p className="soft">Muestra tu carnet y accede a descuentos de aliados.</p>
-    {lista.every((b) => b.es_ejemplo) && <p className="fine">Son ejemplos: así funcionarán los descuentos cuando se sumen negocios reales.</p>}
-    <div className="home-pista">
-      {lista.map((b) => <button key={b.id} className="home-aliado" onClick={() => setAbierto(b)}>
-        <span className="home-aliado-top"><Icon n="pin" s={18} /><Ejemplo p={b} /></span>
-        <strong>{b.etiqueta || b.oferta}</strong><b>{b.nombre}</b><small>{b.oferta}</small><span className="home-ir">Ver descuento <Icon n="right" s={16} /></span>
-      </button>)}
+  const todos = c.beneficios.filter((b) => b.tipo === 'aliado')
+  const lista = limite ? todos.slice(0, limite) : todos
+  if (!todos.length && !invitar) return null
+  const mostrar = () => pedirPerfil('Necesitas un carnet para mostrarlo.', () => nav({ t: 'mostrar' }))
+  return <section className="home-aliados" aria-label="Descuentos con tu carnet">
+    <div className="sec-h">
+      <h2>Descuentos con tu carnet</h2>
+      {onVerTodos && todos.length > lista.length && <button type="button" className="ver" onClick={onVerTodos}>Ver todos</button>}
     </div>
+    {lista.length > 0 && (
+      <div className="cupones">
+        {lista.map((b) => {
+          const v = b.etiqueta || b.oferta
+          return (
+            <button key={b.id} type="button" className="cupon" onClick={() => setAbierto(b)}>
+              <span className={'cupon-valor' + (v.length > 7 ? ' largo' : '')}><strong>{v}</strong></span>
+              <span className="cupon-cuerpo">
+                <b>{b.nombre}</b>
+                <span>{b.oferta}</span>
+                <small><Icon n="pin" s={13} />{[b.zona, b.categoria].filter(Boolean).join(' · ')}<Ejemplo p={b} /></small>
+              </span>
+              <Icon n="right" s={18} w={2} />
+            </button>
+          )
+        })}
+      </div>
+    )}
+    {lista.length > 0 && lista.every((b) => b.es_ejemplo) && <p className="fine">Ejemplos: así se verán los descuentos de negocios reales.</p>}
+    <button type="button" className="cmini" onClick={mostrar}>
+      <span className="cmini-hex">{c.yo ? <Hex p={c.yo} w={36} fs={13} /> : <CeldaAbierta s={24} />}</span>
+      <span className="cmini-t"><b>{c.yo ? c.yo.nombre : 'Tu carnet'}</b><small className={c.yo ? 'mono' : ''}>{c.yo ? carnetId(c.yo.carnet) : 'Créalo para usar los descuentos.'}</small></span>
+      <span className="cmini-cta">Mostrar mi carnet<Icon n="right" s={16} w={2.2} /></span>
+    </button>
+    {invitar && (
+      <button type="button" className="cupon invita" onClick={() => setProponer(true)}>
+        <span className="cupon-valor"><Icon n="plus" s={26} w={2} /></span>
+        <span className="cupon-cuerpo"><b>¿Tienes un negocio?</b><span>Propón un descuento para los miembros.</span></span>
+        <Icon n="right" s={18} w={2} />
+      </button>
+    )}
     <Sheet open={!!abierto} onClose={() => setAbierto(null)} label="Detalle del aliado">
-      {abierto && <Detalle b={abierto} mios={mios} alternar={alternar} onCarnet={() => { setAbierto(null); pedirPerfil('Necesitas un carnet para mostrarlo.', () => nav({ t: 'mostrar' })) }} />}
+      {abierto && <Detalle b={abierto} mios={mios} alternar={alternar} onCarnet={() => { setAbierto(null); mostrar() }} />}
     </Sheet>
+    {invitar && <Sheet open={proponer} onClose={() => setProponer(false)} label="Proponer un beneficio">
+      {proponer && <Proponer onListo={() => setProponer(false)} />}
+    </Sheet>}
   </section>
 }

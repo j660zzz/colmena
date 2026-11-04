@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { hace, firstName, igUrl } from '../lib/format'
 import { activa, quedan, cierraEn, quienesTeNecesitan, waLink, cuantosEjemplo } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, SubHeader, Empty, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
-import { Inicio } from '../components/Inicio'
+import { Inicio, VitrinaSemana, VitrinaGratis } from '../components/Inicio'
 import { CobroInsignia } from '../components/Cobro'
 import { useEstadoVista, useScrollVista, leerBorrador, guardarBorrador, borrarBorrador } from '../lib/vista'
 
@@ -22,6 +22,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
   const irLista = () => setTimeout(() => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
   const porCat = CATS.map((x) => [x, activas.filter((p) => p.categorias.includes(x)).length])
   const [verCats, setVerCats] = useState(false)
+  const intercalar = tipo === 'todo' && !cat
 
   return (
     <>
@@ -74,7 +75,13 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
           </Empty>
         ) : (
           <div className="posts" key={tipo + (cat || '')}>
-            {lista.map((p) => <Post key={p.id} post={p} nav={nav} pedirPerfil={pedirPerfil} />)}
+            {lista.map((p, i) => (
+              <Fragment key={p.id}>
+                <Post post={p} nav={nav} pedirPerfil={pedirPerfil} />
+                {intercalar && i === Math.min(2, lista.length - 1) && <VitrinaSemana nav={nav} irTab={irTab} />}
+                {intercalar && i === Math.min(6, lista.length - 1) && lista.length > 3 && <VitrinaGratis irTab={irTab} />}
+              </Fragment>
+            ))}
           </div>
         )}
         <div className="muro-fin">

@@ -62,6 +62,29 @@ const origin = process.env.COLMENA_QA_ORIGIN || 'http://127.0.0.1:4174'
       await p.screenshot({ path: `${folder}/${name}.png` })
       await p.locator('.body').evaluate((e) => (e.scrollTop = 400))
       await p.screenshot({ path: `${folder}/${name}-vitrinas.png` })
+      // Visor de destacados (primer anillo) y vitrina intercalada entre publicaciones
+      if (phase !== 'antes' && phase !== 'antes-pr') {
+        const fila = p.getByRole('navigation', { name: 'Destacados', exact: true })
+        await p.locator('.body').evaluate((e) => (e.scrollTop = 0))
+        await fila.getByRole('button').first().click()
+        await p.locator('dialog.visor').waitFor()
+        await p.waitForTimeout(400)
+        await p.screenshot({ path: `${folder}/${name}-visor.png` })
+        if (!member && !after) {
+          await p.keyboard.press('ArrowRight')
+          await p.waitForTimeout(300)
+          await p.screenshot({ path: `${folder}/${phase}-visor-reto.png` })
+          await p.keyboard.press('Escape')
+          await fila.getByRole('button', { name: /Descuentos/ }).click()
+          await p.waitForTimeout(400)
+          await p.screenshot({ path: `${folder}/${phase}-visor-descuento.png` })
+        }
+        await p.keyboard.press('Escape')
+        await p.locator('dialog.visor').waitFor({ state: 'detached' })
+        await p.locator('.home-semana').scrollIntoViewIfNeeded()
+        await p.waitForTimeout(300)
+        await p.screenshot({ path: `${folder}/${name}-intercalada.png` })
+      }
       if (!member && !after) {
         await p
           .getByRole('navigation', { name: 'Navegación principal' })
