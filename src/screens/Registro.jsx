@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useColmena } from '../lib/store'
-import { CATS } from '../data/contenido'
+import { CATS, SUGERENCIAS } from '../data/contenido'
 import { carnetId } from '../lib/format'
 import { completitud, manosDadas } from '../lib/logic'
 import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
@@ -60,14 +60,26 @@ export function CarnetCard({ p, numero, nota, estado }) {
 export default function Registro({ motivo, onBack, onListo }) {
   const c = useColmena()
   const [paso, setPaso] = useState(1)
-  const [f, setF] = useState({ nombre: '', marca: '', rol: '', whatsapp: '', instagram: '', categorias: [], habilidades: '' })
+  const [f, setF] = useState({ nombre: '', marca: '', rol: '', whatsapp: '', instagram: '', categorias: [], habilidades: [] })
+  const [nueva, setNueva] = useState('')
   const [acepto, setAcepto] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [err, setErr] = useState('')
   const set = (k) => (e) => setF({ ...f, [k]: k === 'whatsapp' ? fmtWa(e.target.value) : e.target.value })
   const toggle = (x) => setF({ ...f, categorias: f.categorias.includes(x) ? f.categorias.filter((y) => y !== x) : f.categorias.length < 3 ? [...f.categorias, x] : f.categorias })
 
-  const ok = paso === 1 ? f.nombre.trim().length >= 2 : paso === 2 ? waValido(f.whatsapp) && acepto : f.categorias.length > 0
+  // Habilidades: se eligen de las sugerencias o se escriben (máximo 5)
+  const MAX_HAB = 5
+  const tieneHab = (x) => f.habilidades.some((h) => h.toLowerCase() === x.toLowerCase())
+  const alternarHab = (x) => setF({ ...f, habilidades: tieneHab(x) ? f.habilidades.filter((h) => h.toLowerCase() !== x.toLowerCase()) : f.habilidades.length < MAX_HAB ? [...f.habilidades, x] : f.habilidades })
+  const agregarHab = () => {
+    const x = nueva.trim().replace(/\s+/g, ' ').slice(0, 30)
+    if (x.length >= 2 && !tieneHab(x) && f.habilidades.length < MAX_HAB) setF({ ...f, habilidades: [...f.habilidades, x] })
+    setNueva('')
+  }
+  const sugeridas = [...new Set(f.categorias.flatMap((k) => SUGERENCIAS[k] || []))].filter((x) => !tieneHab(x)).slice(0, 8)
+
+  const ok = paso === 1 ? f.nombre.trim().length >= 2 : paso === 2 ? waValido(f.whatsapp) && acepto : f.categorias.length > 0 && f.habilidades.length > 0
 
   const siguiente = async (e) => {
     e.preventDefault()
@@ -77,7 +89,7 @@ export default function Registro({ motivo, onBack, onListo }) {
     try {
       await c.crearPerfil({
         ...f, instagram: limpiarIg(f.instagram),
-        habilidades: f.habilidades.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 8)
+        habilidades: f.habilidades
       })
       onListo()
     } catch (x) { setErr(x.message) } finally { setEnviando(false) }
@@ -90,7 +102,7 @@ export default function Registro({ motivo, onBack, onListo }) {
       <SubHeader title="Crea tu carnet" onBack={paso > 1 ? () => setPaso(paso - 1) : onBack} />
       <div className="steps-bar" aria-hidden="true">{[1, 2, 3].map((i) => <i key={i} className={i <= paso ? 'on' : ''} />)}</div>
       <form className="body fade" onSubmit={siguiente}>
-        <CarnetCard p={{ ...f, habilidades: [] }} nota="Vista previa" />
+        <CarnetCard p={f} nota="Vista previa" estado="Por crear" />
         <p className="step-t">Paso {paso} de 3 · {titulos[paso]}</p>
         {paso === 1 && motivo && <p className="soft">{motivo}</p>}
         <div className="form">
@@ -142,8 +154,28 @@ export default function Registro({ motivo, onBack, onListo }) {
                 <span className="hint">Las usamos para mostrarte publicaciones que te pueden interesar.</span>
               </div>
               <div className="field">
-                <label htmlFor="r-hab">Habilidades</label>
-                <div className="inp"><input id="r-hab" maxLength={200} value={f.habilidades} onChange={set('habilidades')} placeholder="Separado por comas: retoque, reels, empaques" /></div>
+                <span className="lbl">¿En qué puedes ayudar? * <small>(hasta {MAX_HAB})</small></span>
+                <span className="hint">Así te encuentran en Miembros y aparece en tu carnet.</span>
+                {f.habilidades.length > 0 && (
+                  <div className="chips wrap hab-elegidas">
+                    {f.habilidades.map((x) => (
+                      <button key={x} type="button" className="chip" aria-pressed="true" onClick={() => alternarHab(x)} aria-label={`Quitar ${x}`}>{x}<Icon n="x" s={13} w={2.4} /></button>
+                    ))}
+                  </div>
+                )}
+                {sugeridas.length > 0 && f.habilidades.length < MAX_HAB && (
+                  <div className="chips wrap">
+                    {sugeridas.map((x) => <button key={x} type="button" className="chip sm" onClick={() => alternarHab(x)}><Icon n="plus" s={13} w={2.4} />{x}</button>)}
+                  </div>
+                )}
+                {f.habilidades.length < MAX_HAB && (
+                  <div className="inp hab-otra">
+                    <input id="r-hab" maxLength={30} value={nueva} onChange={(e) => setNueva(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); agregarHab() } }}
+                      placeholder={f.categorias.length ? 'Escribe otra habilidad' : 'Ej: retoque, reels, empaques'} aria-label="Escribe una habilidad" />
+                    <button type="button" className="btn ink sm" disabled={nueva.trim().length < 2} onClick={agregarHab}>Agregar</button>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -178,7 +210,7 @@ export function CarnetListo({ onMuro, onSeguir }) {
       <Comb className="listo-comb" viewBox="0 0 200 200" r={22} w={220} h={220} x0={0} y0={0} stroke="rgba(15,15,13,.14)" />
       <div className="listo-in fade">
         <h1>Tu carnet<br />está listo.</h1>
-        <div className="carnet white"><CarnetInner p={yo} /></div>
+        <CarnetCard p={yo} numero={yo.carnet} />
         <p className="listo-sub">Ya puedes publicar y escribirles a otros miembros.</p>
         <div className="earned">
           <span className="ehex"><Icon n="card" s={20} w={2} /></span>
@@ -197,23 +229,6 @@ export function CarnetListo({ onMuro, onSeguir }) {
   )
 }
 
-function CarnetInner({ p }) {
-  return (
-    <>
-      <div className="carnet-head">
-        <div className="carnet-lockup"><CeldaAbierta s={18} color="var(--ink)" /><span className="carnet-brand">Colmena</span></div>
-        <span className="carnet-badge">MIEMBRO</span>
-      </div>
-      <div className="carnet-body">
-        <Hex p={p} w={56} h={64} fs={20} />
-        <div className="carnet-info"><h3>{p.nombre}</h3><p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || 'Miembro'}</p></div>
-      </div>
-      <div className="carnet-foot">
-        <div className="carnet-col"><span className="carnet-lbl">N.º DE CARNET</span><span className="carnet-val mono">{carnetId(p.carnet)}</span></div>
-      </div>
-    </>
-  )
-}
 
 export function Editar({ onBack }) {
   const c = useColmena()

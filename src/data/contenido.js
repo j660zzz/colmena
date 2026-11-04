@@ -1,6 +1,21 @@
 export const CATS = ['Marca', 'Diseño', 'Redes sociales', 'Web/UX', 'Foto', 'Video', 'Ilustración', 'Producción', 'Moda', 'Comida', 'Otro']
 export const TOOLCATS = ['Precio', 'Ventas', 'Legal', 'Marca']
 
+// Habilidades sugeridas al crear el carnet, según las categorías elegidas (la persona puede escribir otras)
+export const SUGERENCIAS = {
+  Marca: ['Logo', 'Identidad', 'Manual de marca', 'Naming'],
+  'Diseño': ['Piezas gráficas', 'Packaging', 'Editorial', 'Tipografía'],
+  'Redes sociales': ['Contenido para redes', 'Community management', 'Copywriting'],
+  'Web/UX': ['Diseño web', 'Tienda en línea', 'UX/UI'],
+  Foto: ['Fotografía de producto', 'Retoque', 'Bodegón'],
+  Video: ['Reels', 'Edición de video', 'Animación'],
+  'Ilustración': ['Ilustración digital', 'Patrones', 'Mural'],
+  'Producción': ['Impresión', 'Proveedores', 'Tirajes cortos', 'Costos'],
+  Moda: ['Confección', 'Estampado', 'Patronaje'],
+  Comida: ['Costos de cocina', 'Menús', 'Ferias'],
+  Otro: ['Ventas', 'Atención al cliente']
+}
+
 // Insignias calculadas con actividad real del perfil (ver statsDe en Carnet.jsx)
 export const BADGES = [
   { n: 'Miembro de Colmena', k: 'card', ok: () => true },

@@ -98,19 +98,19 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
       </div>
 
       <div className="intro-pista" ref={pista} onScroll={alMover}>
-        <section className={'intro-slide' + on(0)} aria-label="Acceso desbloqueado">
+        <section className={'intro-slide' + on(0)} aria-label="Qué incluye Colmena">
           <div className="intro-hero a-up" style={{ '--d': 0 }}><PanalArma /></div>
-          <span className="eyebrow a-up" style={{ '--d': 2 }}>Acceso desbloqueado</span>
-          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Entraste a Colmena. <mark className="hl">Todo esto ya es tuyo.</mark></h1>
+          <span className="eyebrow a-up" style={{ '--d': 2 }}>Te damos la bienvenida</span>
+          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Todo esto es <mark className="hl">gratis</mark> en Colmena.</h1>
           <div className="pase a-up" style={{ '--d': 4 }}>
             <div className="pase-top"><b>Pase Colmena</b><span>Incluido</span></div>
             <ul>
-              <li className="a-up" style={{ '--d': 5 }}><i><Icon n="users" s={16} /></i><div><b>Gente que sabe lo que tú no</b><span>Emprendedores de DCV que te ayudan y a quienes ayudas.</span></div></li>
+              <li className="a-up" style={{ '--d': 5 }}><i><Icon n="users" s={16} /></i><div><b>Ayuda de otros emprendedores</b><span>Pides ayuda y ayudas a estudiantes de DCV que emprenden.</span></div></li>
               <li className="a-up" style={{ '--d': 6 }}><i><Icon n="seal" s={16} /></i><div><b>{digitales.length > 0 ? `${digitales.length} beneficios de estudiante` : 'Beneficios de estudiante'}</b><span>Software y suscripciones gratis o con descuento.</span></div></li>
-              <li className="a-up" style={{ '--d': 7 }}><i><Icon n="cal" s={16} /></i><div><b>Un encuentro al mes</b><span>En persona, para conocerse y aprender a cobrar.</span></div></li>
-              <li className="a-up" style={{ '--d': 8 }}><i><Icon n="tools" s={16} /></i><div><b>Herramientas para cobrar bien</b><span>Calculadora de precios y fichas prácticas.</span></div></li>
+              <li className="a-up" style={{ '--d': 7 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro mensual</b><span>Una reunión presencial con un taller práctico.</span></div></li>
+              <li className="a-up" style={{ '--d': 8 }}><i><Icon n="tools" s={16} /></i><div><b>Calculadora de precios</b><span>Calcula cuánto cobrar y consulta fichas prácticas.</span></div></li>
             </ul>
-            <div className="pase-precio"><span>Lo que pagas</span><b className="mono">$0</b></div>
+            <div className="pase-precio"><span>Costo</span><b className="mono">$0</b></div>
           </div>
         </section>
 
@@ -126,9 +126,9 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
             </div>
             <div className="demo-wa a-pop" style={{ '--d': 5 }}><Icon n="wa" s={16} />Hola, te vi en Colmena. ¡Puedo ayudarte!</div>
           </div>
-          <span className="eyebrow a-up" style={{ '--d': 3 }}>Ayuda cuando la necesitas</span>
-          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Pide ayuda. Ofrece lo que sabes.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Publicas en el muro y quien sabe hacerlo te escribe por WhatsApp. Sin intermediarios y sin comisiones.</p>
+          <span className="eyebrow a-up" style={{ '--d': 3 }}>El muro</span>
+          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Publica lo que necesitas o lo que ofreces.</h1>
+          <p className="intro-p a-up" style={{ '--d': 5 }}>Quien puede ayudarte toca “Puedo ayudar” y te escribe por WhatsApp. No hay intermediarios ni comisiones.</p>
         </section>
 
         <section className={'intro-slide' + on(2)} aria-label="Beneficios de estudiante">
@@ -138,8 +138,8 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
               <span><b><Cuenta n={nDesc} activo={i === 2} /></b>con descuento</span>
             </div>
           )}
-          <span className="eyebrow a-up" style={{ '--d': 1 }}>Beneficios desbloqueados</span>
-          <h1 className="intro-h a-up" style={{ '--d': 2 }}>Lo que ya tienes por ser estudiante y quizás no usas.</h1>
+          <span className="eyebrow a-up" style={{ '--d': 1 }}>Beneficios</span>
+          <h1 className="intro-h a-up" style={{ '--d': 2 }}>Programas y descuentos que tienes por ser estudiante.</h1>
           {muestra.length > 0 && (
             <div className="ben-mini">
               {muestra.map((b, k) => (
@@ -149,7 +149,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
               ))}
             </div>
           )}
-          <p className="intro-p a-up" style={{ '--d': 9 }}>Te decimos cómo activar cada uno, paso a paso.</p>
+          <p className="intro-p a-up" style={{ '--d': 9 }}>Cada beneficio explica cómo activarlo, paso a paso.</p>
         </section>
 
         <section className={'intro-slide' + on(3)} aria-label="Tu carnet">
@@ -162,13 +162,13 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
                   <polygon points="50,2 91.6,26 91.6,74 50,98 8.4,74 8.4,26" pathLength="6" />
                 </svg>
               </span>
-              <span className="intro-carnet-t"><b>Tu nombre</b><span>Tu emprendimiento</span><small>Tu celda se va cerrando</small></span>
+              <span className="intro-carnet-t"><b>Tu nombre</b><span>Tu emprendimiento</span><small>Nivel 1</small></span>
             </div>
             <span className="mono">COL-····</span>
           </div>
-          <span className="eyebrow a-up" style={{ '--d': 3 }}>Tu carnet de miembro</span>
-          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Tu carnet te abre todas las puertas.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Con él publicas, escribes a otros miembros y usas los descuentos de aliados. Cada ayuda cierra un lado de tu celda y subes de nivel. Sin correo ni contraseña: lo creas en un minuto.</p>
+          <span className="eyebrow a-up" style={{ '--d': 3 }}>Tu carnet</span>
+          <h1 className="intro-h a-up" style={{ '--d': 4 }}>Tu carnet es tu perfil en Colmena.</h1>
+          <p className="intro-p a-up" style={{ '--d': 5 }}>Muestra lo que sabes hacer para que otros miembros te encuentren. Con él publicas, escribes por WhatsApp y usas los descuentos de aliados. Subes de nivel cada vez que ayudas. No necesitas correo ni contraseña.</p>
         </section>
       </div>
 
@@ -177,12 +177,12 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
           <button type="button" className="btn primary full big" onClick={onCerrar}>Entendido</button>
         ) : ultimo ? (
           <>
-            <button type="button" className="btn primary full big" onClick={onCarnet}>Activar mi carnet gratis</button>
+            <button type="button" className="btn primary full big" onClick={onCarnet}>Crear carnet</button>
             <button type="button" className="btn outline-w full" onClick={onCerrar}>Explorar primero</button>
           </>
         ) : (
           <button type="button" className={'btn full big ' + (oscura ? 'primary' : 'ink')} onClick={() => ir(i + 1)}>
-            {i === 0 ? 'Ver qué incluye' : 'Siguiente'}<Icon n="right" s={18} w={2.2} />
+            Siguiente<Icon n="right" s={18} w={2.2} />
           </button>
         )}
       </div>

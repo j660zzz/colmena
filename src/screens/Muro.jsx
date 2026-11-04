@@ -84,7 +84,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
         <div className="muro-fin">
           <b>Viste todo lo que hay por ahora.</b>
           <p>Las publicaciones se ocultan solas cuando vencen. <button type="button" className="como-in" onClick={() => abrirAyuda()}>¿Cómo funciona?</button></p>
-          <button type="button" className="btn ink sm" onClick={() => abrirComposer()}><Icon n="plus" s={16} w={2.4} />Publicar algo</button>
+          <button type="button" className="btn ink sm" onClick={() => abrirComposer()}><Icon n="plus" s={16} w={2.4} />Publicar</button>
         </div>
       </div>
     </>

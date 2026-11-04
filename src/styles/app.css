@@ -1030,3 +1030,11 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .para-que i { width: 36px; height: 40px; clip-path: var(--hex); background: var(--ink); color: var(--polen); display: grid; place-items: center; }
 .para-que span { display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--muted); line-height: 1.35; }
 .para-que b { font: 600 15px/1.25 var(--ui); color: var(--ink); }
+
+/* Registro: habilidades con sugerencias */
+.hab-elegidas .chip { display: inline-flex; align-items: center; gap: 6px; }
+.chip.sm { display: inline-flex; align-items: center; gap: 4px; }
+.hab-otra { display: flex; align-items: center; gap: 8px; padding-right: 6px; }
+.hab-otra input { flex: 1; min-width: 0; }
+.hab-otra .btn { min-height: 36px; padding: 6px 12px; }
+.listo .carnet { text-align: left; }

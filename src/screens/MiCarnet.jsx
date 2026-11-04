@@ -22,14 +22,14 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           </div>
           <div className="preview-t">
             <b>Así se verá tu carnet.</b>
-            <p>Es tu tarjeta de presentación en Colmena. Sin correo ni contraseña.</p>
+            <p>Es tu perfil en Colmena. No necesitas correo ni contraseña.</p>
           </div>
           <ul className="para-que">
             <li><i><Icon n="users" s={16} /></i><span><b>Te encuentran por lo que sabes</b>Apareces en Miembros con tus habilidades.</span></li>
-            <li><i><Icon n="wa" s={16} /></i><span><b>Te escriben directo</b>Quien necesita lo que haces te escribe por WhatsApp.</span></li>
-            <li><i><Icon n="seal" s={16} /></i><span><b>Usas los descuentos</b>Lo muestras en los negocios aliados de Cali.</span></li>
+            <li><i><Icon n="wa" s={16} /></i><span><b>Te escriben por WhatsApp</b>Quien necesita lo que haces te escribe directo.</span></li>
+            <li><i><Icon n="seal" s={16} /></i><span><b>Usas los descuentos de aliados</b>Muestras tu carnet en los negocios aliados de Cali.</span></li>
           </ul>
-          <button type="button" className="btn primary full big" onClick={() => pedirPerfil(null, () => {})}>Crear mi carnet</button>
+          <button type="button" className="btn primary full big" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>
           <p className="fine center">Toma menos de un minuto.</p>
         </div>
       </>
