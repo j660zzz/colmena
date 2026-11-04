@@ -11,6 +11,10 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 4 de noviembre de 2026 · Vista previa al compartir el link (Claude)
+
+Rama `diseno/vista-previa`. Etiquetas Open Graph y de Twitter en `index.html` con imagen `public/og-colmena.png` (1200 × 630, Polen plano con el símbolo y "Tu comunidad para emprender" en Tinta, centrada para el recorte cuadrado de WhatsApp). Se genera con `node scripts/og-imagen.cjs`. Se quitó "Diseño de Comunicación Visual" de la descripción de la página y del manifiesto. WhatsApp guarda en caché la vista previa de cada link: para ver la nueva en un link ya compartido, agregarle algo al final (por ejemplo `?v=2`). Pendiente opcional: vista previa propia por publicación (`?publicacion=`) con una función de Netlify que lea Supabase.
+
 ## 4 de noviembre de 2026 · Íconos de manos y celda unificada (Claude)
 
 Rama `diseno/iconos-manos` (PR #12). Por pedido de Jhon: Intercambia pasa a ser la moneda con flechas (pareja de Cobra), Necesito queda con tres dedos y pulgar, y todos los hexágonos con trazo (destacados, visor, ganador y carnet de la bienvenida) usan el nuevo componente `Celda`, que repite la forma literal del logo con un interior concéntrico. Detalle en `docs/iconos/README.md`. Publicado por pedido de Jhon.
