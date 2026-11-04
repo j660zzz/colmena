@@ -21,6 +21,10 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [ ] Beneficios: revisar cada mes Miro (pausado el 2026-11-04 porque no recibe solicitudes) y las convocatorias de Fondo Emprender. Google AI Plus se puede reclamar hasta el 2026-12-31: ese día poner `activo = false`. Ya hay tareas programadas en la sesión de Claude para ambas cosas (revisión el día 5 de cada mes y la pausa de Google AI Plus el 2027-01-01).
 - [ ] Orden de destacados de Beneficios: hoy el componente pone primero Adobe, Dominio web, Framer y Microsoft 365 con una lista fija; lo ideal es ajustar `orden` en la tabla `beneficios`.
 
+## Pendientes de Jhon
+- [ ] Activar "Guardar con correo Javeriana": registrar la app en Microsoft Entra y activar el proveedor Azure en Supabase. Pasos en `docs/cuenta/README.md`.
+- [ ] Revisar cada mes la tabla `convocatorias` (las tres de Corfecali cierran el 10 de noviembre de 2026).
+
 ## Decisiones de Jhon
 - [ ] Fecha y lugar reales del Encuentro 01 (hoy dice "por confirmar").
 - [ ] Cuándo quitar los perfiles de ejemplo.

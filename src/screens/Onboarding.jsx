@@ -256,6 +256,7 @@ export const TEMAS = {
   carnet: { t: 'Tu carnet', d: 'Tu perfil en Colmena: quién eres, a qué te dedicas y cuántas veces has ayudado. Tu WhatsApp solo lo ven otros miembros.' },
   cobro: { t: 'Cobra o intercambia', d: 'Cada carnet muestra cómo trabaja esa persona. Intercambiar es cambiar tu trabajo por el de otro miembro.', extra: 'cobro' },
   nivel: { t: 'Tu nivel', d: 'Subes de nivel cuando ayudas a otros miembros, participas en los retos y vas a los encuentros. Cada nivel cierra un lado de tu celda. No pierdes nada si no subes: todo funciona desde el nivel 1.' },
+  ferias: { t: 'Ferias y convocatorias', d: 'En Encuentro hay ferias para vender y convocatorias para conseguir proyectos en Cali. Cada una tiene su fecha, sus requisitos y el link oficial. Lo que ya cerró se oculta solo.' },
   beneficios: { t: 'Beneficios', d: 'Software y suscripciones que ya tienes gratis o con descuento por ser estudiante de la Javeriana, y negocios de Cali que dan descuento al mostrar tu carnet.' },
   ejemplo: { t: 'Contenido de ejemplo', d: 'Lo marcado como “Ejemplo” es contenido de muestra para que veas cómo funciona. No son personas reales.' }
 }

@@ -1,7 +1,7 @@
 # Base de datos — Supabase (proyecto `colmena`, región São Paulo)
 
 Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_migrations`):
-`esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`, `beneficios_investigacion_2026_11`, `beneficios_spotify_no_destacado`, `beneficios_spotify_destacado_otra_vez` y `textos_muro_pulido` (solo datos; copia en `supabase/migraciones/`).
+`esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`, `beneficios_investigacion_2026_11`, `beneficios_spotify_no_destacado`, `beneficios_spotify_destacado_otra_vez`, `textos_muro_pulido`, `cuentas_javeriana` y `convocatorias` (copia en `supabase/migraciones/`).
 
 ## Tablas (lectura pública, sin escritura directa)
 | Tabla | Para qué |
@@ -17,6 +17,8 @@ Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_mi
 | `encuentros` | Encuentro presencial. La app muestra el de mayor `numero` con `activo = true`. `fecha` nula = "Fecha por confirmar". |
 | `asistencias` | Quién se apuntó a qué encuentro. |
 | `beneficios` | Pestaña Beneficios. `tipo` = `digital` (lo que ya tienes por ser estudiante) o `aliado` (negocio en Cali). `oferta`, `detalle`, `como` (pasos), `requisito`, `link`, `fuente`, `verificado_en`, `orden`, `activo`, `es_ejemplo`. |
+| `convocatorias` | Ferias, eventos y convocatorias reales en Cali (pestaña Encuentro). `tipo` = `convocatoria`, `evento` o `feria`; `cierre` (plazo para postularse) y `fecha` (día del evento). La app oculta lo que ya cerró o pasó. Cada fila tiene `fuente` y `verificado_en`. |
+| `cuentas` | Une un carnet con una cuenta Microsoft `@javerianacali.edu.co` para recuperarlo en otro dispositivo. Sin lectura desde el cliente. Ver `docs/cuenta/README.md`. |
 | `solicitudes_beneficio` | Propuestas de negocios que quieren ser aliados. Sin lectura pública: se revisan en el Table Editor. |
 
 ## Escrituras: solo por RPC
@@ -33,7 +35,8 @@ Todas reciben `p_id` y `p_clave` (los entrega `crear_perfil` y se guardan en el 
 - `calificar(p_id, p_clave, p_post, p_para, p_estrellas, p_chips, p_comentario)`
 - `alternar_me_sirve`, `alternar_ayuda`, `alternar_conexion`, `alternar_asistencia`
 - `unirse_reto(p_id, p_clave, p_reto, p_link)`, `salir_reto`, `alternar_voto_reto(p_id, p_clave, p_reto, p_participante)`
-- `proponer_beneficio(p_negocio, p_contacto, p_propuesta, p_id?, p_clave?)` — no exige carnet; máximo 20 propuestas por hora en total.
+- `proponer_beneficio(p_negocio, p_contacto, p_propuesta, p_id?, p_clave?)` — no exige carnet; máximo 20 propuestas por hora en total. También recibe las ferias y convocatorias que sugieren los miembros (el nombre empieza por `[Convocatoria]`).
+- `vincular_cuenta(p_id, p_clave)` · `recuperar_carnet()` · `mi_cuenta(p_id, p_clave)` — requieren sesión de Supabase Auth con un correo `@javerianacali.edu.co`.
 
 Tiempo real activado en `publicaciones`, `ayudas`, `me_sirve`, `reto_participantes`, `reto_votos` y `asistencias`.
 
@@ -43,4 +46,5 @@ Tiempo real activado en `publicaciones`, `ayudas`, `me_sirve`, `reto_participant
 - Quitar los ejemplos cuando haya suficientes miembros reales: `delete from perfiles where es_ejemplo;` (borra también sus publicaciones).
 - **Beneficios**: Table Editor → `beneficios`. Para sumar un aliado real crea una fila con `tipo = aliado`, `es_ejemplo = false`, `nombre`, `oferta`, `categoria`, `zona`, `como` y `verificado_en`. Revisa los digitales cada semestre (precios y condiciones cambian) y actualiza `verificado_en`.
 - **Propuestas de aliados**: Table Editor → `solicitudes_beneficio`.
+- **Ferias y convocatorias**: Table Editor → `convocatorias`. Revísalas cada mes junto con los beneficios. Para sumar una, crea una fila con `fuente` (la página donde lo verificaste), `verificado_en` y `cierre` o `fecha`. Lo vencido se oculta solo.
 - Moderar una publicación: Table Editor → `publicaciones` → borrar la fila.

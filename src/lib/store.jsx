@@ -50,6 +50,7 @@ export function ColmenaProvider({ children }) {
   const [votos, setVotos] = useState([])
   const [resenas, setResenas] = useState([])
   const [beneficios, setBeneficios] = useState([])
+  const [convocatorias, setConvocatorias] = useState([])
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
   const [cuenta, setCuenta] = useState(null)
   const [avisoCuenta, setAvisoCuenta] = useState(null)
@@ -73,6 +74,7 @@ export function ColmenaProvider({ children }) {
     votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
     resenas: async () => setResenas(await q(supabase.rpc('resenas_publicas'))),
     beneficios: async () => setBeneficios(await q(supabase.from('beneficios').select('*').order('tipo').order('orden'))),
+    convocatorias: async () => setConvocatorias(await q(supabase.from('convocatorias').select('*').eq('activo', true).order('orden'))),
     encuentro: async () => {
       const rows = await q(supabase.from('encuentros').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
       setEncuentro(rows[0] || null)
@@ -319,7 +321,7 @@ export function ColmenaProvider({ children }) {
   }
 
   const valor = {
-    sesion, yo, beneficios, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
+    sesion, yo, beneficios, convocatorias, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
     cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
     cargando, errorRed, recargar: cargarTodo, ...acciones,
