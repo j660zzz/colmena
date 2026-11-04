@@ -6,6 +6,8 @@ import { completitud, manosDadas } from '../lib/logic'
 import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
 import { GuardarCarnet, RecuperarCarnet } from '../components/Cuenta'
 import { leerBorrador, guardarBorrador, borrarBorrador } from '../lib/vista'
+import { destacadoActual } from '../lib/destacados'
+import { useRelojRetos } from '../lib/reloj'
 import { COBRO, CobroIconos, CobroInsignia, QUE_ES_INTERCAMBIAR } from '../components/Cobro'
 
 const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
@@ -18,6 +20,8 @@ const fmtWa = (v) => { let d = soloDigitos(v); if (d.length > 10 && d.startsWith
 // El carnet como ficha: quién es, en qué te puede ayudar y cómo trabaja
 export function CarnetCard({ p, numero, nota, estado }) {
   const c = useColmena()
+  const ahora = useRelojRetos(c.retos)
+  const destacado = ['reto', 'participantes', 'votos'].every((k) => c.datos[k]?.disponible) && destacadoActual(c.retos, c.participantes, c.votos, ahora)?.perfil_id === p.id
   const real = !!p.id
   const sabe = (p.habilidades?.length ? p.habilidades : p.categorias || []).slice(0, 3)
   const ayudas = real ? manosDadas(c, p.id) : 0
@@ -28,6 +32,7 @@ export function CarnetCard({ p, numero, nota, estado }) {
         <div className="carnet-lockup"><CeldaAbierta s={18} color="var(--ink)" /><span className="carnet-brand">Colmena</span></div>
         <span className="carnet-badges">{nota && <span className="carnet-live">{nota}</span>}<span className="carnet-badge">MIEMBRO</span></span>
       </div>
+      {destacado && <span className="home-carnet-premio"><Icon n="star" s={16} />Destacado de la semana{p.es_ejemplo ? ' · Ejemplo' : ''}</span>}
       <div className="carnet-body">
         <Hex p={p.nombre ? p : null} w={60} h={66} fs={21} />
         <div className="carnet-info">

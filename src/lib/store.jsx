@@ -32,11 +32,11 @@ async function microsoftActivo() {
 }
 
 const GRUPOS = {
-  muro: ['perfiles', 'publicaciones', 'ayudas', 'meSirve', 'beneficios', 'reto', 'encuentro', 'talleres', 'asistencias', 'participantes'],
+  muro: ['perfiles', 'publicaciones', 'ayudas', 'meSirve', 'beneficios', 'reto', 'votos', 'convocatorias', 'encuentro', 'talleres', 'asistencias', 'participantes'],
   miembros: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
   encuentro: ['perfiles', 'encuentro', 'asistencias', 'talleres', 'interes', 'convocatorias', 'reto', 'participantes', 'votos'],
   herramientas: ['beneficios'],
-  carnet: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
+  carnet: ['reto', 'votos', 'perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
   calc: [], ficha: [], registro: [], listo: ['perfiles'], editar: ['perfiles'],
   publicado: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas'],
   publicacion: ['perfiles', 'publicaciones', 'ayudas', 'meSirve'],
@@ -64,6 +64,7 @@ export function ColmenaProvider({ children }) {
   const [encuentro, setEncuentro] = useState(null)
   const [meSirve, setMeSirve] = useState([])
   const [reto, setReto] = useState(null)
+  const [retos, setRetos] = useState([])
   const [participantes, setParticipantes] = useState([])
   const [votos, setVotos] = useState([])
   const [resenas, setResenas] = useState([])
@@ -91,8 +92,9 @@ export function ColmenaProvider({ children }) {
     asistencias: async () => setAsistencias(await q(supabase.from('asistencias').select('*'))),
     meSirve: async () => setMeSirve(await q(supabase.from('me_sirve').select('*'))),
     reto: async () => {
-      const rows = await q(supabase.from('retos').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
-      setReto(rows[0] || null)
+      const rows = await q(supabase.from('retos').select('*').order('numero', { ascending: false }))
+      setRetos(rows)
+      setReto(rows.find((r) => r.activo) || null)
     },
     participantes: async () => setParticipantes(await q(supabase.from('reto_participantes').select('*').order('created_at', { ascending: true }))),
     votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
@@ -385,7 +387,7 @@ export function ColmenaProvider({ children }) {
 
   const valor = {
     sesion, yo, beneficios, convocatorias, talleres, interes, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
-    meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
+    meSirve, reto, retos, participantes, votos, resenas, pendientes, cargarPendientes,
     cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
     cargando, datos, asegurarDatos, reintentar, errorRed, recargar: cargarTodo, ...acciones,
     cargarPublicacion: async (id) => {

@@ -1383,3 +1383,48 @@ button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
+
+/* Inicio: premio, aliados y una sola vitrina de novedades antes del muro. */
+.home-saludo { display: flex; flex-direction: column; gap: 4px; }
+.home-saludo h1 { font-size: 22px; line-height: 1.15; }
+.home-saludo p { font-size: 14px; color: var(--muted); }
+.home-premio { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; border-radius: 24px; background: var(--ink); color: var(--surface); }
+.home-premio > .k, .home-mini > .k { display: flex; align-items: center; gap: 8px; }
+.home-premio > .k { color: rgba(255,255,255,.72); }
+.home-premio h2 { font-size: 25px; line-height: 1.1; }
+.home-premio p { font-size: 14px; line-height: 1.4; }
+.home-premio small { font-size: 12px; color: rgba(255,255,255,.72); }
+.home-premio .btn { align-self: flex-start; }
+.home-premio .home-nota { font-size: 12px; color: rgba(255,255,255,.72); }
+.home-ganador { display: flex; gap: 12px; align-items: center; width: 100%; }
+.home-ganador > div:last-child { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.home-ganador h2 { overflow-wrap: anywhere; }
+.home-ganador .hexav { background: var(--ink); color: var(--polen); }
+.home-avatar { flex: none; padding: 2px; background: var(--surface); clip-path: var(--hex); }
+.home-ganador .ejemplo { align-self: flex-start; color: var(--surface); }
+.home-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.home-aliados, .home-semana { display: flex; flex-direction: column; gap: 8px; }
+.home-aliados .sec-h, .home-semana .sec-h { margin-top: 8px; }
+.home-aliados h2, .home-semana h2 { font-size: 20px; line-height: 1.15; }
+.home-aliados > p { margin: 0; }
+.home-pista { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; margin: 0 -16px; padding: 4px 16px 8px; scrollbar-width: none; }
+.home-pista::-webkit-scrollbar { display: none; }
+.home-pista > button { flex: 0 0 232px; scroll-snap-align: start; text-align: left; }
+.home-aliado, .home-mini { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; border-radius: 20px; padding: 16px; background: var(--surface); box-shadow: var(--soft); transition: transform .18s var(--ease); }
+.home-aliado:active, .home-mini:active { transform: scale(.98); }
+.home-aliado { border: 1px solid var(--ink); }
+.home-aliado-top { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+.home-aliado strong { font: 700 30px/1.1 var(--disp); letter-spacing: -.03em; overflow-wrap: anywhere; }
+.home-aliado b, .home-mini b { font: 700 17px/1.2 var(--disp); }
+.home-aliado small, .home-mini small { font-size: 13px; color: var(--muted); }
+.home-ir { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; font: 600 13px/1.2 var(--ui); }
+.home-mini { flex-basis: 224px !important; min-height: 188px; }
+.home-mini .k { font-size: 11px; }
+.home-historial { display: flex; flex-direction: column; gap: 8px; }
+.home-insignia { display: flex; gap: 12px; padding: 16px; border-radius: 16px; background: var(--surface); box-shadow: var(--soft); }
+.home-insignia > svg { flex: none; }
+.home-insignia > div { display: flex; flex-direction: column; gap: 4px; }
+.home-insignia span, .home-insignia small { font-size: 13px; color: var(--muted); }
+.home-carnet-premio { display: inline-flex; align-items: center; gap: 8px; font: 600 12px/1.2 var(--ui); margin-top: 8px; }
+
+.muro-body { overflow-anchor: none; }

@@ -213,7 +213,7 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
               <li key={t} className="a-left" style={{ '--d': 2 + k * 2 }}><i><Icon n={cat === 'Video' ? 'spark' : cat === 'Foto' ? 'ig' : 'bulb'} s={16} /></i><div><small>{cat} · Ejemplo</small><b>{t}</b></div></li>
             ))}
           </ol>
-          <p className="intro-p a-up" style={{ '--d': 8 }}>Talleres cortos con otros miembros y una noche al mes para mostrar tu marca.</p>
+          <p className="intro-p a-up" style={{ '--d': 8 }}>Participa en el reto: el perfil ganador aparece 7 días en el inicio y gana una insignia. También hay talleres y un encuentro al mes.</p>
         </section>
 
         <section className={'intro-slide' + on(3)} aria-label="Beneficios de estudiante" aria-hidden={i !== 3}>

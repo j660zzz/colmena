@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
-import { hace, firstName, igUrl, fechaLarga } from '../lib/format'
-import { activa, quedan, cierraEn, quienesTeNecesitan, waLink, cuantosEjemplo, nivelDe } from '../lib/logic'
+import { hace, firstName, igUrl } from '../lib/format'
+import { activa, quedan, cierraEn, quienesTeNecesitan, waLink, cuantosEjemplo } from '../lib/logic'
 import { Icon, Hex, Ejemplo, BrandHeader, SubHeader, Empty, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
+import { Inicio } from '../components/Inicio'
 import { CobroInsignia } from '../components/Cobro'
 import { useEstadoVista, useScrollVista, leerBorrador, guardarBorrador, borrarBorrador } from '../lib/vista'
 
@@ -26,6 +27,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
     <>
       <BrandHeader right={headerRight} />
       <div className="body fade muro-body" ref={scroll}>
+        <Inicio nav={nav} irTab={irTab} pedirPerfil={pedirPerfil} />
         {teNecesitan.length > 0 && (
           <button type="button" className="te-necesitan" onClick={() => { setTipo('need'); setCat(null); irLista() }}>
             <b><Mark>{teNecesitan.length} {teNecesitan.length === 1 ? 'persona necesita' : 'personas necesitan'}</Mark> lo que sabes hacer.</b>
@@ -33,14 +35,12 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
           </button>
         )}
 
-        <Portada irTab={irTab} pedirPerfil={pedirPerfil} activas={activas} verPiden={() => { setTipo('need'); setCat(null); irLista() }} />
-
         <button type="button" className="composer" onClick={() => abrirComposer()}>
           <span>¿Qué necesitas o qué ofreces?</span>
           <span className="plus"><Icon n="plus" s={18} w={2.4} /></span>
         </button>
 
-        <PrimerosPasos irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirComposer={abrirComposer} />
+        {!c.yo && <PrimerosPasos irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirComposer={abrirComposer} />}
 
         <div className="muro-bar" id="lista">
           <div className="tabs-t" role="tablist" aria-label="Tipo de publicación">
@@ -74,17 +74,9 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
           </Empty>
         ) : (
           <div className="posts" key={tipo + (cat || '')}>
-            {lista.map((p, k) => (
-              <Fragment key={p.id}>
-                <Post post={p} nav={nav} pedirPerfil={pedirPerfil} />
-                {k === Math.min(2, lista.length - 1) && tipo === 'todo' && !cat && (
-                  <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirAyuda={abrirAyuda} />
-                )}
-              </Fragment>
-            ))}
+            {lista.map((p) => <Post key={p.id} post={p} nav={nav} pedirPerfil={pedirPerfil} />)}
           </div>
         )}
-        {lista.length === 0 && <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirAyuda={abrirAyuda} />}
         <div className="muro-fin">
           <b>No hay más publicaciones por ahora.</b>
           <p>Las publicaciones se ocultan solas cuando vencen. <button type="button" className="como-in" onClick={() => abrirAyuda()}>¿Cómo funciona?</button></p>
@@ -94,157 +86,6 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
     </>
   )
 }
-
-// Portada: qué hay hoy en Colmena, con cifras de la base. Para miembros, lo suyo.
-function Portada({ irTab, pedirPerfil, activas, verPiden }) {
-  const c = useColmena()
-  const piden = activas.filter((p) => p.tipo === 'need' && !p.resuelta_at)
-  const pidenEj = piden.filter((p) => c.perfil(p.autor_id)?.es_ejemplo).length
-  const nBen = c.beneficios.filter((b) => b.tipo === 'digital').length
-  const nGratis = c.beneficios.filter((b) => b.tipo === 'digital' && b.gratis).length
-  const e = c.encuentro
-  const r = c.reto
-  const retoAbierto = r && new Date(r.cierra_en).getTime() > Date.now()
-  const yo = c.yo
-  const actividadLista = ['ayudas', 'publicaciones', 'participantes', 'asistencias', 'resenas'].every((n) => c.datos[n]?.disponible)
-  const nv = yo && actividadLista ? nivelDe(c, yo.id) : null
-  const mias = yo ? activas.filter((p) => p.autor_id === yo.id).map((p) => p.id) : []
-  const meEscribieron = yo ? c.ayudas.filter((a) => mias.includes(a.publicacion_id)).length : 0
-
-  const tiles = [
-    c.datos.publicaciones?.disponible && c.datos.perfiles?.disponible && { k: 'piden', ic: 'hand', n: piden.length, t: piden.length === 1 ? 'persona pide ayuda' : 'personas piden ayuda', nota: pidenEj ? `${pidenEj} de ejemplo` : null, go: verPiden },
-    nBen > 0 && { k: 'ben', ic: 'gift', n: nBen, t: 'beneficios de estudiante', nota: nGratis ? `${nGratis} gratis` : null, go: () => irTab('herramientas') },
-    retoAbierto
-      ? { k: 'reto', ic: 'spark', n: null, t: 'Reto de la semana', nota: cierraEn(r.cierra_en), go: () => irTab('encuentro') }
-      : e && { k: 'enc', ic: 'cal', n: null, t: `Encuentro ${String(e.numero).padStart(2, '0')}`, nota: fechaLarga(e.fecha) || 'Fecha por confirmar', go: () => irTab('encuentro') }
-  ].filter(Boolean)
-
-  if (yo) {
-    return (
-      <section className="portada mia" aria-label="Lo tuyo">
-        <button type="button" onClick={() => irTab('carnet')}>
-          <small>Tu nivel</small><b>{nv ? `${nv.n} · ${nv.t}` : 'Ver tu carnet'}</b><span>{nv ? (nv.sig ? `Te ${nv.faltan === 1 ? 'falta 1 punto' : `faltan ${nv.faltan} puntos`}` : 'Nivel más alto') : 'Consulta tu actividad'}</span>
-        </button>
-        <button type="button" onClick={() => irTab('carnet')}>
-          <small>Te escribieron</small>{c.datos.ayudas?.disponible && <b>{meEscribieron}</b>}<span>{mias.length ? `En ${mias.length} ${mias.length === 1 ? 'publicación' : 'publicaciones'}` : 'Publica para recibir ayuda'}</span>
-        </button>
-      </section>
-    )
-  }
-  return (
-    <section className="portada" aria-label="Qué hay en Colmena">
-      <div className="portada-top">
-        <h1>Pide ayuda, ofrece lo que sabes y usa tus beneficios.</h1>
-        <p>Para estudiantes de DCV que emprenden. Gratis.</p>
-      </div>
-      <div className="portada-tiles">
-        {tiles.map((x) => (
-          <button key={x.k} type="button" onClick={x.go}>
-            <Icon n={x.ic} s={18} />
-            {x.n != null ? <b>{x.n}</b> : null}
-            <span>{x.t}</span>
-            {x.nota && <small>{x.nota}</small>}
-          </button>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-// "Lo que se mueve": lo vivo de la colmena en un carrusel (reto, panal, encuentro, herramienta)
-function Movimiento({ irTab, nav, pedirPerfil, abrirAyuda }) {
-  const c = useColmena()
-  const toast = useToast()
-  const pista = useRef(null)
-  const [i, setI] = useState(0)
-  const r = c.reto
-  const e = c.encuentro
-
-  const gente = r ? c.participantes.filter((x) => x.reto_id === r.id) : []
-  const yoEnReto = c.yo && gente.some((x) => x.perfil_id === c.yo.id)
-  const retoAbierto = r && new Date(r.cierra_en).getTime() > Date.now()
-  const ejReto = cuantosEjemplo(c, gente.map((x) => x.perfil_id))
-  const medirse = () => pedirPerfil('Necesitas un carnet para participar en el reto.', async () => {
-    try { await c.unirseReto(r.id); toast('Ya estás participando. Sube tu propuesta en Encuentro.'); irTab('encuentro') } catch (x) { toast(x.message, true) }
-  })
-
-  const van = e ? c.asistencias.filter((a) => a.encuentro_id === e.id).map((a) => c.perfil(a.perfil_id)).filter(Boolean) : []
-  const ejVan = van.filter((p) => p.es_ejemplo).length
-
-  const nBen = c.beneficios.filter((b) => b.tipo === 'digital').length
-  const slides = [
-    nBen > 0 && (
-      <article key="beneficios" className="mov ink">
-        <div className="mov-top"><span className="k">Con tu correo Javeriana</span></div>
-        <h3>Tienes {nBen} beneficios que quizás no estás usando.</h3>
-        <p className="mov-facts claro">Office, Adobe, Figma, Spotify y más, gratis o con descuento.</p>
-        <button type="button" className="go" onClick={() => irTab('herramientas')}>Ver beneficios <Icon n="right" s={15} w={2.2} /></button>
-      </article>
-    ),
-    r && (
-      <article key="reto" className="mov polen">
-        <div className="mov-top"><span className="k">Reto de la semana <QueEs onClick={() => abrirAyuda('reto')} /></span><span className="cd">{cierraEn(r.cierra_en)}</span></div>
-        <h3>{r.titulo}</h3>
-        <div className="mov-foot">
-          <span className="mov-who">
-            {gente.length > 0 && <span className="stack">{gente.slice(0, 3).map((x) => <Hex key={x.perfil_id} p={c.perfil(x.perfil_id)} w={22} fs={8} />)}</span>}
-            <span>{gente.length === 0 ? 'Nadie participa todavía' : `${gente.length} ${gente.length === 1 ? 'participa' : 'participan'}`}{ejReto > 0 && <em><br />{ejReto} de ejemplo</em>}</span>
-          </span>
-          {!retoAbierto ? <button type="button" className="btn ink sm" onClick={() => irTab('encuentro')}>Ver</button>
-            : yoEnReto ? <button type="button" className="btn ink sm" onClick={() => irTab('encuentro')}>Subir propuesta</button>
-            : <button type="button" className="btn ink sm" onClick={medirse}>Participar</button>}
-        </div>
-      </article>
-    ),
-    c.talleres[0] && (
-      <article key="talleres" className="mov ink">
-        <div className="mov-top"><span className="k">Talleres</span>{c.talleres[0].es_ejemplo && <span className="ejemplo">Ejemplo</span>}</div>
-        <h3>{c.talleres[0].titulo}</h3>
-        <p className="mov-facts claro">{c.talleres.slice(1, 3).map((t) => t.titulo).join(' · ')}</p>
-        <button type="button" className="go" onClick={() => irTab('encuentro')}>Ver talleres <Icon n="right" s={15} w={2.2} /></button>
-      </article>
-    ),
-    e && (
-      <article key="encuentro" className="mov white">
-        <div className="mov-top"><span className="k">Encuentro {String(e.numero).padStart(2, '0')} · cierre del mes</span></div>
-        <h3>{e.titulo}</h3>
-        <p className="mov-facts"><Icon n="cal" s={15} />{fechaLarga(e.fecha) || 'Fecha por confirmar'}{e.lugar ? ` · ${e.lugar}` : ''}</p>
-        <div className="mov-foot">
-          <span className="mov-who">
-            {van.length > 0 && <span className="stack">{van.slice(0, 3).map((p) => <Hex key={p.id} p={p} w={22} fs={8} />)}</span>}
-            <span>{van.length === 0 ? 'Nadie se ha inscrito todavía' : `${van.length} ${van.length === 1 ? 'quiere ir' : 'quieren ir'}`}{ejVan > 0 && <em><br />{ejVan} de ejemplo</em>}</span>
-          </span>
-          <button type="button" className="btn primary sm" onClick={() => irTab('encuentro')}>Quiero ir</button>
-        </div>
-      </article>
-    ),
-    <article key="calc" className="mov white">
-      <div className="mov-top"><span className="k">Herramienta</span></div>
-      <h3>¿Cuánto deberías cobrar por lo que haces?</h3>
-      <p className="mov-facts">Suma materiales, horas y gastos fijos, y te da un precio sugerido.</p>
-      <div className="mov-foot"><span /><button type="button" className="btn ink sm" onClick={() => nav({ t: 'calc' })}>Calcular</button></div>
-    </article>
-  ].filter(Boolean)
-
-  const alMover = () => {
-    const el = pista.current
-    if (!el || !el.firstElementChild) return
-    const paso = el.firstElementChild.getBoundingClientRect().width + 12
-    setI(Math.min(slides.length - 1, Math.round(el.scrollLeft / paso)))
-  }
-
-  return (
-    <section className="movimiento" aria-label="Lo que se mueve">
-      <div className="sec-h"><h3>Esta semana</h3><span className="meta mono">{i + 1}/{slides.length}</span></div>
-      <div className="mov-pista" ref={pista} onScroll={alMover}>{slides}</div>
-      <div className="mov-dots" aria-hidden="true">{slides.map((_, k) => <i key={k} className={k === i ? 'on' : ''} />)}</div>
-    </section>
-  )
-}
-
-const QueEs = ({ onClick }) => (
-  <button type="button" className="quees" onClick={onClick} aria-label="¿Qué es esto?">?</button>
-)
 
 const AVISO = 'colmena.aviso-prueba.v1'
 function AvisoPrueba() {
@@ -279,7 +120,8 @@ export function RetoCard({ irTab, pedirPerfil, completo = false }) {
       </div>
       <h3>{r.titulo}</h3>
       {completo && r.descripcion && <p className="reto-desc">{r.descripcion}</p>}
-      {completo && <p className="reto-pts">Subir tu propuesta suma 2 puntos a tu nivel.</p>}
+<p className="reto-pts">El perfil ganador aparece 7 días en el inicio y recibe la insignia Destacado de la semana.</p>
+      {completo && <p className="fine">Gana la propuesta con más votos Útil al cierre. En empate, quien participó primero. Se necesita al menos un voto.</p>}
       <div className="reto-foot">
         <div className="who-row">
           {gente.length > 0 && <div className="stack">{gente.slice(0, 4).map((x) => <Hex key={x.perfil_id} p={c.perfil(x.perfil_id)} w={24} fs={9} />)}</div>}

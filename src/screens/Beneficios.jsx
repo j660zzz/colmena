@@ -32,7 +32,7 @@ function dominioDe(b) {
   if (DOMINIO[b.nombre]) return DOMINIO[b.nombre]
   try { const h = new URL(b.link).hostname.replace(/^www\./, ''); return SIN_LOGO.test(h) ? null : h } catch { return null }
 }
-function Logo({ b, s = 40 }) {
+export function Logo({ b, s = 40 }) {
   const [fallo, setFallo] = useState(false)
   const d = b.tipo === 'digital' ? dominioDe(b) : null
   const ic = b.tipo === 'aliado' ? 'pin' : ICONO_CAT[b.categoria] || 'seal'
@@ -72,7 +72,6 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
 
   const digitales = c.beneficios.filter((b) => b.tipo === 'digital')
   const aliados = c.beneficios.filter((b) => b.tipo === 'aliado')
-  const reales = aliados.filter((b) => !b.es_ejemplo).length
   const destacados = digitales.filter((b) => b.destacado).sort((x, y) => rango(x) - rango(y))
   const nGratis = digitales.filter((b) => b.gratis).length
   const cats = CATS_B.filter((k) => digitales.some((b) => b.categoria === k))
@@ -112,6 +111,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
         </div>
       </div>
 
+      {tienda && <Aliados nav={nav} pedirPerfil={pedirPerfil} />}
       {tienda ? (
         <>
           {destacados.length > 0 && (
@@ -136,11 +136,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
             )
           })}
 
-          <section className="bfila">
-            <div className="sec-h"><h3>Aliados en Cali</h3>{!reales && <span className="meta">Muy pronto</span>}</div>
-            <p className="soft">Negocios que dan descuento a los miembros de Colmena. Para usarlos, muestra tu carnet.</p>
-            <div className="blista">{aliados.map(fila1)}</div>
-          </section>
+
         </>
       ) : lista.length === 0 ? (
         <Empty title="No encontramos ese beneficio">Prueba con otra palabra o mira todas las categorías.</Empty>
@@ -267,4 +263,26 @@ function Proponer({ onListo }) {
       <button type="submit" className="btn primary full big" disabled={!ok || enviando}>{enviando ? 'Enviando…' : 'Enviar propuesta'}</button>
     </form>
   )
+}
+
+export function Aliados({ nav, pedirPerfil }) {
+  const c = useColmena()
+  const [abierto, setAbierto] = useState(null)
+  const [mios, alternar] = useMios()
+  const lista = c.beneficios.filter((b) => b.tipo === 'aliado')
+  if (!lista.length) return null
+  return <section className="home-aliados" aria-label="Aliados en Cali">
+    <div className="sec-h"><h2>Tu carnet en Cali</h2><Icon n="card" s={22} /></div>
+    <p className="soft">Muestra tu carnet y accede a descuentos de aliados.</p>
+    {lista.every((b) => b.es_ejemplo) && <p className="fine">Son ejemplos: así funcionarán los descuentos cuando se sumen negocios reales.</p>}
+    <div className="home-pista">
+      {lista.map((b) => <button key={b.id} className="home-aliado" onClick={() => setAbierto(b)}>
+        <span className="home-aliado-top"><Icon n="pin" s={18} /><Ejemplo p={b} /></span>
+        <strong>{b.etiqueta || b.oferta}</strong><b>{b.nombre}</b><small>{b.oferta}</small><span className="home-ir">Ver descuento <Icon n="right" s={16} /></span>
+      </button>)}
+    </div>
+    <Sheet open={!!abierto} onClose={() => setAbierto(null)} label="Detalle del aliado">
+      {abierto && <Detalle b={abierto} mios={mios} alternar={alternar} onCarnet={() => { setAbierto(null); pedirPerfil('Necesitas un carnet para mostrarlo.', () => nav({ t: 'mostrar' })) }} />}
+    </Sheet>
+  </section>
 }
