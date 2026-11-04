@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'Colmena',
         short_name: 'Colmena',
-        description: 'Ayuda entre emprendedores de Diseño de Comunicación Visual · Javeriana Cali.',
+        description: 'La comunidad de estudiantes que emprenden en Cali.',
         lang: 'es-CO',
         start_url: '/',
         scope: '/',
