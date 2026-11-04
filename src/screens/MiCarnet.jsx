@@ -31,7 +31,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
             <li><i><Icon n="gift" s={16} /></i><span><b>Usas los descuentos de aliados</b>Muestras tu carnet en los negocios aliados de Cali.</span></li>
           </ul>
           <button type="button" className="btn primary full big" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>
-          <p className="fine center">Toma menos de un minuto.</p>
+          <p className="fine center">Son 3 pasos.</p>
           <RecuperarCarnet />
         </div>
       </>

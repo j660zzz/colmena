@@ -3,6 +3,8 @@ import { TOOLS, TOOLCATS } from '../data/contenido'
 import { cop } from '../lib/format'
 import { Icon, Header, SubHeader, useToast } from '../components/ui'
 import { marcarCalcAbierta } from './Onboarding'
+import { EstadoDatos } from '../components/EstadoDatos'
+import { useEstadoVista, useScrollVista } from '../lib/vista'
 import { SeccionBeneficios } from './Beneficios'
 
 const K_LEIDAS = 'colmena.leidas.v1'
@@ -11,7 +13,8 @@ const marcarLeida = (id) => { try { const l = leidas(); if (!l.includes(id)) loc
 const ICONO = { Precio: 'note', Ventas: 'trend', Legal: 'seal', Marca: 'spark' }
 
 export default function Herramientas({ nav, headerRight, pedirPerfil }) {
-  const [cat, setCat] = useState(null)
+  const [cat, setCat] = useEstadoVista('herramientas.cat', null)
+  const scroll = useScrollVista('herramientas.scroll')
   const ya = leidas()
   const lista = cat ? TOOLS.filter((t) => t.cat === cat) : TOOLS
   const empezar = TOOLS.filter((t) => !ya.includes(t.id)).slice(0, 2)
@@ -19,8 +22,8 @@ export default function Herramientas({ nav, headerRight, pedirPerfil }) {
   return (
     <>
       <Header right={headerRight} />
-      <div className="body fade">
-        <SeccionBeneficios pedirPerfil={pedirPerfil} nav={nav} />
+      <div className="body fade" ref={scroll}>
+        <EstadoDatos nombres={['beneficios']}><SeccionBeneficios pedirPerfil={pedirPerfil} nav={nav} /></EstadoDatos>
 
         <div className="sec-h"><h3>Herramientas</h3></div>
         <button type="button" className="feature" onClick={() => nav({ t: 'calc' })}>
@@ -122,7 +125,7 @@ export function Calculadora({ onBack, abrirComposer }) {
   const costo = v.mat + mano + fijo
   const precio = costo * (1 + v.mg / 100)
   const pct = (x) => costo > 0 ? Math.round(x / costo * 100) : 0
-  const resumen = `Mi precio en Colmena: ${cop(precio)}\nMateriales: ${cop(v.mat)}\nTrabajo (${v.hrs} h): ${cop(mano)}\nGastos fijos: ${cop(fijo)}\nCosto total: ${cop(costo)}\nMargen: ${v.mg}%`
+  const resumen = `Mi precio en Colmena: ${cop(precio)}\nMateriales: ${cop(v.mat)}\nTrabajo (${v.hrs} h): ${cop(mano)}\nGastos fijos: ${cop(fijo)}\nCosto total: ${cop(costo)}\nGanancia sobre el costo: ${v.mg}%`
 
   const F = ({ id, label, k, pre, suf, step = 1000 }) => (
     <div className="field">
@@ -163,7 +166,7 @@ export function Calculadora({ onBack, abrirComposer }) {
             {F({ id: 'c-proj', label: 'Proyectos al mes', k: 'proj', step: 1 })}
           </div>
           <div className="field">
-            <label htmlFor="c-mg">Margen de ganancia <b className="mono">{v.mg}%</b></label>
+            <label htmlFor="c-mg">Ganancia sobre el costo <b className="mono">{v.mg}%</b></label>
             <input id="c-mg" className="range" type="range" min="0" max="100" step="5" value={v.mg} onChange={set('mg')} />
           </div>
         </div>

@@ -1373,3 +1373,13 @@ input::placeholder, textarea::placeholder { color: rgba(15, 15, 13, .4); }
 .enc-saltos button { position: relative; min-height: 44px; padding: 0 2px; background: none; box-shadow: none; font: 600 13px/1 var(--ui); gap: 6px; }
 .enc-saltos button::before { content: ""; position: absolute; inset: 7px -10px; border-radius: 999px; background: var(--surface); box-shadow: var(--soft); z-index: -1; }
 .ticket h3 { font-size: 24px; line-height: 1.1; }
+
+/* Fiabilidad de los flujos: conservar la retícula y ampliar el área de toque. */
+.enter, .btn.sm, .segbar button, .chip, .chip.sm, .m-modos button,
+.sec-h .ver, .como-in, .intro-saltar, .linkbtn, .linkbtn.tiny, .go, .mov .go,
+.panal-card .go, .cat-btn, .who, input.range { min-height: 44px; }
+button.chip, .bchips button, .m-cats button, .tabs-t button { min-width: 44px; }
+.bchips button::before, .m-cats button::before { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}

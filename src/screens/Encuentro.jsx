@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useColmena } from '../lib/store'
 import { fechaLarga } from '../lib/format'
 import { Icon, Hex, Ejemplo, Header, Titulo, useToast } from '../components/ui'
+import { EstadoDatos } from '../components/EstadoDatos'
 import { RetoCard } from './Muro'
 import Convocatorias from './Convocatorias'
 import Talleres, { QuienesVan } from './Talleres'
@@ -19,13 +20,13 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
             <button key={id} type="button" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><Icon n={ic} s={15} />{t}</button>
           ))}
         </nav>
-        <div id="enc-ticket"><Ticket pedirPerfil={pedirPerfil} /></div>
-        <QuienesVan nav={nav} />
-        <div id="enc-talleres"><Talleres pedirPerfil={pedirPerfil} /></div>
-        <div id="enc-ferias"><Convocatorias /></div>
+        <div id="enc-ticket"><EstadoDatos nombres={['encuentro', 'perfiles', 'asistencias']}><Ticket pedirPerfil={pedirPerfil} /></EstadoDatos></div>
+        <EstadoDatos nombres={['perfiles', 'asistencias']}><QuienesVan nav={nav} /></EstadoDatos>
+        <div id="enc-talleres"><EstadoDatos nombres={['talleres', 'interes']}><Talleres pedirPerfil={pedirPerfil} /></EstadoDatos></div>
+        <div id="enc-ferias"><EstadoDatos nombres={['convocatorias']}><Convocatorias /></EstadoDatos></div>
         <div id="enc-reto" />
-        <RetoCard irTab={irTab} pedirPerfil={pedirPerfil} completo />
-        <Propuestas nav={nav} pedirPerfil={pedirPerfil} />
+        <EstadoDatos nombres={['reto', 'participantes']}><RetoCard irTab={irTab} pedirPerfil={pedirPerfil} completo /></EstadoDatos>
+        <EstadoDatos nombres={['reto', 'participantes', 'votos', 'perfiles']}><Propuestas nav={nav} pedirPerfil={pedirPerfil} /></EstadoDatos>
       </div>
     </>
   )

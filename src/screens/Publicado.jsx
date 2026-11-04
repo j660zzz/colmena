@@ -9,6 +9,7 @@ export default function Publicado({ postId, onBack, nav, irTab, pedirPerfil }) {
   const c = useColmena()
   const toast = useToast()
   const post = c.publicaciones.find((p) => p.id === postId)
+  if (!post && c.datos.publicaciones?.estado === 'error') return <><SubHeader title="Tu publicación" onBack={onBack} /><div className="body"><h2>Tu publicación se guardó</h2><p>No pudimos actualizar el muro. No necesitas publicarla otra vez.</p><button className="btn ink" onClick={() => c.reintentar(['publicaciones'])}>Reintentar</button></div></>
   if (!post) return <><SubHeader title="Tu publicación" onBack={onBack} /><div className="body"><Empty title="Esta publicación ya no está" /></div></>
 
   const nueva = Date.now() - new Date(post.created_at).getTime() < 5 * 60000
