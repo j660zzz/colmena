@@ -129,11 +129,15 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
       else { await navigator.clipboard.writeText(url); toast('Enlace copiado') }
     } catch { /* cancelado */ }
   }
-  const escribir = () => pedirPerfil(`Necesitas un carnet para escribirle a ${firstName(m.nombre)}.`, async () => {
-    if (m.es_ejemplo) { toast('Este perfil es de ejemplo, así que no hay a quién escribirle.'); return }
+  // tema: la habilidad sobre la que quiere escribirle (el mensaje sale listo)
+  const escribir = (tema) => pedirPerfil(`Necesitas un carnet para escribirle a ${firstName(m.nombre)}.`, async () => {
+    if (m.es_ejemplo) { toast(typeof tema === 'string' ? `Perfil de ejemplo. Con alguien real se abre WhatsApp con un mensaje sobre ${tema.toLowerCase()}.` : 'Este perfil es de ejemplo, así que no hay a quién escribirle.'); return }
     try {
       const num = await c.contactar(m.id)
-      if (num) location.href = waLink(num, `Hola ${firstName(m.nombre)}, te vi en Colmena.`)
+      const msg = typeof tema === 'string'
+        ? `Hola ${firstName(m.nombre)}, te vi en Colmena. Me interesa tu ayuda con ${tema.toLowerCase()}.`
+        : `Hola ${firstName(m.nombre)}, te vi en Colmena.`
+      if (num) location.href = waLink(num, msg)
       else if (m.instagram) location.href = igUrl(m.instagram)
       else toast(`${firstName(m.nombre)} todavía no agregó su WhatsApp.`)
     } catch (e) { toast(e.message, true) }
@@ -154,7 +158,6 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
         <CarnetCard p={m} numero={m.carnet} />
 
         <div className="perfil-meta">
-          <span className={'disp ' + (m.disponible ? 'on' : 'off')}><i />{m.disponible ? 'Disponible para proyectos' : 'Sin cupo por ahora'}</span>
           <span className="desde">Miembro desde {mesDesde(m.created_at)}</span>
           <NivelChip id={m.id} nombre={propio ? null : firstName(m.nombre)} />
         </div>
@@ -175,9 +178,16 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
 
         {(m.habilidades.length > 0 || m.categorias.length > 0) && (
           <section className="perfil-sec">
-            <h3>Lo que ofrece</h3>
-            {m.habilidades.length > 0 && <div className="post-tags">{m.habilidades.map((x) => <span key={x} className="tag strong">{x}</span>)}</div>}
-            {m.categorias.length > 0 && <p className="cats-line">Categorías: {m.categorias.join(' · ')}</p>}
+            <h3>{propio ? 'Te pueden pedir ayuda con' : `Pídele ayuda con`}</h3>
+            <div className="pide">
+              {(m.habilidades.length ? m.habilidades : m.categorias).map((x) => (
+                <button key={x} type="button" disabled={propio} onClick={() => escribir(x)}>
+                  <b>{x}</b>
+                  {!propio && <span><Icon n="wa" s={14} />Escribirle sobre esto</span>}
+                </button>
+              ))}
+            </div>
+            {m.habilidades.length > 0 && m.categorias.length > 0 && <p className="cats-line">Categorías: {m.categorias.join(' · ')}</p>}
           </section>
         )}
 

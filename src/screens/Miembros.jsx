@@ -3,44 +3,67 @@ import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { firstName } from '../lib/format'
 import { activa, activoSemana, manosDadas, quienesPueden, normal, nivelDe, puntosDe } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Header, Titulo, Empty, Mark, Sheet } from '../components/ui'
+import { Icon, Hex, Ejemplo, Header, Titulo, Empty, Mark } from '../components/ui'
+import { statsDe } from './Carnet'
+
+const COBRA = { dinero: 'Cobra', trueque: 'Intercambio', ambos: 'Cobra o intercambia' }
+const MODOS = [['todos', 'Todos'], ['disponibles', 'Disponibles'], ['intercambio', 'Intercambian']]
 
 export default function Miembros({ nav, headerRight }) {
   const c = useColmena()
   const [q, setQ] = useState('')
   const [cat, setCat] = useState(null)
+  const [modo, setModo] = useState('todos')
   const buscador = useRef(null)
-  const [verCats, setVerCats] = useState(false)
 
   const ordenados = useMemo(() => [...c.perfiles].sort((a, b) =>
     (a.es_ejemplo - b.es_ejemplo) || ((nivelDe(c, b.id).n >= 5) - (nivelDe(c, a.id).n >= 5)) || (puntosDe(c, b.id).total - puntosDe(c, a.id).total) || (new Date(b.created_at) - new Date(a.created_at))), [c.perfiles, c.ayudas, c.participantes, c.asistencias, c.resenas]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const lista = ordenados.filter((m) => {
-    if (c.yo && m.id === c.yo.id) return false
+  const otros = ordenados.filter((m) => !(c.yo && m.id === c.yo.id))
+  const t = normal(q.trim())
+  const lista = otros.filter((m) => {
     if (cat && !m.categorias.includes(cat)) return false
-    const t = normal(q.trim())
+    if (modo === 'disponibles' && !m.disponible) return false
+    if (modo === 'intercambio' && !['trueque', 'ambos'].includes(m.intercambio)) return false
     return !t || normal([m.nombre, m.marca, m.rol, m.bio, ...m.habilidades, ...m.categorias].join(' ')).includes(t)
   })
-  const activos = c.perfiles.filter((m) => !m.es_ejemplo && activoSemana(c, m.id)).length
+  const cats = CATS.map((x) => [x, otros.filter((m) => m.categorias.includes(x)).length]).filter(([, n]) => n > 0)
+  const disponibles = otros.filter((m) => m.disponible).slice(0, 8)
+  const filtrando = !!(cat || t || modo !== 'todos')
 
   const miNecesito = c.yo && c.publicaciones.find((p) => p.autor_id === c.yo.id && p.tipo === 'need' && activa(p))
   const sugeridos = miNecesito ? quienesPueden(c, miNecesito.categorias, c.yo.id).slice(0, 6) : []
 
   // Si todos tienen el mismo nivel, la etiqueta no ayuda a distinguir a nadie
   const mismoNivel = new Set(lista.map((m) => nivelDe(c, m.id).n).filter((n) => n > 1)).size <= 1
+  const limpiar = () => { setQ(''); setCat(null); setModo('todos') }
 
   return (
     <>
       <Header right={headerRight} />
       <div className="body fade">
-        <Titulo title="Miembros" />
+        <Titulo title="Miembros" sub="Encuentra a quien sabe lo que necesitas." />
         <div className="search">
           <Icon n="search" s={19} />
-          <input ref={buscador} type="search" placeholder="Buscar por nombre o habilidad" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar miembros" />
+          <input ref={buscador} type="search" placeholder="Logo, fotos, reels, costos…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar miembros por nombre o habilidad" />
           {q && <button type="button" className="iconbtn" aria-label="Limpiar búsqueda" onClick={() => { setQ(''); buscador.current?.focus() }}><Icon n="x" s={18} /></button>}
         </div>
 
-        {sugeridos.length > 0 && (
+        <section className="m-necesitas" aria-label="Filtrar por lo que necesitas">
+          <span className="k">¿Qué necesitas?</span>
+          <div className="m-cats">
+            {cats.map(([x, n]) => (
+              <button key={x} type="button" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>
+                {x}<small>{n}</small>
+              </button>
+            ))}
+          </div>
+          <div className="m-modos" role="group" aria-label="Mostrar">
+            {MODOS.map(([k, txt]) => <button key={k} type="button" aria-pressed={modo === k} onClick={() => setModo(k)}>{txt}</button>)}
+          </div>
+        </section>
+
+        {sugeridos.length > 0 && !filtrando && (
           <>
             <div className="sec-h"><h3>Te pueden ayudar con lo que publicaste</h3></div>
             <p className="soft">Saben de <Mark>{miNecesito.categorias.join(', ')}</Mark></p>
@@ -57,52 +80,57 @@ export default function Miembros({ nav, headerRight }) {
           </>
         )}
 
-        <div className="sec-h">
-          <h3>{cat ? cat : 'Todos'}<span className="meta"> · {lista.length}</span></h3>
-          {cat
-            ? <button type="button" className="cat-btn on" onClick={() => setCat(null)} aria-label={`Quitar filtro ${cat}`}>{cat}<Icon n="x" s={14} w={2.2} /></button>
-            : <button type="button" className="cat-btn" onClick={() => setVerCats(true)}>Filtrar<Icon n="right" s={14} w={2} /></button>}
-        </div>
-        {activos > 0 && <p className="fine">{activos} {activos === 1 ? 'miembro activo' : 'miembros activos'} esta semana</p>}
-        <Sheet open={verCats} onClose={() => setVerCats(false)} label="Filtrar miembros por categoría">
-          <div className="cats-sheet">
-            <h2>¿Qué estás buscando?</h2>
-            <p className="soft">Muestra solo los miembros que saben de una categoría.</p>
-            <div className="cats-list">
-              {CATS.map((x) => {
-                const n = c.perfiles.filter((m) => m.categorias.includes(x) && !(c.yo && m.id === c.yo.id)).length
-                return (
-                  <button key={x} type="button" disabled={n === 0} onClick={() => { setCat(x); setVerCats(false) }}>
-                    <span>{x}</span><small>{n === 0 ? 'Nadie todavía' : `${n} ${n === 1 ? 'miembro' : 'miembros'}`}</small>
-                  </button>
-                )
-              })}
+        {!filtrando && disponibles.length > 0 && (
+          <section className="m-disp" aria-label="Disponibles para proyectos">
+            <div className="sec-h"><h3>Disponibles ahora</h3><span className="meta">{otros.filter((m) => m.disponible).length} con cupo</span></div>
+            <div className="m-disp-pista">
+              {disponibles.map((m, i) => (
+                <button key={m.id} type="button" className={'m-dcard' + (i % 2 ? ' claro' : '')} onClick={() => nav({ t: 'carnet', id: m.id })}>
+                  <span className="m-dtop"><Hex p={m} w={48} h={52} fs={17} /><span className="m-dok"><i />Con cupo</span></span>
+                  <b>{m.nombre}<Ejemplo p={m} /></b>
+                  <span className="m-drol">{m.rol || m.marca}</span>
+                  <span className="m-dskills">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 2).map((x) => <em key={x}>{x}</em>)}</span>
+                  <span className="go">Ver carnet <Icon n="right" s={14} w={2.2} /></span>
+                </button>
+              ))}
             </div>
-          </div>
-        </Sheet>
+          </section>
+        )}
+
+        <div className="sec-h">
+          <h3>{filtrando ? `${lista.length} ${lista.length === 1 ? 'resultado' : 'resultados'}` : 'Todos los miembros'}</h3>
+          {filtrando ? <button type="button" className="ver" onClick={limpiar}>Limpiar</button> : <span className="meta">{otros.length}</span>}
+        </div>
 
         {lista.length === 0 ? (
-          <Empty title="Sin resultados">
-            {q ? `Nadie coincide con “${q}”. Prueba con una habilidad, como “foto” o “identidad”.` : 'Todavía no hay miembros en esta categoría.'}
+          <Empty title="Sin resultados" action={<button type="button" className="btn ghost sm" onClick={limpiar}>Ver todos</button>}>
+            {q ? `Nadie coincide con “${q}”. Prueba con una habilidad, como “foto” o “identidad”.` : 'Nadie coincide con esos filtros todavía.'}
           </Empty>
         ) : (
           <div className="cards">
             {lista.map((m) => {
-              const n = manosDadas(c, m.id)
+              const st = statsDe(c, m.id)
               const nv = nivelDe(c, m.id)
               const activo = !m.es_ejemplo && activoSemana(c, m.id)
+              const sabe = (m.habilidades.length ? m.habilidades : m.categorias).slice(0, 3)
               return (
-                <button key={m.id} type="button" className="member" onClick={() => nav({ t: 'carnet', id: m.id })}>
-                  <span className="mhex"><Hex p={m} w={52} h={58} fs={18} />{activo && <i className="live" title="Activo esta semana" />}</span>
-                  <span className="minfo">
-                    <b>{m.nombre}<Ejemplo p={m} /></b>
-                    <span>{[m.rol, m.marca].filter(Boolean).join(' · ') || 'Miembro de Colmena'}</span>
-                    {(m.habilidades.length > 0 || m.categorias.length > 0) && (
-                      <small className="m-skills">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 3).join(' · ')}</small>
-                    )}
-                    {(n > 0 || (nv.n > 1 && !mismoNivel)) && <small className="m-ayudas">{nv.n > 1 && !mismoNivel && <span className="m-nv">Nivel {nv.n}</span>}{n > 0 && <><Icon n="hand" s={13} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</>}</small>}
+                <button key={m.id} type="button" className="member2" onClick={() => nav({ t: 'carnet', id: m.id })}>
+                  <span className="m2-top">
+                    <span className="mhex"><Hex p={m} w={48} h={52} fs={17} />{activo && <i className="live" title="Activo esta semana" />}</span>
+                    <span className="m2-who">
+                      <b>{m.nombre}<Ejemplo p={m} /></b>
+                      <span>{[m.rol, m.marca].filter(Boolean).join(' · ') || 'Miembro de Colmena'}</span>
+                    </span>
+                    <Icon n="right" s={18} />
                   </span>
-                  <Icon n="right" s={18} />
+                  {sabe.length > 0 && <span className="m2-skills">{sabe.map((x) => <em key={x}>{x}</em>)}</span>}
+                  <span className="m2-meta">
+                    <span className={'m2-disp' + (m.disponible ? ' on' : '')}><i />{m.disponible ? 'Disponible' : 'Sin cupo'}</span>
+                    {COBRA[m.intercambio] && <span>{COBRA[m.intercambio]}</span>}
+                    {st.manos > 0 && <span><Icon n="hand" s={13} />{st.manos}</span>}
+                    {st.promedio > 0 && <span><Icon n="star" s={13} w={2} />{st.promedio.toFixed(1)}</span>}
+                    {nv.n > 1 && !mismoNivel && <span className="m-nv">Nivel {nv.n}</span>}
+                  </span>
                 </button>
               )
             })}

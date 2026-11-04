@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { carnetId } from '../lib/format'
-import { completitud } from '../lib/logic'
+import { completitud, manosDadas } from '../lib/logic'
 import { Icon, Hex, SubHeader, CeldaAbierta, Comb, useToast } from '../components/ui'
 
 const limpiarIg = (v) => v.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')
@@ -11,21 +11,41 @@ export const waValido = (v) => /^3\d{9}$/.test(soloDigitos(v).replace(/^57(?=3\d
 // Si pegan el número con +57, se quita el indicativo antes de formatear
 const fmtWa = (v) => { let d = soloDigitos(v); if (d.length > 10 && d.startsWith('57')) d = d.slice(2); d = d.slice(0, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ') }
 
+const COBRA = { dinero: 'Cobra en dinero', trueque: 'Prefiere intercambio', ambos: 'Dinero o intercambio' }
+
+// El carnet como ficha: quién es, en qué te puede ayudar y cómo trabaja
 export function CarnetCard({ p, numero, nota, estado }) {
+  const c = useColmena()
+  const real = !!p.id
+  const sabe = (p.habilidades?.length ? p.habilidades : p.categorias || []).slice(0, 3)
+  const ayudas = real ? manosDadas(c, p.id) : 0
   return (
     <div className="carnet">
       <Comb className="combmark" viewBox="0 0 210 250" r={26} w={230} h={270} x0={-16} y0={-20} stroke="rgba(15,15,13,.10)" />
       <div className="carnet-head">
         <div className="carnet-lockup"><CeldaAbierta s={18} color="var(--ink)" /><span className="carnet-brand">Colmena</span></div>
-        <span className="carnet-badge">MIEMBRO</span>
+        <span className="carnet-badges">{nota && <span className="carnet-live">{nota}</span>}<span className="carnet-badge">MIEMBRO</span></span>
       </div>
       <div className="carnet-body">
-        <Hex p={p.nombre ? p : null} w={56} h={64} fs={20} />
+        <Hex p={p.nombre ? p : null} w={60} h={66} fs={21} />
         <div className="carnet-info">
           <h3>{p.nombre || 'Tu nombre'}</h3>
           <p className="role">{[p.marca, p.rol].filter(Boolean).join(' · ') || (nota ? 'Tu marca · Lo que haces' : 'Miembro de Colmena')}</p>
         </div>
       </div>
+      <div className="carnet-sabe">
+        <span className="carnet-lbl">PUEDE AYUDARTE CON</span>
+        <div className="carnet-skills">
+          {sabe.length ? sabe.map((x) => <span key={x}>{x}</span>) : <><span className="vacio">Lo que sabes hacer</span><span className="vacio">Otra habilidad</span></>}
+        </div>
+      </div>
+      {real && (
+        <div className="carnet-datos">
+          <span className={p.disponible ? 'on' : ''}><i />{p.disponible ? 'Disponible' : 'Sin cupo'}</span>
+          {COBRA[p.intercambio] && <span>{COBRA[p.intercambio]}</span>}
+          {ayudas > 0 && <span>{ayudas} {ayudas === 1 ? 'ayuda dada' : 'ayudas dadas'}</span>}
+        </div>
+      )}
       <div className="carnet-foot">
         <div className="carnet-col"><span className="carnet-lbl">N.º DE CARNET</span><span className="carnet-val mono">{numero ? carnetId(numero) : 'COL-····'}</span></div>
         <div className="carnet-col right">
@@ -33,7 +53,6 @@ export function CarnetCard({ p, numero, nota, estado }) {
           <span className="carnet-status"><i className="status-hex" />{estado || (p.es_ejemplo ? 'Ejemplo' : 'Activa · DCV')}</span>
         </div>
       </div>
-      {nota && <span className="carnet-live">{nota}</span>}
     </div>
   )
 }
