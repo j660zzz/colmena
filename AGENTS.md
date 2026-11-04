@@ -2,6 +2,12 @@
 
 Este repo lo trabajan varios agentes a la vez (Claude, Gemini en Antigravity, otros). Léelo completo antes de tocar algo.
 
+## Contexto rápido (léelo primero)
+- **Estado y decisiones:** `docs/BITACORA.md` es el registro de lo que se construyó, lo que Jhon decidió y lo que sigue pendiente. Pendientes por agente: `TODO-AGENTES.md`.
+- **Público:** estudiantes de DCV de 18 a 23 años que emprenden. Quieren rapidez e inmediatez: pantallas cortas, sin números que "chillen", sin espacios muertos, textos de una línea.
+- **Producción y pruebas comparten la misma base de Supabase.** Aplicar una migración la deja en vivo para todos; los cambios de esquema los aprueba Jhon.
+- Lo que Jhon ya descartó (no lo vuelvas a proponer sin preguntarle): la meta del mes con avances semanales, el panal dentro de Encuentro, SMS para guardar la cuenta.
+
 ## Qué es Colmena
 App web instalable (PWA) del Proyecto de Grado de Jhon Alexander Marín Rivera, Diseño de Comunicación Visual, Pontificia Universidad Javeriana Cali. Título oficial del proyecto: **"Sistema articulado de apoyo para el emprendedor local"**. Colmena es el nombre del sistema diseñado.
 
@@ -38,8 +44,12 @@ Si un cambio visual necesita un dato nuevo, **no inventes columnas ni llamadas**
 - Prohibido: abejas o mascotas, panal cubriendo todo un fondo, estética institucional (sellos, escudos, azul), lorem ipsum.
 - Personalidad: **colectivo, útil, caluroso**. Retícula de 8 pt, objetivos táctiles de 44 px mínimo, respetar `prefers-reduced-motion`.
 
-## Interfaz actual: Bloques · Vínculo
-Marca arriba, tarjetas del Muro alternando Blanco y Tinta, barra para publicar en Polen y navegación flotante en Tinta. Decisiones y verificación en `design-qa.md`; exploraciones en `mockups/rediseno-ui/`.
+## Interfaz actual
+Marca arriba, portada con cifras reales (visitantes) o resumen propio (miembros), barra para publicar en Polen, tarjetas del Muro en Blanco con la acción principal en píldora Niebla de 44 px, listas compactas con logo en Beneficios, y navegación flotante en Tinta. Polen queda para la acción principal de cada pantalla.
+- Cada pieza nueva tiene su carpeta en `docs/` con decisiones, fuentes y capturas: `muro-pulido`, `bienvenida`, `encuentro`, `convocatorias`, `beneficios`, `cuenta`, `iconos`.
+- `design-qa.md` y `mockups/rediseno-ui/` documentan la primera versión (30 de octubre) y están desactualizados en varios detalles.
+- **Íconos:** solo los del kit propio en `src/components/ui.jsx` (`I`). Sin logos de terceros ni de redes en el repo.
+- **Movimiento:** 150 a 250 ms, sin rebote, y todo se apaga con `prefers-reduced-motion`.
 
 ## Imágenes de terceros
 El repo es público. No subas referencias, capturas ni recursos de otros diseñadores o marcas: describe en texto lo que se toma de cada referencia.
@@ -49,9 +59,20 @@ El repo es público. No subas referencias, capturas ni recursos de otros diseña
 - No pongas cifras de miembros, asistentes o encuentros pasados que no salgan de la base de datos.
 - Español de Colombia, tono cercano y directo, tuteo.
 
+## Voz y textos
+Escribir como escriben las apps grandes en español (Mercado Pago, Google/Material): claro, corto y útil.
+- Tuteo siempre, tono cordial y neutro. Nada de jerga ni regionalismos forzados ("me le mido", "una chimba", "sin cobrar un ojo", "embalarse").
+- Decir qué hace cada cosa, no frases de eslogan. El eslogan va en piezas de marca, no en la interfaz.
+- Vocabulario fijo: **ayuda** (no "mano"), **Participar** en el reto, **Útil** (no "Me sirve"), **Crear carnet**, **miembros** (no "la colmena" como sujeto).
+- Errores: qué pasó y qué hacer ("No se pudo conectar. Revisa tu conexión."). Sin bromas.
+- Botones con verbo: Publicar, Participar, Calcular, Guardar cambios.
+- Cero datos sin fuente (nada de "evita el 80 %").
+
 ## Datos (Supabase)
 - Lectura pública con la llave publicable; **toda escritura pasa por funciones RPC** que validan la clave del dispositivo (ver `supabase/README.md`).
-- No hay cuentas: al crear el carnet el servidor devuelve `{id, clave}` y se guarda en `localStorage` (`src/lib/session.js`).
+- No hay contraseñas: al crear el carnet el servidor devuelve `{id, clave}` y se guarda en `localStorage` (`src/lib/session.js`). Para no perderlo, el miembro puede **guardarlo con su correo `@javerianacali.edu.co`** (Microsoft vía Supabase Auth; tabla privada `cuentas`). Esa sesión de Auth solo se usa un momento y se cierra; la app sigue usando la clave del dispositivo. Requiere que Jhon active el proveedor Azure (`docs/cuenta/README.md`).
+- Las propuestas de miembros (beneficios, ferias, talleres) llegan a `solicitudes_beneficio`; el nombre empieza por `[Convocatoria]` o `[Taller]`.
+- Todo lo de muestra lleva `es_ejemplo = true` y la etiqueta "Ejemplo", también los talleres.
 - No cambies el esquema desde el cliente ni agregues políticas de escritura directa.
 
 ## Cómo correrlo

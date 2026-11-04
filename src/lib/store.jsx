@@ -1,12 +1,34 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { supabase } from './supabase'
+import { supabase, SUPABASE_URL, SUPABASE_KEY } from './supabase'
 import { leerSesion, guardarSesion, borrarSesion } from './session'
 import { AVATAR_COLORS } from './format'
 
 const Ctx = createContext(null)
 export const useColmena = () => useContext(Ctx)
 
-const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,tiene_whatsapp,created_at'
+const PERFIL_COLS = 'id,nombre,marca,rol,categorias,habilidades,instagram,color,carnet,es_ejemplo,tiene_whatsapp,created_at,bio,disponible,intercambio,portafolio'
+
+// Mensajes del servidor reescritos para que digan qué pasó y qué hacer (las funciones RPC no se tocan)
+const MENSAJES = {
+  'Vas muy rápido. Espera unos minutos para volver a publicar.': 'Publicaste varias veces seguidas. Espera unos minutos y vuelve a intentarlo.',
+  'Vas muy rápido. Espera un rato para escribir a más personas.': 'Les escribiste a muchas personas seguidas. Espera un rato y vuelve a intentarlo.',
+  'Solo se califica una mano confirmada.': 'Solo puedes calificar una ayuda confirmada.',
+  'No puedes darte la mano a ti mismo.': 'No puedes confirmar una ayuda contigo.',
+  'Ese eres tú.': 'Esta publicación es tuya.',
+  'Estado no válido': 'No se pudo guardar. Inténtalo otra vez.',
+  'Ese correo ya guarda otro carnet.': 'Ese correo ya tiene otro carnet guardado. Entra con otro correo Javeriana.'
+}
+
+// Guardar el carnet con el correo Javeriana (cuenta Microsoft). Antes de salir hacia Microsoft se anota
+// qué se quería hacer; al volver, se hace y se cierra la sesión de Auth.
+const K_CUENTA = 'colmena.cuenta.pendiente'
+const DOMINIO = '@javerianacali.edu.co'
+async function microsoftActivo() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY } })
+    return !!(await r.json())?.external?.azure
+  } catch { return false }
+}
 
 async function q(promise) {
   const { data, error } = await promise
@@ -27,7 +49,13 @@ export function ColmenaProvider({ children }) {
   const [participantes, setParticipantes] = useState([])
   const [votos, setVotos] = useState([])
   const [resenas, setResenas] = useState([])
+  const [beneficios, setBeneficios] = useState([])
+  const [convocatorias, setConvocatorias] = useState([])
+  const [talleres, setTalleres] = useState([])
+  const [interes, setInteres] = useState([])
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
+  const [cuenta, setCuenta] = useState(null)
+  const [avisoCuenta, setAvisoCuenta] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [errorRed, setErrorRed] = useState(null)
   const perfilesRef = useRef(perfiles)
@@ -47,6 +75,10 @@ export function ColmenaProvider({ children }) {
     participantes: async () => setParticipantes(await q(supabase.from('reto_participantes').select('*').order('created_at', { ascending: true }))),
     votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
     resenas: async () => setResenas(await q(supabase.rpc('resenas_publicas'))),
+    beneficios: async () => setBeneficios(await q(supabase.from('beneficios').select('*').order('tipo').order('orden'))),
+    talleres: async () => setTalleres(await q(supabase.from('talleres').select('*').eq('activo', true).order('orden'))),
+    interes: async () => setInteres(await q(supabase.from('taller_interes').select('*'))),
+    convocatorias: async () => setConvocatorias(await q(supabase.from('convocatorias').select('*').eq('activo', true).order('orden'))),
     encuentro: async () => {
       const rows = await q(supabase.from('encuentros').select('*').eq('activo', true).order('numero', { ascending: false }).limit(1))
       setEncuentro(rows[0] || null)
@@ -62,7 +94,7 @@ export function ColmenaProvider({ children }) {
       res.forEach((r, i) => { if (r.status === 'rejected') console.warn('Colmena: falló', pendientes[i][0], r.reason) })
       pendientes = pendientes.filter((_, i) => res[i].status === 'rejected')
     }
-    setErrorRed(pendientes.length ? 'No pudimos conectar con la colmena. Revisa tu internet.' : null)
+    setErrorRed(pendientes.length ? 'No se pudo conectar. Revisa tu conexión.' : null)
     setCargando(false)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -84,12 +116,17 @@ export function ColmenaProvider({ children }) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_participantes' }, (p) => { cargar.participantes(); asegurar(p.new?.perfil_id) })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reto_votos' }, () => cargar.votos())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'asistencias' }, () => cargar.asistencias())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'taller_interes' }, (p) => { cargar.interes(); asegurar(p.new?.perfil_id) })
       .subscribe()
     const t = setInterval(() => { cargar.perfiles(); cargar.resenas(); cargarPendientes() }, 45000)
     const vis = () => { if (document.visibilityState === 'visible') cargarTodo() }
     document.addEventListener('visibilitychange', vis)
     return () => { supabase.removeChannel(ch); clearInterval(t); document.removeEventListener('visibilitychange', vis) }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // La sesión vive en un ref para que una acción pedida antes de sacar el carnet funcione al terminar el registro
+  const sesionRef = useRef(sesion)
+  sesionRef.current = sesion
 
   const yo = useMemo(() => (sesion ? perfiles.find((p) => p.id === sesion.id) || null : null), [sesion, perfiles])
 
@@ -99,14 +136,18 @@ export function ColmenaProvider({ children }) {
   }, [cargando, sesion, perfiles, yo])
 
   const rpc = async (fn, args) => {
-    if (!sesion) throw new Error('Necesitas un perfil')
-    const { data, error } = await supabase.rpc(fn, { p_id: sesion.id, p_clave: sesion.clave, ...args })
-    if (error) throw new Error(error.message?.includes('no autorizado') ? 'Tu sesión no es válida en este dispositivo.' : error.message)
+    const s = sesionRef.current
+    if (!s) throw new Error('Necesitas un carnet para hacer esto.')
+    const { data, error } = await supabase.rpc(fn, { p_id: s.id, p_clave: s.clave, ...args })
+    if (error) {
+      const m = error.message || ''
+      if (m.includes('no autorizado')) throw new Error('No pudimos validar tu carnet en este dispositivo. Recarga la página e inténtalo otra vez.')
+      if (/fetch|network|Failed/i.test(m)) throw new Error('No se pudo conectar. Revisa tu conexión e inténtalo otra vez.')
+      throw new Error(MENSAJES[m] || m)
+    }
     return data
   }
 
-  const sesionRef = useRef(sesion)
-  sesionRef.current = sesion
   async function cargarPendientes() {
     const s = sesionRef.current
     if (!s) { setPendientes({ confirmar: [], calificar: [] }); return }
@@ -119,7 +160,76 @@ export function ColmenaProvider({ children }) {
   }
   useEffect(() => { cargarPendientes() }, [sesion]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Con qué correo está guardado el carnet de este dispositivo
+  async function cargarCuenta() {
+    const s = sesionRef.current
+    if (!s) { setCuenta(null); return }
+    const { data, error } = await supabase.rpc('mi_cuenta', { p_id: s.id, p_clave: s.clave })
+    if (!error) setCuenta(data || null)
+  }
+  useEffect(() => { cargarCuenta() }, [sesion]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Al volver de Microsoft: vincular o recuperar, según lo que se pidió antes de salir
+  useEffect(() => {
+    let pend = null
+    try { pend = localStorage.getItem(K_CUENTA) } catch { /* sin almacenamiento */ }
+    if (!pend) return
+    const params = new URLSearchParams(location.search + location.hash.replace(/^#/, '&'))
+    const limpiar = () => {
+      try { localStorage.removeItem(K_CUENTA) } catch { /* nada */ }
+      history.replaceState(history.state, '', location.pathname)
+    }
+    ;(async () => {
+      if (params.get('error')) {
+        limpiar()
+        setAvisoCuenta({ msg: 'No se pudo iniciar sesión con tu correo Javeriana. Inténtalo otra vez.', error: true })
+        return
+      }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      try {
+        if (!(session.user?.email || '').toLowerCase().endsWith(DOMINIO)) {
+          setAvisoCuenta({ msg: `Entraste con ${session.user?.email || 'otra cuenta'}. Usa tu correo ${DOMINIO}.`, error: true })
+        } else if (pend === 'recuperar') {
+          const { data, error } = await supabase.rpc('recuperar_carnet')
+          if (error) throw new Error(MENSAJES[error.message] || error.message)
+          if (!data) setAvisoCuenta({ msg: 'Ese correo no tiene un carnet guardado. Crea uno nuevo.', error: true })
+          else {
+            const s = { id: data.id, clave: data.clave }
+            guardarSesion(s); sesionRef.current = s
+            await cargar.perfiles()
+            setSesion(s)
+            setAvisoCuenta({ msg: 'Recuperaste tu carnet.' })
+          }
+        } else {
+          const r = await rpc('vincular_cuenta', {})
+          setCuenta(r?.correo || null)
+          setAvisoCuenta({ msg: 'Tu carnet quedó guardado con tu correo Javeriana.' })
+        }
+      } catch (e) {
+        setAvisoCuenta({ msg: e.message, error: true })
+      } finally {
+        limpiar()
+        await supabase.auth.signOut().catch(() => {})
+      }
+    })()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const acciones = {
+    // modo: 'vincular' (guardar el carnet de este dispositivo) o 'recuperar' (traerlo a este dispositivo)
+    async entrarConJaveriana(modo) {
+      if (!(await microsoftActivo())) {
+        throw new Error(modo === 'recuperar'
+          ? 'Recuperar con el correo Javeriana todavía no está activo.'
+          : 'Guardar con el correo Javeriana todavía no está activo. Mientras tanto, tu carnet queda guardado en este navegador.')
+      }
+      try { localStorage.setItem(K_CUENTA, modo) } catch { throw new Error('Tu navegador no deja guardar datos. Sal del modo privado e inténtalo otra vez.') }
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: { scopes: 'email', redirectTo: location.origin + '/', queryParams: { domain_hint: DOMINIO.slice(1), prompt: 'select_account' } }
+      })
+      if (error) { try { localStorage.removeItem(K_CUENTA) } catch { /* nada */ } throw new Error('No se pudo abrir el inicio de sesión. Revisa tu conexión e inténtalo otra vez.') }
+    },
     async crearPerfil(f) {
       const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]
       const { data, error } = await supabase.rpc('crear_perfil', {
@@ -129,14 +239,21 @@ export function ColmenaProvider({ children }) {
       if (error) throw new Error(error.message?.includes('WhatsApp') ? error.message : 'No pudimos crear tu carnet. Intenta de nuevo.')
       const s = { id: data.id, clave: data.clave }
       guardarSesion(s)
+      sesionRef.current = s
       await cargar.perfiles()
       setSesion(s)
       return data
     },
+    async proponerBeneficio(negocio, contacto, propuesta) {
+      const s = sesionRef.current
+      const { error } = await supabase.rpc('proponer_beneficio', { p_negocio: negocio, p_contacto: contacto, p_propuesta: propuesta, p_id: s?.id || null, p_clave: s?.clave || null })
+      if (error) throw new Error(error.message?.includes('solicitudes') ? error.message : 'No se pudo enviar. Revisa los datos e intenta de nuevo.')
+    },
     async actualizarPerfil(f) {
       await rpc('actualizar_perfil', {
         p_nombre: f.nombre, p_marca: f.marca, p_rol: f.rol, p_categorias: f.categorias,
-        p_habilidades: f.habilidades, p_instagram: f.instagram, p_whatsapp: f.whatsapp || null
+        p_habilidades: f.habilidades, p_instagram: f.instagram, p_whatsapp: f.whatsapp || null,
+        p_bio: f.bio ?? null, p_disponible: f.disponible ?? null, p_intercambio: f.intercambio ?? null, p_portafolio: f.portafolio ?? null
       })
       await cargar.perfiles()
     },
@@ -161,8 +278,8 @@ export function ColmenaProvider({ children }) {
       await Promise.all([cargar.ayudas(), cargarPendientes()])
     },
     async alternarMeSirve(postId) {
-      const ya = meSirve.some((m) => m.publicacion_id === postId && m.perfil_id === sesion.id)
-      setMeSirve((l) => ya ? l.filter((m) => !(m.publicacion_id === postId && m.perfil_id === sesion.id)) : [...l, { publicacion_id: postId, perfil_id: sesion.id }])
+      const ya = meSirve.some((m) => m.publicacion_id === postId && m.perfil_id === sesionRef.current.id)
+      setMeSirve((l) => ya ? l.filter((m) => !(m.publicacion_id === postId && m.perfil_id === sesionRef.current.id)) : [...l, { publicacion_id: postId, perfil_id: sesionRef.current.id }])
       try { return await rpc('alternar_me_sirve', { p_post: postId }) } catch (e) { cargar.meSirve(); throw e }
     },
     async calificar(postId, paraId, estrellas, chips, comentario) {
@@ -183,30 +300,41 @@ export function ColmenaProvider({ children }) {
       await cargar.votos()
       return r
     },
+    async marcarResuelta(id, resuelta = true) {
+      setPublicaciones((l) => l.map((p) => p.id === id ? { ...p, resuelta_at: resuelta ? new Date().toISOString() : null } : p))
+      try { await rpc('marcar_resuelta', { p_post: id, p_resuelta: resuelta }) } catch (e) { cargar.publicaciones(); throw e }
+    },
     async borrarPublicacion(id) {
       setPublicaciones((l) => l.filter((p) => p.id !== id))
       await rpc('borrar_publicacion', { p_post: id })
     },
     async alternarAyuda(postId) {
-      const ya = ayudas.some((a) => a.publicacion_id === postId && a.perfil_id === sesion.id)
-      setAyudas((l) => ya ? l.filter((a) => !(a.publicacion_id === postId && a.perfil_id === sesion.id)) : [...l, { publicacion_id: postId, perfil_id: sesion.id }])
+      const ya = ayudas.some((a) => a.publicacion_id === postId && a.perfil_id === sesionRef.current.id)
+      setAyudas((l) => ya ? l.filter((a) => !(a.publicacion_id === postId && a.perfil_id === sesionRef.current.id)) : [...l, { publicacion_id: postId, perfil_id: sesionRef.current.id }])
       try { return await rpc('alternar_ayuda', { p_post: postId }) } catch (e) { cargar.ayudas(); throw e }
     },
     async alternarConexion(aId) {
-      const ya = conexiones.some((c) => c.de_id === sesion.id && c.a_id === aId)
-      setConexiones((l) => ya ? l.filter((c) => !(c.de_id === sesion.id && c.a_id === aId)) : [...l, { de_id: sesion.id, a_id: aId }])
+      const ya = conexiones.some((c) => c.de_id === sesionRef.current.id && c.a_id === aId)
+      setConexiones((l) => ya ? l.filter((c) => !(c.de_id === sesionRef.current.id && c.a_id === aId)) : [...l, { de_id: sesionRef.current.id, a_id: aId }])
       try { return await rpc('alternar_conexion', { p_a: aId }) } catch (e) { cargar.conexiones(); throw e }
     },
+    async alternarInteresTaller(tallerId) {
+      const yo = sesionRef.current.id
+      const ya = interes.some((x) => x.taller_id === tallerId && x.perfil_id === yo)
+      setInteres((l) => ya ? l.filter((x) => !(x.taller_id === tallerId && x.perfil_id === yo)) : [...l, { taller_id: tallerId, perfil_id: yo }])
+      try { return await rpc('alternar_interes_taller', { p_taller: tallerId }) } catch (e) { cargar.interes(); throw e }
+    },
     async alternarAsistencia(encId) {
-      const ya = asistencias.some((a) => a.encuentro_id === encId && a.perfil_id === sesion.id)
-      setAsistencias((l) => ya ? l.filter((a) => !(a.encuentro_id === encId && a.perfil_id === sesion.id)) : [...l, { encuentro_id: encId, perfil_id: sesion.id }])
+      const ya = asistencias.some((a) => a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)
+      setAsistencias((l) => ya ? l.filter((a) => !(a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)) : [...l, { encuentro_id: encId, perfil_id: sesionRef.current.id }])
       try { return await rpc('alternar_asistencia', { p_encuentro: encId }) } catch (e) { cargar.asistencias(); throw e }
     }
   }
 
   const valor = {
-    sesion, yo, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
+    sesion, yo, beneficios, convocatorias, talleres, interes, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, participantes, votos, resenas, pendientes, cargarPendientes,
+    cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
     cargando, errorRed, recargar: cargarTodo, ...acciones,
     perfil: (id) => perfiles.find((p) => p.id === id)
   }

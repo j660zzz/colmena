@@ -1,27 +1,42 @@
-export const CATS = ['Marca', 'Diseño', 'Foto', 'Video', 'Ilustración', 'Producción', 'Moda', 'Comida']
+export const CATS = ['Marca', 'Diseño', 'Redes sociales', 'Web/UX', 'Foto', 'Video', 'Ilustración', 'Producción', 'Moda', 'Comida', 'Otro']
 export const TOOLCATS = ['Precio', 'Ventas', 'Legal', 'Marca']
+
+// Habilidades sugeridas al crear el carnet, según las categorías elegidas (la persona puede escribir otras)
+export const SUGERENCIAS = {
+  Marca: ['Logo', 'Identidad', 'Manual de marca', 'Naming'],
+  'Diseño': ['Piezas gráficas', 'Packaging', 'Editorial', 'Tipografía'],
+  'Redes sociales': ['Contenido para redes', 'Community management', 'Copywriting'],
+  'Web/UX': ['Diseño web', 'Tienda en línea', 'UX/UI'],
+  Foto: ['Fotografía de producto', 'Retoque', 'Bodegón'],
+  Video: ['Reels', 'Edición de video', 'Animación'],
+  'Ilustración': ['Ilustración digital', 'Patrones', 'Mural'],
+  'Producción': ['Impresión', 'Proveedores', 'Tirajes cortos', 'Costos'],
+  Moda: ['Confección', 'Estampado', 'Patronaje'],
+  Comida: ['Costos de cocina', 'Menús', 'Ferias'],
+  Otro: ['Ventas', 'Atención al cliente']
+}
 
 // Insignias calculadas con actividad real del perfil (ver statsDe en Carnet.jsx)
 export const BADGES = [
-  { n: 'Entró a la colmena', k: 'card', ok: () => true },
+  { n: 'Miembro de Colmena', k: 'card', ok: () => true },
   { n: 'Primera publicación', k: 'wall', ok: (s) => s.publicaciones >= 1 },
-  { n: 'Le dio la mano a alguien', k: 'hand', ok: (s) => s.manos >= 1 },
+  { n: 'Primera ayuda', k: 'hand', ok: (s) => s.manos >= 1 },
   { n: 'Perfil completo', k: 'seal', ok: (s) => s.completo },
-  { n: 'Se le midió a un reto', k: 'spark', ok: (s) => s.retos >= 1 },
-  { n: 'Se apuntó a un encuentro', k: 'cal', ok: (s) => s.encuentros >= 1 },
+  { n: 'Primer reto', k: 'spark', ok: (s) => s.retos >= 1 },
+  { n: 'Primer encuentro', k: 'cal', ok: (s) => s.encuentros >= 1 },
   { n: 'Primera reseña', k: 'star', ok: (s) => s.resenas >= 1 },
-  { n: 'Cinco manos dadas', k: 'users', ok: (s) => s.manos >= 5, meta: 5, prog: (s) => s.manos }
+  { n: 'Cinco ayudas', k: 'users', ok: (s) => s.manos >= 5, meta: 5, prog: (s) => s.manos }
 ]
 
-export const CHIPS_CALIFICAR = ['Cumplió a tiempo', 'Buena comunicación', 'Calidad top', 'Lo repetiría']
-export const PALABRA_ESTRELLAS = ['', 'Mal', 'Regular', 'Bien', 'Muy bien', 'Una chimba']
+export const CHIPS_CALIFICAR = ['Cumplió a tiempo', 'Buena comunicación', 'Buena calidad', 'La recomiendo']
+export const PALABRA_ESTRELLAS = ['', 'Mala', 'Regular', 'Buena', 'Muy buena', 'Excelente']
 
 // Fichas de la biblioteca. Contenido práctico y general; lo legal lleva nota de verificación.
 export const TOOLS = [
   {
     id: 'presupuesto', n: 'Presupuesto en una página', k: 'Plantilla', cat: 'Precio',
-    d: 'Estructura clara para cotizar sin improvisar.',
-    lead: 'Un presupuesto bueno evita el 80 % de los malentendidos: deja escrito qué entra, qué no y cuánto cuesta.',
+    d: 'Una estructura clara para cotizar.',
+    lead: 'Un presupuesto claro evita malentendidos: deja por escrito qué incluye, qué no y cuánto cuesta.',
     secciones: [
       { h: 'Lo que nunca puede faltar', ul: [
         'A quién va dirigido y la fecha.',
@@ -66,7 +81,7 @@ Vigencia: 15 días.` }
         'Proyectos largos: por hitos, por ejemplo 40 / 30 / 30.',
         'Producción con materiales: el anticipo cubre al menos los insumos.'
       ] },
-      { h: 'Cómo decirlo sin pena', p: [
+      { h: 'Cómo proponerlo', p: [
         'Ponlo en el presupuesto desde el inicio, no lo negocies al final.',
         '“Para separar la fecha y arrancar, trabajo con un anticipo del 50 %. El saldo se paga al entregar.”',
         'Si el cliente no paga el anticipo, el proyecto no ha empezado. No adelantes trabajo.'
@@ -76,7 +91,7 @@ Vigencia: 15 días.` }
   {
     id: 'contrato', n: 'Contrato simple de servicio', k: 'Plantilla', cat: 'Legal',
     d: 'Las cláusulas básicas, en lenguaje claro.',
-    lead: 'Un acuerdo corto y firmado vale más que mil chats. Esta es una guía de puntos a cubrir, no asesoría legal.',
+    lead: 'Un acuerdo corto y firmado te protege más que una conversación por chat. Esta es una guía de puntos para incluir, no asesoría legal.',
     secciones: [
       { h: 'Puntos que debe cubrir', ol: [
         'Partes: quién contrata a quién (nombres y documento).',
@@ -113,9 +128,9 @@ Vigencia: 15 días.` }
     nota: 'Las reglas tributarias cambian. Confirma tu caso en dian.gov.co o con un contador antes de facturar.'
   },
   {
-    id: 'frio', n: 'Mensaje en frío que sí responden', k: 'Plantilla', cat: 'Ventas',
-    d: 'Estructura de cuatro líneas y tres ejemplos.',
-    lead: 'Nadie lee mensajes largos de desconocidos. Cuatro líneas, una pregunta fácil.',
+    id: 'frio', n: 'Mensajes para conseguir clientes', k: 'Plantilla', cat: 'Ventas',
+    d: 'Una estructura de cuatro líneas y tres ejemplos.',
+    lead: 'Un mensaje corto tiene más probabilidades de recibir respuesta. Usa cuatro líneas y termina con una pregunta fácil.',
     secciones: [
       { h: 'La estructura', ol: [
         'Quién eres, en una línea.',
@@ -130,8 +145,8 @@ Hola, soy Laura, hago fotografía de comida en Cali. Vi que lanzaron carta nueva
 2 · A una marca de ropa
 Hola, soy Andrés, edito reels para marcas locales. Su contenido de producto está muy bien, pero los videos se cortan antes del gancho. Puedo reeditar uno gratis para que vean la diferencia. ¿Les interesa?
 
-3 · A otro emprendedor de la colmena
-Hola, vi en Colmena que necesitas etiquetas en vinilo. Yo imprimí las mías con una imprenta que hace tirajes cortos. ¿Te paso el contacto?` }
+3 · A otro emprendedor de Colmena
+Hola, vi en Colmena que buscas quién te imprima etiquetas en vinilo. Yo imprimí las mías con una imprenta que hace tirajes cortos. ¿Te paso el contacto?` }
     ]
   },
   {

@@ -79,7 +79,7 @@ export function quienesTeNecesitan(c, yo) {
 export function quienesPueden(c, cats, excluir) {
   return c.perfiles
     .filter((m) => m.id !== excluir && m.categorias.some((x) => cats.includes(x)))
-    .sort((a, b) => (a.es_ejemplo - b.es_ejemplo) || (manosDadas(c, b.id) - manosDadas(c, a.id)))
+    .sort((a, b) => (a.es_ejemplo - b.es_ejemplo) || ((nivelDe(c, b.id).n >= 3) - (nivelDe(c, a.id).n >= 3)) || (puntosDe(c, b.id).total - puntosDe(c, a.id).total))
 }
 
 export function tendencias(c) {
@@ -101,12 +101,13 @@ export function activoSemana(c, id) {
 // Qué tan completo está un carnet (lo ve solo el dueño)
 export function completitud(p) {
   const pasos = [
-    { ok: !!p.nombre, v: 20, t: 'Tu nombre' },
-    { ok: p.categorias?.length > 0, v: 20, t: 'Elige en qué te mueves' },
+    { ok: !!p.nombre, v: 15, t: 'Tu nombre' },
+    { ok: p.categorias?.length > 0, v: 15, t: 'Elige tus categorías' },
     { ok: !!p.tiene_whatsapp, v: 15, t: 'Agrega tu WhatsApp' },
-    { ok: !!p.rol, v: 15, t: 'Cuenta qué haces' },
-    { ok: !!p.marca, v: 15, t: 'Agrega tu marca' },
-    { ok: p.habilidades?.length > 0, v: 15, t: 'Escribe lo que sabes hacer' }
+    { ok: !!p.rol, v: 15, t: 'Agrega a qué te dedicas' },
+    { ok: !!p.marca, v: 10, t: 'Agrega tu marca' }
+    , { ok: !!p.bio, v: 15, t: 'Escribe sobre ti' },
+    { ok: p.habilidades?.length > 0, v: 15, t: 'Agrega tus habilidades' }
   ]
   return { pct: pasos.reduce((s, x) => s + (x.ok ? x.v : 0), 0), faltan: pasos.filter((x) => !x.ok) }
 }
@@ -116,4 +117,48 @@ export function semanaDelMes(d = new Date()) {
   return Math.min(3, Math.ceil(dia / 7))
 }
 
+// Para buscar sin importar tildes ni mayúsculas: "diseno" encuentra "Diseño"
+export const normal = (t) => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
 export const waLink = (num, texto) => `https://wa.me/${num}${texto ? '?text=' + encodeURIComponent(texto) : ''}`
+
+// ---------- Niveles: la celda se va cerrando con lo que haces en Colmena ----------
+// Solo cuenta actividad real y verificable. No hay castigos ni cosas bloqueadas por nivel.
+export const PUNTOS = [
+  { k: 'dada', t: 'Una ayuda que diste y te confirmaron', v: 3 },
+  { k: 'recibida', t: 'Confirmar una ayuda que recibiste', v: 1 },
+  { k: 'reto', t: 'Subir tu propuesta a un reto', v: 2 },
+  { k: 'encuentro', t: 'Inscribirte al encuentro del mes', v: 1 },
+  { k: 'resena', t: 'Recibir una reseña', v: 1 },
+  { k: 'completo', t: 'Completar tu carnet (una vez)', v: 2 }
+]
+export const NIVELES = [
+  { n: 1, t: 'Nuevo', desde: 0, da: 'Todo Colmena: publicar, escribir y usar los beneficios.' },
+  { n: 2, t: 'Activo', desde: 3, da: 'Tu nivel aparece en tu carnet.' },
+  { n: 3, t: 'Colaborador', desde: 8, da: 'Apareces primero en las sugerencias cuando alguien pide ayuda en tus categorías.' },
+  { n: 4, t: 'Aliado', desde: 16, da: 'Tu celda se pinta de amarillo en tu carnet.' },
+  { n: 5, t: 'Referente', desde: 28, da: 'Apareces arriba en el directorio de Miembros.' },
+  { n: 6, t: 'Mentor', desde: 45, da: 'Celda completa. El nivel más alto de Colmena.' }
+]
+
+export function puntosDe(c, id) {
+  const p = c.perfil(id)
+  const manos = manosConfirmadas(c)
+  const n = {
+    dada: manos.filter((m) => m.ayuda === id).length,
+    recibida: manos.filter((m) => m.recibe === id).length,
+    reto: c.participantes.filter((x) => x.perfil_id === id && x.link).length,
+    encuentro: c.asistencias.filter((x) => x.perfil_id === id).length,
+    resena: c.resenas.filter((r) => r.para_id === id).length,
+    completo: p && completitud(p).pct === 100 ? 1 : 0
+  }
+  return { n, total: PUNTOS.reduce((s, x) => s + n[x.k] * x.v, 0) }
+}
+
+export function nivelDe(c, id) {
+  const { n, total } = puntosDe(c, id)
+  const actual = [...NIVELES].reverse().find((l) => total >= l.desde)
+  const sig = NIVELES.find((l) => l.n === actual.n + 1) || null
+  const avance = sig ? (total - actual.desde) / (sig.desde - actual.desde) : 1
+  return { ...actual, puntos: total, sig, faltan: sig ? sig.desde - total : 0, avance, detalle: n }
+}
