@@ -3,7 +3,7 @@ import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { hace, firstName, initials, igUrl, fechaLarga } from '../lib/format'
 import { activa, quedan, cierraEn, panalSemana, quienesTeNecesitan, waLink, cuantosEjemplo, PANAL } from '../lib/logic'
-import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, BrandHeader, Empty, Panal, Mark, Sheet, useToast } from '../components/ui'
 import { PrimerosPasos, marcarPractica } from './Onboarding'
 
 export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirComposer, abrirAyuda }) {
@@ -17,9 +17,7 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
   const teNecesitan = c.yo ? quienesTeNecesitan(c, c.yo) : []
   const irLista = () => setTimeout(() => document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
   const porCat = CATS.map((x) => [x, activas.filter((p) => p.categorias.includes(x)).length])
-  const pedido = CATS.map((x) => [x, activas.filter((p) => p.tipo === 'need' && p.categorias.includes(x)).length])
-    .filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).slice(0, 4)
-  const elegir = (x, t = tipo) => { setTipo(t); setCat(cat === x && t === tipo ? null : x); irLista() }
+  const [verCats, setVerCats] = useState(false)
 
   return (
     <>
@@ -48,33 +46,32 @@ export default function Muro({ nav, irTab, pedirPerfil, headerRight, abrirCompos
 
         <Movimiento irTab={irTab} nav={nav} pedirPerfil={pedirPerfil} abrirAyuda={abrirAyuda} />
 
-        {pedido.length > 0 && (
-          <section className="pedido" aria-label="Lo más pedido">
-            <div className="sec-h"><h3><Icon n="trend" s={18} /> Lo más pedido</h3><span className="meta">Necesitos activos</span></div>
-            <div className="tiles">
-              {pedido.map(([x, n], i) => (
-                <button key={x} type="button" className="tile" aria-pressed={cat === x && tipo === 'need'} onClick={() => elegir(x, 'need')}>
-                  <span className="tile-n">{String(i + 1).padStart(2, '0')}</span>
-                  <b>{x}</b>
-                  <small>{n} {n === 1 ? 'pide ayuda' : 'piden ayuda'}</small>
+        <div className="sec-h" id="lista">
+          <h3>El muro</h3>
+          {cat
+            ? <button type="button" className="cat-btn on" onClick={() => setCat(null)} aria-label={`Quitar filtro ${cat}`}>{cat}<Icon n="x" s={14} w={2.2} /></button>
+            : <button type="button" className="cat-btn" onClick={() => setVerCats(true)}>Filtrar por categoría<Icon n="right" s={14} w={2} /></button>}
+        </div>
+        <div className="muro-bar">
+          <div className="tabs-t" role="tablist" aria-label="Tipo de publicación">
+            {[['todo', 'Todo'], ['need', 'Piden ayuda'], ['offer', 'Ofrecen']].map(([k, t]) => (
+              <button key={k} type="button" role="tab" aria-selected={tipo === k} onClick={() => setTipo(k)}>{t}<small>{cuenta(k)}</small></button>
+            ))}
+          </div>
+        </div>
+        <Sheet open={verCats} onClose={() => setVerCats(false)} label="Filtrar por categoría">
+          <div className="cats-sheet">
+            <h2>¿Qué estás buscando?</h2>
+            <p className="soft">Muestra solo las publicaciones de una categoría.</p>
+            <div className="cats-list">
+              {porCat.map(([x, n]) => (
+                <button key={x} type="button" disabled={n === 0} onClick={() => { setCat(x); setVerCats(false); irLista() }}>
+                  <span>{x}</span><small>{n === 0 ? 'Nada todavía' : `${n} ${n === 1 ? 'publicación' : 'publicaciones'}`}</small>
                 </button>
               ))}
             </div>
-          </section>
-        )}
-
-        <div className="sec-h" id="lista"><h3>El muro</h3><span className="meta">{lista.length} {lista.length === 1 ? 'publicación' : 'publicaciones'}</span></div>
-        <div className="segbar" role="group" aria-label="Tipo de publicación">
-          {[['todo', 'Todo'], ['need', 'Necesito'], ['offer', 'Ofrezco']].map(([k, t]) => (
-            <button key={k} type="button" aria-pressed={tipo === k} onClick={() => setTipo(k)}>{t} <small>{cuenta(k)}</small></button>
-          ))}
-        </div>
-        <div className="filtros" role="group" aria-label="Filtrar por categoría">
-          <button type="button" className="filtro" aria-pressed={!cat} onClick={() => setCat(null)}>Todas</button>
-          {porCat.filter(([, n]) => n > 0).map(([x, n]) => (
-            <button key={x} type="button" className="filtro" aria-pressed={cat === x} onClick={() => setCat(cat === x ? null : x)}>{x}<small>{n}</small></button>
-          ))}
-        </div>
+          </div>
+        </Sheet>
 
         {lista.length === 0 ? (
           <Empty title="Nada por aquí todavía"
