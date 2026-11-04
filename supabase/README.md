@@ -1,7 +1,7 @@
 # Base de datos — Supabase (proyecto `colmena`, región São Paulo)
 
 Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_migrations`):
-`esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`.
+`esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`, `beneficios_investigacion_2026_11` (solo datos; copia en `supabase/migraciones/`).
 
 ## Tablas (lectura pública, sin escritura directa)
 | Tabla | Para qué |
