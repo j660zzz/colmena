@@ -89,7 +89,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
             return (
               <section key={k} className="bfila">
                 <div className="sec-h"><h3>{TITULO[k] || k}</h3><button type="button" className="ver" onClick={() => elegir(k)}>Ver {fila.length}</button></div>
-                <div className="bfila-pista">{fila.map((b) => <Tile key={b.id} b={b} onClick={() => setAbierto(b)} />)}</div>
+                <div className="bfila-pista">{fila.map((b, i) => <Tile key={b.id} b={b} i={i} onClick={() => setAbierto(b)} />)}</div>
               </section>
             )
           })}
@@ -97,7 +97,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
           <section className="bfila">
             <div className="sec-h"><h3>Aliados en Cali</h3><span className="meta">{reales ? `${reales} ${reales === 1 ? 'negocio' : 'negocios'}` : 'Muy pronto'}</span></div>
             <p className="soft">Negocios que dan descuento a los miembros de Colmena. Muestras tu carnet y listo.</p>
-            <div className="bfila-pista">{aliados.map((b) => <Tile key={b.id} b={b} onClick={() => setAbierto(b)} />)}</div>
+            <div className="bfila-pista">{aliados.map((b, i) => <Tile key={b.id} b={b} i={i + 2} onClick={() => setAbierto(b)} />)}</div>
           </section>
         </>
       ) : lista.length === 0 ? (
@@ -105,7 +105,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
       ) : (
         <>
           <p className="fine">{lista.length} {lista.length === 1 ? 'beneficio' : 'beneficios'}{filtro !== 'todo' && filtro !== 'gratis' && filtro !== 'aliados' ? ` en ${filtro}` : ''}</p>
-          <div className="bgrid">{lista.map((b) => <Tile key={b.id} b={b} onClick={() => setAbierto(b)} />)}</div>
+          <div className="bgrid">{lista.map((b, i) => <Tile key={b.id} b={b} i={[0, 2, 1, 2][i % 4]} onClick={() => setAbierto(b)} />)}</div>
         </>
       )}
 
@@ -128,18 +128,20 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
   )
 }
 
-function Tile({ b, onClick }) {
+function Tile({ b, i = 0, onClick }) {
   const aliado = b.tipo === 'aliado'
   return (
-    <button type="button" className={'btile' + (aliado ? ' aliado' : '')} onClick={onClick}>
-      <span className="btile-top">
-        <span className="ben-ic">{inicial(b.nombre)}</span>
+    <button type="button" className={'btile c' + (i % 3) + (aliado ? ' aliado' : '')} onClick={onClick}>
+      <span className="btile-cov">
+        <span className="btile-l">{inicial(b.nombre)}</span>
         {b.etiqueta && <span className="bet">{b.etiqueta}</span>}
       </span>
-      <b>{b.nombre}</b>
-      <span className="btile-o">{b.oferta}</span>
-      <span className="btile-f">
-        {aliado ? <>{b.zona || b.categoria}{b.es_ejemplo && <Ejemplo p={b} />}</> : b.para_todos ? 'Gratis para todos' : 'Para estudiantes'}
+      <span className="btile-b">
+        <b>{b.nombre}</b>
+        <span className="btile-o">{b.oferta}</span>
+        <span className="btile-f">
+          {aliado ? <>{b.zona || b.categoria}{b.es_ejemplo && <Ejemplo p={b} />}</> : b.para_todos ? 'Gratis para todos' : 'Para estudiantes'}
+        </span>
       </span>
     </button>
   )
