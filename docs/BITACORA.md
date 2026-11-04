@@ -11,6 +11,17 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 4 de noviembre de 2026 · Fiabilidad de los flujos (Codex)
+
+Mejoras autorizadas por Jhon tras la auditoría técnica, en `diseno/fiabilidad-flujos`. Pendiente de revisión; no fusionado ni publicado.
+- Carga independiente por pantalla, lecturas con plazo de 6 s y solicitudes deduplicadas; se reutilizan datos frescos un minuto. Error y vacío se muestran por separado; calculadora y fichas no dependen del éxito de Beneficios.
+- Borradores temporales de publicación y registro por pestaña; se conservan con Atrás y recarga. Búsquedas, filtros y posición de lectura se recuperan al volver de un carnet.
+- Borrado visible solo tras confirmación, enlaces directos a publicaciones y mensajes que distinguen guardado exitoso de lectura posterior fallida.
+- Demo estática con movimiento reducido, foco confinado en bienvenida y objetivos táctiles revisados de 44 px. “Ganancia sobre el costo” conserva la fórmula de precios. Correo Javeriana inactivo se explica antes de intentar la acción, sin activarlo.
+- Pantallas secundarias bajo demanda, precacheadas para uso sin conexión. Una actualización no interrumpe formularios o diálogos abiertos. Paquete JS principal: aproximadamente 462 KB frente a 538 KB anteriores, sin comprimir.
+- Verificado: npm install y build correctos; 35 comprobaciones de flujos y 6 de PWA, sin errores JS ni escrituras reales. Capturas, decisiones, scripts reproducibles y límites en `docs/fiabilidad-flujos/README.md`.
+- Tokens de marca, esquema y políticas intactos. Pendientes de Jhon (Microsoft, fecha/lugar del encuentro y color de logos) sin cambios. Faltan teléfono físico, lectores de pantalla y validación de operaciones reales en una base separada.
+
 ## 4 de noviembre de 2026 · Pulido para los jurados
 Trabajo de Jhon con Claude en la rama `diseno/muro-pulido` (PR #8, que arrastra #5, #6 y #7). Se publicó en `main` al final del día. El detalle de cada pieza está en su carpeta de `docs/`.
 
