@@ -9,8 +9,8 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [ ] Estados vacíos con ilustración propia de celdas (sin abejas literales).
 - [ ] Revisar contraste AA de textos `--ink-3` / `--ink-4` sobre crema.
 - [ ] Escritorio (≥ 1024 px): hoy es la app centrada; evaluar una vista de dos columnas.
-- [ ] Beneficios: sumar las categorías nuevas **Apoyo para emprender**, **Aprender** y **Vender** a `CATS_B`, `TITULO` e `ICONO_CAT` en `src/screens/Beneficios.jsx`. Ya hay 7 filas con esas categorías en la tabla `beneficios` (Campus Nova, Ley 1780, Fondo Emprender, Perfil de Negocio, Biblioteca, Cámara de Comercio, HubSpot). Hasta que se agreguen, solo salen en destacados, en la búsqueda y en el filtro Gratis. Títulos sugeridos: "Para empezar tu emprendimiento", "Para aprender gratis" y "Para vender". Detalle en `docs/beneficios/investigacion-2026-11.md`.
-- [ ] Beneficios: en `PRIMERO` (`src/screens/Beneficios.jsx`) sacar Spotify de los destacados (no ayuda a emprender) y dar prioridad a Campus Nova, Ley 1780 y Google AI Plus.
+- [x] Beneficios: sumar las categorías nuevas (Claude, con permiso de Jhon) **Apoyo para emprender**, **Aprender** y **Vender** a `CATS_B`, `TITULO` e `ICONO_CAT` en `src/screens/Beneficios.jsx`. Ya hay 7 filas con esas categorías en la tabla `beneficios` (Campus Nova, Ley 1780, Fondo Emprender, Perfil de Negocio, Biblioteca, Cámara de Comercio, HubSpot). Hasta que se agreguen, solo salen en destacados, en la búsqueda y en el filtro Gratis. Títulos sugeridos: "Para empezar tu emprendimiento", "Para aprender gratis" y "Para vender". Detalle en `docs/beneficios/investigacion-2026-11.md`.
+- [x] Beneficios: en `PRIMERO` (`src/screens/Beneficios.jsx`) sacar Spotify de los destacados (no ayuda a emprender) y dar prioridad a Campus Nova, Ley 1780 y Google AI Plus.
 
 ## Datos y lógica (Claude)
 - [ ] Notificaciones dentro de la app cuando alguien responde tu publicación.
@@ -18,7 +18,7 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [ ] Recuperar el carnet en otro dispositivo (código de recuperación).
 - [ ] Moderación: botón "reportar" en publicaciones.
 - [ ] Imágenes reales: columna `imagen_url` en `publicaciones` (foto de producto) y portada de portafolio en `perfiles`, con almacenamiento y RPC. La auditoría UI (`docs/auditoria-ui/informe.md`, F3) lo pide para que el muro y el directorio dejen de ser solo texto.
-- [ ] Beneficios: revisar cada mes Miro (pausado el 2026-11-04 porque no recibe solicitudes) y las convocatorias de Fondo Emprender. Google AI Plus se puede reclamar hasta el 2026-12-31: ese día poner `activo = false`.
+- [ ] Beneficios: revisar cada mes Miro (pausado el 2026-11-04 porque no recibe solicitudes) y las convocatorias de Fondo Emprender. Google AI Plus se puede reclamar hasta el 2026-12-31: ese día poner `activo = false`. Ya hay tareas programadas en la sesión de Claude para ambas cosas (revisión el día 5 de cada mes y la pausa de Google AI Plus el 2027-01-01).
 - [ ] Orden de destacados de Beneficios: hoy el componente pone primero Adobe, Dominio web, Framer y Microsoft 365 con una lista fija; lo ideal es ajustar `orden` en la tabla `beneficios`.
 
 ## Decisiones de Jhon

@@ -6,17 +6,20 @@ import { Icon, Hex, Ejemplo, Sheet, Empty, Comb, useToast } from '../components/
 
 const fecha = (d) => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
 
-const CATS_B = ['Diseño', 'Web', 'Productividad', 'Audio y video', 'Equipos']
+const CATS_B = ['Apoyo para emprender', 'Diseño', 'Web', 'Vender', 'Productividad', 'Aprender', 'Audio y video', 'Equipos']
 const TITULO = {
+  'Apoyo para emprender': 'Para empezar tu emprendimiento',
   'Diseño': 'Para diseñar',
+  Vender: 'Para vender',
+  Aprender: 'Para aprender gratis',
   Web: 'Para lanzar tu marca en internet',
   Productividad: 'Para organizarte',
   'Audio y video': 'Para el día a día',
   Equipos: 'Para equiparte'
 }
-const ICONO_CAT = { 'Diseño': 'spark', Web: 'link', Productividad: 'note', 'Audio y video': 'clock', Equipos: 'bag' }
-// Los primeros destacados son los que más le sirven a un emprendimiento de diseño
-const PRIMERO = ['Suite de Adobe', 'Dominio web gratis', 'Framer', 'Microsoft 365']
+const ICONO_CAT = { 'Apoyo para emprender': 'route', 'Diseño': 'spark', Web: 'link', Vender: 'trend', Productividad: 'note', Aprender: 'bulb', 'Audio y video': 'clock', Equipos: 'bag' }
+// Los primeros destacados son los que más le sirven a quien está empezando un emprendimiento
+const PRIMERO = ['Ruta de Emprendimiento Campus Nova', 'Matrícula mercantil sin costo', 'Google AI Plus para estudiantes', 'Suite de Adobe', 'Software de la universidad en la nube', 'Asesoría EmprendeLab', 'Perfil de Negocio de Google', 'Dominio web gratis', 'Framer', 'Microsoft 365']
 const rango = (b) => { const k = PRIMERO.indexOf(b.nombre); return k < 0 ? 99 : k }
 
 // Guardados y activados: solo en este dispositivo
@@ -71,7 +74,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
     <>
       <header className="ptitle">
         <h1>Beneficios</h1>
-        {digitales.length > 0 && <p className="sub"><b>{nGratis} gratis</b> y {digitales.length - nGratis} con descuento con tu correo Javeriana</p>}
+        {digitales.length > 0 && <p className="sub"><b>{nGratis} gratis</b> de {digitales.length} beneficios para estudiar, emprender y vender</p>}
       </header>
 
       <div className="ben-filtros" ref={arriba}>
