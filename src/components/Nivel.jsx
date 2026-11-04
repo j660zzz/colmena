@@ -45,14 +45,20 @@ export function NivelCard({ id }) {
   const l = nivelDe(c, id)
   return (
     <section className="nivel-card">
-      <CeldaNivel n={l.n} size={64} />
+      <CeldaNivel n={l.n} size={76} />
       <div className="nv-t">
         <span className="k">Tu nivel</span>
         <b>Nivel {l.n} · {l.t}</b>
         {l.sig ? (
           <>
             <div className="prog"><i style={{ width: Math.max(4, Math.round(l.avance * 100)) + '%' }} /></div>
-            <small>{l.puntos} puntos · te {l.faltan === 1 ? 'falta 1' : `faltan ${l.faltan}`} para {l.sig.t}</small>
+            <small>{l.puntos} {l.puntos === 1 ? 'punto' : 'puntos'} · te {l.faltan === 1 ? 'falta 1' : `faltan ${l.faltan}`} para {l.sig.t}</small>
+            {(() => {
+              // La acción más útil que todavía no ha hecho
+              const HAZ = { dada: 'Ayuda a alguien del muro', completo: 'Completa tu carnet', encuentro: 'Inscríbete al encuentro del mes' }
+              const p = PUNTOS.find((x) => HAZ[x.k] && !l.detalle[x.k]) || PUNTOS[0]
+              return <p className="nv-accion"><Icon n="spark" s={15} /><span>{HAZ[p.k] || p.t}</span><b>+{p.v} {p.v === 1 ? 'punto' : 'puntos'}</b></p>
+            })()}
           </>
         ) : <small>{l.puntos} puntos · llegaste al nivel más alto</small>}
         <button type="button" className="linkbtn" onClick={() => setVer(true)}>Cómo subir de nivel</button>

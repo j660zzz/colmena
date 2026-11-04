@@ -3,7 +3,7 @@ import { useColmena } from '../lib/store'
 import { CATS } from '../data/contenido'
 import { firstName } from '../lib/format'
 import { activa, activoSemana, manosDadas, quienesPueden, normal, nivelDe, puntosDe } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Header, Empty, Mark, Sheet } from '../components/ui'
+import { Icon, Hex, Ejemplo, Header, Titulo, Empty, Mark, Sheet } from '../components/ui'
 
 export default function Miembros({ nav, headerRight }) {
   const c = useColmena()
@@ -26,10 +26,14 @@ export default function Miembros({ nav, headerRight }) {
   const miNecesito = c.yo && c.publicaciones.find((p) => p.autor_id === c.yo.id && p.tipo === 'need' && activa(p))
   const sugeridos = miNecesito ? quienesPueden(c, miNecesito.categorias, c.yo.id).slice(0, 6) : []
 
+  // Si todos tienen el mismo nivel, la etiqueta no ayuda a distinguir a nadie
+  const mismoNivel = new Set(lista.map((m) => nivelDe(c, m.id).n).filter((n) => n > 1)).size <= 1
+
   return (
     <>
-      <Header title="Miembros" sub="Busca por nombre o habilidad" right={headerRight} />
+      <Header right={headerRight} />
       <div className="body fade">
+        <Titulo title="Miembros" />
         <div className="search">
           <Icon n="search" s={19} />
           <input ref={buscador} type="search" placeholder="Buscar por nombre o habilidad" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar miembros" />
@@ -96,7 +100,7 @@ export default function Miembros({ nav, headerRight }) {
                     {(m.habilidades.length > 0 || m.categorias.length > 0) && (
                       <small className="m-skills">{(m.habilidades.length ? m.habilidades : m.categorias).slice(0, 3).join(' · ')}</small>
                     )}
-                    {(n > 0 || nv.n > 1) && <small className="m-ayudas">{nv.n > 1 && <span className="m-nv">Nivel {nv.n}</span>}{n > 0 && <><Icon n="hand" s={13} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</>}</small>}
+                    {(n > 0 || (nv.n > 1 && !mismoNivel)) && <small className="m-ayudas">{nv.n > 1 && !mismoNivel && <span className="m-nv">Nivel {nv.n}</span>}{n > 0 && <><Icon n="hand" s={13} />{n} {n === 1 ? 'ayuda dada' : 'ayudas dadas'}</>}</small>}
                   </span>
                   <Icon n="right" s={18} />
                 </button>

@@ -18,7 +18,7 @@ export default function Herramientas({ nav, headerRight, pedirPerfil }) {
   const n = TOOLS.filter((t) => ya.includes(t.id)).length
   return (
     <>
-      <Header title="Beneficios" sub="Descuentos, aliados y herramientas para tu emprendimiento" right={headerRight} />
+      <Header right={headerRight} />
       <div className="body fade">
         <SeccionBeneficios pedirPerfil={pedirPerfil} nav={nav} />
 

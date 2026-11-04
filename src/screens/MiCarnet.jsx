@@ -1,7 +1,7 @@
 import { useColmena } from '../lib/store'
 import { carnetId, firstName, hace, mesDesde } from '../lib/format'
 import { completitud, inicioSemana, panalSemana, activa } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Header, Empty, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, Header, Titulo, useToast } from '../components/ui'
 import { CarnetCard } from './Registro'
 import { NivelCard } from '../components/Nivel'
 import { statsDe, Insignias, Voces } from './Carnet'
@@ -14,12 +14,18 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
   if (!yo) {
     return (
       <>
-        <Header title="Mi carnet" right={headerRight} />
+        <Header right={headerRight} />
         <div className="body">
-          <Empty icon="card" title="Aún no tienes carnet"
-            action={<button type="button" className="btn primary" onClick={() => pedirPerfil(null, () => {})}>Crear carnet</button>}>
-            Tu carnet es tu perfil en Colmena: quién eres, a qué te dedicas y cómo has ayudado. Se crea en menos de un minuto.
-          </Empty>
+          <Titulo title="Mi carnet" />
+          <div className="carnet-preview">
+            <CarnetCard p={{}} nota="Vista previa" estado="Por crear" />
+          </div>
+          <div className="preview-t">
+            <b>Así se verá tu carnet.</b>
+            <p>Con él publicas, escribes a otros miembros y usas los descuentos de aliados. Sin correo ni contraseña.</p>
+          </div>
+          <button type="button" className="btn primary full big" onClick={() => pedirPerfil(null, () => {})}>Crear mi carnet</button>
+          <p className="fine center">Toma menos de un minuto.</p>
         </div>
       </>
     )
@@ -53,8 +59,9 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
 
   return (
     <>
-      <Header title="Mi carnet" sub={`Miembro desde ${mesDesde(yo.created_at)}`} right={headerRight} />
+      <Header right={headerRight} />
       <div className="body fade">
+        <Titulo title="Mi carnet" sub={`Miembro desde ${mesDesde(yo.created_at)}`} />
         <CarnetCard p={yo} numero={yo.carnet} />
         <div className="duo">
           <button type="button" className="btn ink" onClick={compartir}><Icon n="share" s={17} />Compartir mi carnet</button>
@@ -112,7 +119,7 @@ export default function MiCarnet({ nav, pedirPerfil, headerRight }) {
           <div><b>{misCeldas}</b><span>{misCeldas === 1 ? 'Celda aportada' : 'Celdas aportadas'}</span></div>
         </div>
 
-        <Insignias s={s} />
+        <Insignias s={s} propio />
         <Voces id={yo.id} nav={nav} />
 
         <div className="sec-h"><h3>Mis publicaciones</h3><span className="meta">{(() => { const k = misPosts.filter((p) => activa(p)).length; return `${k} ${k === 1 ? 'activa' : 'activas'}` })()}</span></div>

@@ -18,7 +18,7 @@ const TABS = [
   { id: 'muro', label: 'Muro', ic: 'wall' },
   { id: 'miembros', label: 'Miembros', ic: 'users' },
   { id: 'encuentro', label: 'Encuentro', ic: 'cal' },
-  { id: 'herramientas', label: 'Beneficios', ic: 'bag' },
+  { id: 'herramientas', label: 'Beneficios', ic: 'seal' },
   { id: 'carnet', label: 'Carnet', ic: 'card' }
 ]
 
@@ -93,7 +93,22 @@ function Shell() {
     if (location.search.includes('carnet=')) history.replaceState(history.state, '', location.pathname)
   }, [])
 
-  if (c.cargando) return <div className="loading"><div className="hexav" /></div>
+  // Mientras carga se ve la forma de la pantalla (bloques planos que pulsan), no una pantalla vacía
+  if (c.cargando) {
+    return (
+      <div className="esqueleto" aria-busy="true" aria-label="Cargando Colmena">
+        <div className="sk-head"><i className="sk sk-logo" /><i className="sk sk-btn" /></div>
+        <i className="sk sk-composer" />
+        {[0, 1, 2].map((k) => (
+          <div key={k} className="sk-post" style={{ '--k': k }}>
+            <div className="sk-who"><i className="sk sk-av" /><span><i className="sk sk-l1" /><i className="sk sk-l2" /></span></div>
+            <i className="sk sk-t1" /><i className="sk sk-t2" />
+            <div className="sk-foot"><i className="sk sk-b1" /><i className="sk sk-b2" /></div>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   const avisos = c.pendientes.confirmar.length + c.pendientes.calificar.filter((x) => !x.yo_califique).length
   const headerRight = c.yo
@@ -142,8 +157,8 @@ function Shell() {
           {TABS.map((t) => {
             const on = t.id === tab && !(sub && sub.t === 'carnet')
             return (
-              <button key={t.id} type="button" className="tab" aria-current={on ? 'page' : undefined} aria-label={t.label} onClick={() => irTab(t.id)}>
-                <Icon n={t.ic} s={22} w={on ? 2 : 1.7} />{on && <span>{t.label}</span>}
+              <button key={t.id} type="button" className="tab" aria-current={on ? 'page' : undefined} onClick={() => irTab(t.id)}>
+                <Icon n={t.ic} s={22} w={on ? 2 : 1.7} /><span>{t.label}</span>
               </button>
             )
           })}

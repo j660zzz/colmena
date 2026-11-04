@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useColmena } from '../lib/store'
 import { fechaLarga, firstName, hace, initials } from '../lib/format'
 import { panalSemana, semanaDelMes, PANAL } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Header, Panal, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, Header, Titulo, Panal, useToast } from '../components/ui'
 import { RetoCard } from './Muro'
 
 export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
@@ -12,8 +12,9 @@ export default function Encuentro({ nav, irTab, pedirPerfil, headerRight }) {
 
   return (
     <>
-      <Header title="Encuentro" sub="El reto, el panal y el encuentro del mes" right={headerRight} />
+      <Header right={headerRight} />
       <div className="body fade">
+        <Titulo title="Encuentro" sub="El reto, el panal y el encuentro del mes" />
         <Ticket pedirPerfil={pedirPerfil} />
         <div className="route" aria-label={`Vas en la semana ${semana} del mes`}>
           {ruta.map(([t, i]) => (

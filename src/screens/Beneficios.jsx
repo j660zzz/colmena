@@ -2,10 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { carnetId } from '../lib/format'
 import { normal } from '../lib/logic'
-import { Icon, Hex, Ejemplo, Sheet, Empty, useToast } from '../components/ui'
+import { Icon, Hex, Ejemplo, Sheet, Empty, Comb, useToast } from '../components/ui'
 
 const fecha = (d) => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : ''
-const inicial = (n) => (n.replace(/^(Suite|Plan) de /i, '').match(/[A-Za-zÁÉÍÓÚÑ]/) || ['·'])[0].toUpperCase()
 
 const CATS_B = ['Diseño', 'Web', 'Productividad', 'Audio y video', 'Equipos']
 const TITULO = {
@@ -15,6 +14,25 @@ const TITULO = {
   'Audio y video': 'Para el día a día',
   Equipos: 'Para equiparte'
 }
+const ICONO_CAT = { 'Diseño': 'spark', Web: 'link', Productividad: 'note', 'Audio y video': 'clock', Equipos: 'bag' }
+// Los primeros destacados son los que más le sirven a un emprendimiento de diseño
+const PRIMERO = ['Suite de Adobe', 'Dominio web gratis', 'Framer', 'Microsoft 365']
+const rango = (b) => { const k = PRIMERO.indexOf(b.nombre); return k < 0 ? 99 : k }
+
+// Guardados y activados: solo en este dispositivo
+const K_MIOS = 'colmena.beneficios.v1'
+function leerMios() {
+  try { const x = JSON.parse(localStorage.getItem(K_MIOS) || '{}'); return { guardados: x.guardados || [], activados: x.activados || [] } } catch { return { guardados: [], activados: [] } }
+}
+function useMios() {
+  const [mios, setMios] = useState(leerMios)
+  const alternar = (lista, id) => setMios((m) => {
+    const n = { ...m, [lista]: m[lista].includes(id) ? m[lista].filter((x) => x !== id) : [...m[lista], id] }
+    try { localStorage.setItem(K_MIOS, JSON.stringify(n)) } catch { /* sin almacenamiento */ }
+    return n
+  })
+  return [mios, alternar]
+}
 
 // Beneficios como tienda: destacados, colecciones por categoría, filtros y buscador
 export function SeccionBeneficios({ pedirPerfil, nav }) {
@@ -23,12 +41,13 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
   const [proponer, setProponer] = useState(false)
   const [filtro, setFiltro] = useState('todo')
   const [q, setQ] = useState('')
+  const [mios, alternarMio] = useMios()
   const arriba = useRef(null)
 
   const digitales = c.beneficios.filter((b) => b.tipo === 'digital')
   const aliados = c.beneficios.filter((b) => b.tipo === 'aliado')
   const reales = aliados.filter((b) => !b.es_ejemplo).length
-  const destacados = digitales.filter((b) => b.destacado)
+  const destacados = digitales.filter((b) => b.destacado).sort((x, y) => rango(x) - rango(y))
   const nGratis = digitales.filter((b) => b.gratis).length
   const cats = CATS_B.filter((k) => digitales.some((b) => b.categoria === k))
 
@@ -37,23 +56,23 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
   const lista = c.beneficios.filter((b) => coincide(b) && (
     filtro === 'todo' ? true
       : filtro === 'gratis' ? b.gratis
+      : filtro === 'guardados' ? mios.guardados.includes(b.id)
       : filtro === 'aliados' ? b.tipo === 'aliado'
       : b.tipo === 'digital' && b.categoria === filtro))
   const tienda = filtro === 'todo' && !t
   const elegir = (f) => { setFiltro(f); arriba.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
-  const filtros = [['todo', 'Todo'], ['gratis', 'Gratis'], ...cats.map((k) => [k, k]), ['aliados', 'Aliados en Cali']]
+  const filtros = [['todo', 'Todo'], ...(mios.guardados.length ? [['guardados', `Guardados ${mios.guardados.length}`]] : []), ['gratis', 'Gratis'], ...cats.map((k) => [k, k]), ['aliados', 'Aliados en Cali']]
+  const tile = (b, i) => (
+    <Tile key={b.id} b={b} i={i} onClick={() => setAbierto(b)} sinValor={filtro === 'gratis'}
+      guardado={mios.guardados.includes(b.id)} activado={mios.activados.includes(b.id)} />
+  )
 
   return (
     <>
-      <section className="ben-hero">
-        <span className="k">Con tu correo Javeriana</span>
-        <h3>{digitales.length} beneficios para ti y para tu marca</h3>
-        <div className="ben-nums">
-          <span><b>{nGratis}</b>gratis</span>
-          <span><b>{digitales.length - nGratis}</b>con descuento</span>
-          <span><b>{aliados.length}</b>{reales ? 'aliados en Cali' : 'aliados (ejemplo)'}</span>
-        </div>
-      </section>
+      <header className="ptitle">
+        <h1>Beneficios</h1>
+        {digitales.length > 0 && <p className="sub"><b>{nGratis} gratis</b> y {digitales.length - nGratis} con descuento con tu correo Javeriana</p>}
+      </header>
 
       <div className="ben-filtros" ref={arriba}>
         <div className="search">
@@ -74,8 +93,8 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
             <div className="bdest-pista">
               {destacados.map((b, i) => (
                 <button key={b.id} type="button" className={'bdest ' + (i % 2 ? 'polen' : 'ink')} onClick={() => setAbierto(b)}>
-                  <span className="k">{b.categoria}</span>
-                  <b className="bdest-et">{b.etiqueta || 'Beneficio'}</b>
+                  <Comb className="bdest-comb" viewBox="0 0 120 120" r={16} w={150} h={150} x0={0} y0={0} stroke="currentColor" sw={1.5} />
+                  <span className="bdest-top"><span className="k">{b.categoria}</span><b className="bdest-et">{b.etiqueta || 'Beneficio'}</b></span>
                   <span className="bdest-n">{b.nombre}</span>
                   <span className="bdest-o">{b.oferta}</span>
                   <span className="go">Cómo obtenerlo <Icon n="right" s={15} w={2.2} /></span>
@@ -89,7 +108,7 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
             return (
               <section key={k} className="bfila">
                 <div className="sec-h"><h3>{TITULO[k] || k}</h3><button type="button" className="ver" onClick={() => elegir(k)}>Ver {fila.length}</button></div>
-                <div className="bfila-pista">{fila.map((b, i) => <Tile key={b.id} b={b} i={i} onClick={() => setAbierto(b)} />)}</div>
+                <div className="bfila-pista">{fila.map(tile)}</div>
               </section>
             )
           })}
@@ -97,15 +116,15 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
           <section className="bfila">
             <div className="sec-h"><h3>Aliados en Cali</h3><span className="meta">{reales ? `${reales} ${reales === 1 ? 'negocio' : 'negocios'}` : 'Muy pronto'}</span></div>
             <p className="soft">Negocios que dan descuento a los miembros de Colmena. Muestras tu carnet y listo.</p>
-            <div className="bfila-pista">{aliados.map((b, i) => <Tile key={b.id} b={b} i={i + 2} onClick={() => setAbierto(b)} />)}</div>
+            <div className="bfila-pista">{aliados.map(tile)}</div>
           </section>
         </>
       ) : lista.length === 0 ? (
         <Empty title="No encontramos ese beneficio">Prueba con otra palabra o mira todas las categorías.</Empty>
       ) : (
         <>
-          <p className="fine">{lista.length} {lista.length === 1 ? 'beneficio' : 'beneficios'}{filtro !== 'todo' && filtro !== 'gratis' && filtro !== 'aliados' ? ` en ${filtro}` : ''}</p>
-          <div className="bgrid">{lista.map((b, i) => <Tile key={b.id} b={b} i={[0, 2, 1, 2][i % 4]} onClick={() => setAbierto(b)} />)}</div>
+          <p className="fine">{lista.length} {lista.length === 1 ? 'beneficio' : 'beneficios'}{filtro !== 'todo' && cats.includes(filtro) ? ` en ${filtro}` : ''}</p>
+          <div className="bgrid">{lista.map(tile)}</div>
         </>
       )}
 
@@ -118,7 +137,8 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
 
       <Sheet open={!!abierto} onClose={() => setAbierto(null)} label="Detalle del beneficio">
         {abierto && (
-          <Detalle b={abierto} onCarnet={() => { setAbierto(null); pedirPerfil('Necesitas un carnet para usar los descuentos de aliados.', () => nav({ t: 'mostrar' })) }} />
+          <Detalle b={abierto} mios={mios} alternar={alternarMio}
+            onCarnet={() => { setAbierto(null); pedirPerfil('Necesitas un carnet para usar los descuentos de aliados.', () => nav({ t: 'mostrar' })) }} />
         )}
       </Sheet>
       <Sheet open={proponer} onClose={() => setProponer(false)} label="Proponer un beneficio">
@@ -128,26 +148,37 @@ export function SeccionBeneficios({ pedirPerfil, nav }) {
   )
 }
 
-function Tile({ b, i = 0, onClick }) {
+// La portada es el valor del beneficio (GRATIS, −45 %, 1 AÑO…), no una letra
+function Tile({ b, i = 0, onClick, sinValor = false, guardado = false, activado = false }) {
   const aliado = b.tipo === 'aliado'
+  const valor = sinValor ? b.oferta : (b.etiqueta || b.oferta)
+  const largo = valor.length > 10
+  const tono = i % 2 ? 'blanco' : 'ink'
   return (
-    <button type="button" className={'btile c' + (i % 3) + (aliado ? ' aliado' : '')} onClick={onClick}>
+    <button type="button" className={'btile ' + tono + (aliado ? ' aliado' : '')} onClick={onClick}>
       <span className="btile-cov">
-        <span className="btile-l">{inicial(b.nombre)}</span>
-        {b.etiqueta && <span className="bet">{b.etiqueta}</span>}
+        <span className="btile-ic"><Icon n={aliado ? 'pin' : ICONO_CAT[b.categoria] || 'seal'} s={18} /></span>
+        {(guardado || activado) && (
+          <span className={'btile-mio' + (activado ? ' ok' : '')} aria-label={activado ? 'Ya lo activaste' : 'Guardado'}>
+            <Icon n={activado ? 'check' : 'star'} s={14} w={2.4} />
+          </span>
+        )}
+        <b className={'btile-v' + (largo ? ' largo' : '') + (sinValor ? ' oferta' : '')}>{valor}</b>
       </span>
       <span className="btile-b">
         <b>{b.nombre}</b>
-        <span className="btile-o">{b.oferta}</span>
-        <span className="btile-f">
-          {aliado ? <>{b.zona || b.categoria}{b.es_ejemplo && <Ejemplo p={b} />}</> : b.para_todos ? 'Gratis para todos' : 'Para estudiantes'}
-        </span>
+        {!sinValor && <span className="btile-o">{b.oferta}</span>}
+        {(aliado || b.para_todos) && (
+          <span className="btile-f">{aliado ? <>{b.zona || b.categoria}{b.es_ejemplo && <Ejemplo p={b} />}</> : 'Gratis para todos'}</span>
+        )}
       </span>
     </button>
   )
 }
 
-function Detalle({ b, onCarnet }) {
+function Detalle({ b, onCarnet, mios, alternar }) {
+  const guardado = mios.guardados.includes(b.id)
+  const activado = mios.activados.includes(b.id)
   return (
     <div className="ben-det">
       <div className="ben-det-top">
@@ -165,6 +196,10 @@ function Detalle({ b, onCarnet }) {
         </>
       )}
       {b.requisito && <p className="soft"><b>Requisito:</b> {b.requisito}</p>}
+      <div className="ben-mio">
+        <button type="button" aria-pressed={guardado} onClick={() => alternar('guardados', b.id)}><Icon n="star" s={17} w={guardado ? 2.4 : 1.8} />{guardado ? 'Guardado' : 'Guardar'}</button>
+        {b.tipo === 'digital' && <button type="button" className="ok" aria-pressed={activado} onClick={() => alternar('activados', b.id)}><Icon n="check" s={17} w={2.4} />{activado ? 'Ya lo activé' : 'Marcar como activado'}</button>}
+      </div>
       {b.es_ejemplo && <p className="nota">Este aliado es de ejemplo para mostrar cómo funciona. No es un negocio real.</p>}
       {b.tipo === 'aliado'
         ? <button type="button" className="btn primary full big" onClick={onCarnet}><Icon n="card" s={18} />Mostrar mi carnet</button>

@@ -11,7 +11,7 @@ export const waValido = (v) => /^3\d{9}$/.test(soloDigitos(v).replace(/^57(?=3\d
 // Si pegan el número con +57, se quita el indicativo antes de formatear
 const fmtWa = (v) => { let d = soloDigitos(v); if (d.length > 10 && d.startsWith('57')) d = d.slice(2); d = d.slice(0, 10); return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ') }
 
-export function CarnetCard({ p, numero, nota }) {
+export function CarnetCard({ p, numero, nota, estado }) {
   return (
     <div className="carnet">
       <Comb className="combmark" viewBox="0 0 210 250" r={26} w={230} h={270} x0={-16} y0={-20} stroke="rgba(15,15,13,.10)" />
@@ -30,7 +30,7 @@ export function CarnetCard({ p, numero, nota }) {
         <div className="carnet-col"><span className="carnet-lbl">N.º DE CARNET</span><span className="carnet-val mono">{numero ? carnetId(numero) : 'COL-····'}</span></div>
         <div className="carnet-col right">
           <span className="carnet-lbl">ESTADO</span>
-          <span className="carnet-status"><i className="status-hex" />{p.es_ejemplo ? 'Ejemplo' : 'Activa · DCV'}</span>
+          <span className="carnet-status"><i className="status-hex" />{estado || (p.es_ejemplo ? 'Ejemplo' : 'Activa · DCV')}</span>
         </div>
       </div>
       {nota && <span className="carnet-live">{nota}</span>}

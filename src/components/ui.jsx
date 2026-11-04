@@ -110,14 +110,17 @@ export function BrandHeader({ right }) {
   )
 }
 
-export function Header({ title, sub, right }) {
+// La marca queda fija arriba; el título de cada pestaña va dentro del scroll (ver Titulo)
+export function Header({ right }) {
+  return <BrandHeader right={right} />
+}
+
+export function Titulo({ title, sub }) {
   return (
-    <>
-      <BrandHeader right={right} />
-      <header className="apphead">
-        <div className="hgroup"><h1>{title}</h1>{sub && <p className="sub">{sub}</p>}</div>
-      </header>
-    </>
+    <header className="ptitle">
+      <h1>{title}</h1>
+      {sub && <p className="sub">{sub}</p>}
+    </header>
   )
 }
 

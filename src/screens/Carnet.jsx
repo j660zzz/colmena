@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { BADGES } from '../data/contenido'
 import { firstName, igUrl, hace, mesDesde } from '../lib/format'
@@ -20,23 +21,60 @@ export function statsDe(c, id) {
   }
 }
 
-export function Insignias({ s }) {
+// Cómo se gana cada insignia (para mostrar solo la siguiente, no seis candados)
+const COMO_GANAR = {
+  'Primera publicación': 'Publica lo que necesitas u ofreces en el muro.',
+  'Primera ayuda': 'Responde una publicación y que te confirmen la ayuda.',
+  'Perfil completo': 'Completa tu carnet: bio, habilidades y portafolio.',
+  'Primer reto': 'Sube una propuesta al reto de la semana.',
+  'Primer encuentro': 'Inscríbete al encuentro del mes.',
+  'Primera reseña': 'Recibe una reseña después de ayudar a alguien.',
+  'Cinco ayudas': 'Ayuda a cinco miembros.'
+}
+const K_INSIGNIAS = 'colmena.insignias.v1'
+
+export function Insignias({ s, propio = false }) {
+  const [todas, setTodas] = useState(false)
   const ganadas = BADGES.filter((b) => b.ok(s))
+  const siguiente = BADGES.find((b) => !b.ok(s))
+  // Las insignias nuevas desde la última visita se "llenan" una vez
+  const [nuevas] = useState(() => {
+    if (!propio) return []
+    try {
+      const vistas = JSON.parse(localStorage.getItem(K_INSIGNIAS) || 'null')
+      return vistas ? ganadas.map((b) => b.n).filter((n) => !vistas.includes(n)) : []
+    } catch { return [] }
+  })
+  useEffect(() => {
+    if (!propio) return
+    try { localStorage.setItem(K_INSIGNIAS, JSON.stringify(ganadas.map((b) => b.n))) } catch { /* sin almacenamiento */ }
+  }, [propio, ganadas.length]) // eslint-disable-line react-hooks/exhaustive-deps
+  const visibles = todas ? BADGES : ganadas
   return (
     <>
       <div className="sec-h"><h3>Insignias</h3><span className="meta">{ganadas.length} de {BADGES.length}</span></div>
-      <div className="prog"><i style={{ width: Math.round(ganadas.length / BADGES.length * 100) + '%' }} /></div>
       <div className="badges">
-        {BADGES.map((b) => {
+        {visibles.map((b) => {
           const on = b.ok(s)
           return (
-            <div key={b.n} className={'badge ' + (on ? 'on' : 'off')}>
+            <div key={b.n} className={'badge ' + (on ? 'on' : 'off') + (nuevas.includes(b.n) ? ' nueva' : '')}>
               <div className="h"><Icon n={on ? b.k : 'lock'} s={20} w={on ? 2 : 1.6} /></div>
               <small>{b.n}</small>
             </div>
           )
         })}
       </div>
+      {propio && siguiente && !todas && (
+        <div className="badge-sig">
+          <div className="h"><Icon n={siguiente.k} s={20} /></div>
+          <div><small>Siguiente insignia</small><b>{siguiente.n}</b><span>{COMO_GANAR[siguiente.n]}</span></div>
+        </div>
+      )}
+      {ganadas.length < BADGES.length && (
+        <button type="button" className="linkbtn" aria-expanded={todas} onClick={() => setTodas(!todas)}>
+          {todas ? 'Ver solo las ganadas' : `Ver las ${BADGES.length} insignias`}
+        </button>
+      )}
     </>
   )
 }
