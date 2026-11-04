@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
 import { Icon, CeldaAbierta, Sheet } from '../components/ui'
+import { CobroLista, CobroIconos } from '../components/Cobro'
 
 // ---------- Recordar qué ya vio cada persona (solo en este navegador) ----------
 const leer = (k) => { try { return localStorage.getItem(k) } catch { return null } }
@@ -19,7 +20,7 @@ export const marcarCalcAbierta = () => { guardar(K_CALC_ABIERTA, '1'); avisar() 
 export const marcarPractica = () => { guardar(K_PRACTICA, '1'); avisar() }
 
 // ---------- Bienvenida: un "pase" que se desbloquea al entrar ----------
-// Cuatro pantallas cortas con movimiento al llegar a cada una. Las cifras salen de la base de datos.
+// Cuatro pantallas cortas: qué es, el muro, beneficios y el carnet con el nivel. Las cifras salen de la base de datos.
 const SLIDES = ['pase', 'muro', 'beneficios', 'carnet']
 const OSCURA = { pase: true, muro: false, beneficios: false, carnet: true }
 
@@ -98,20 +99,16 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
       </div>
 
       <div className="intro-pista" ref={pista} onScroll={alMover}>
-        <section className={'intro-slide' + on(0)} aria-label="Qué incluye Colmena">
+        <section className={'intro-slide' + on(0)} aria-label="Qué es Colmena">
           <div className="intro-hero a-up" style={{ '--d': 0 }}><PanalArma /></div>
           <span className="eyebrow a-up" style={{ '--d': 2 }}>Te damos la bienvenida</span>
-          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Todo esto es <mark className="hl">gratis</mark> en Colmena.</h1>
-          <div className="pase a-up" style={{ '--d': 4 }}>
-            <div className="pase-top"><b>Pase Colmena</b><span>Incluido</span></div>
-            <ul>
-              <li className="a-up" style={{ '--d': 5 }}><i><Icon n="users" s={16} /></i><div><b>Ayuda de otros emprendedores</b><span>Pides ayuda y ayudas a estudiantes de DCV que emprenden.</span></div></li>
-              <li className="a-up" style={{ '--d': 6 }}><i><Icon n="seal" s={16} /></i><div><b>{digitales.length > 0 ? `${digitales.length} beneficios de estudiante` : 'Beneficios de estudiante'}</b><span>Software y suscripciones gratis o con descuento.</span></div></li>
-              <li className="a-up" style={{ '--d': 7 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro mensual</b><span>Una reunión presencial con un taller práctico.</span></div></li>
-              <li className="a-up" style={{ '--d': 8 }}><i><Icon n="tools" s={16} /></i><div><b>Calculadora de precios</b><span>Calcula cuánto cobrar y consulta fichas prácticas.</span></div></li>
-            </ul>
-            <div className="pase-precio"><span>Costo</span><b className="mono">$0</b></div>
-          </div>
+          <h1 className="intro-h a-up" style={{ '--d': 3 }}>Colmena conecta a estudiantes de DCV que <mark className="hl">emprenden</mark>.</h1>
+          <ul className="intro-lista">
+            <li className="a-up" style={{ '--d': 4 }}><i><Icon n="wall" s={16} /></i><div><b>Muro</b><span>Pide ayuda u ofrece lo que sabes hacer.</span></div></li>
+            <li className="a-up" style={{ '--d': 5 }}><i><Icon n="seal" s={16} /></i><div><b>Beneficios</b><span>{digitales.length > 0 ? `${digitales.length} programas` : 'Programas'} gratis o con descuento por ser estudiante.</span></div></li>
+            <li className="a-up" style={{ '--d': 6 }}><i><Icon n="cal" s={16} /></i><div><b>Encuentro</b><span>Una reunión presencial al mes con un taller práctico.</span></div></li>
+          </ul>
+          <p className="intro-p a-up" style={{ '--d': 7 }}>Es gratis.</p>
         </section>
 
         <section className={'intro-slide' + on(1)} aria-label="Cómo funciona el muro">
@@ -124,11 +121,11 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
               <span className="pill offer">Ofrezco</span><span className="ejemplo">Ejemplo</span>
               <p>Hago fotos de producto con fondo blanco.</p>
             </div>
-            <div className="demo-wa a-pop" style={{ '--d': 5 }}><Icon n="wa" s={16} />Hola, te vi en Colmena. ¡Puedo ayudarte!</div>
+            <div className="demo-wa a-pop" style={{ '--d': 5 }}><Icon n="wa" s={16} />Hola, te vi en Colmena. Puedo revisarte el logo.</div>
           </div>
           <span className="eyebrow a-up" style={{ '--d': 3 }}>El muro</span>
           <h1 className="intro-h a-up" style={{ '--d': 4 }}>Publica lo que necesitas o lo que ofreces.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Quien puede ayudarte toca “Puedo ayudar” y te escribe por WhatsApp. No hay intermediarios ni comisiones.</p>
+          <p className="intro-p a-up" style={{ '--d': 5 }}>Quien puede ayudarte toca “Puedo ayudar” y te escribe por WhatsApp. Si ves algo que te sirve, toca “Me interesa”. Sin comisiones.</p>
         </section>
 
         <section className={'intro-slide' + on(2)} aria-label="Beneficios de estudiante">
@@ -162,13 +159,14 @@ export function Bienvenida({ onCarnet, onCerrar, miembro = false }) {
                   <polygon points="50,2 91.6,26 91.6,74 50,98 8.4,74 8.4,26" pathLength="6" />
                 </svg>
               </span>
-              <span className="intro-carnet-t"><b>Tu nombre</b><span>Tu emprendimiento</span><small>Nivel 1</small></span>
+              <span className="intro-carnet-t"><b>Tu nombre</b><span>Tu emprendimiento</span><small>Nivel 1</small><span className="intro-cobro"><CobroIconos modo="ambos" s={14} />Cobra o intercambia</span></span>
             </div>
             <span className="mono">COL-····</span>
           </div>
           <span className="eyebrow a-up" style={{ '--d': 3 }}>Tu carnet</span>
           <h1 className="intro-h a-up" style={{ '--d': 4 }}>Tu carnet es tu perfil en Colmena.</h1>
-          <p className="intro-p a-up" style={{ '--d': 5 }}>Muestra lo que sabes hacer para que otros miembros te encuentren. Con él publicas, escribes por WhatsApp y usas los descuentos de aliados. Subes de nivel cada vez que ayudas. No necesitas correo ni contraseña.</p>
+          <p className="intro-p a-up" style={{ '--d': 5 }}>Muestra lo que sabes hacer y si cobras o intercambias. Lo necesitas para publicar y escribirles a otros miembros. No pide correo ni contraseña.</p>
+          <p className="intro-nivel a-up" style={{ '--d': 6 }}><Icon n="trend" s={18} /><span><b>Tu nivel</b> sube cuando ayudas, participas en retos y vas a los encuentros.</span></p>
         </section>
       </div>
 
@@ -256,6 +254,7 @@ export const TEMAS = {
   reto: { t: 'El reto de la semana', d: 'Un ejercicio corto con un caso real. Te inscribes, subes tu propuesta como link y los miembros votan con “Útil”.' },
   sirve: { t: 'Útil', d: 'Marca una publicación o propuesta que te parece valiosa. Le muestra a quien la publicó que su aporte sirve.' },
   carnet: { t: 'Tu carnet', d: 'Tu perfil en Colmena: quién eres, a qué te dedicas y cuántas veces has ayudado. Tu WhatsApp solo lo ven otros miembros.' },
+  cobro: { t: 'Cobra o intercambia', d: 'Cada carnet muestra cómo trabaja esa persona. Intercambiar es cambiar tu trabajo por el de otro miembro.', extra: 'cobro' },
   nivel: { t: 'Tu nivel', d: 'Subes de nivel cuando ayudas a otros miembros, participas en los retos y vas a los encuentros. Cada nivel cierra un lado de tu celda. No pierdes nada si no subes: todo funciona desde el nivel 1.' },
   beneficios: { t: 'Beneficios', d: 'Software y suscripciones que ya tienes gratis o con descuento por ser estudiante de la Javeriana, y negocios de Cali que dan descuento al mostrar tu carnet.' },
   ejemplo: { t: 'Contenido de ejemplo', d: 'Lo marcado como “Ejemplo” es contenido de muestra para que veas cómo funciona. No son personas reales.' }
@@ -270,7 +269,7 @@ export function Ayuda({ tema, onIntro }) {
         {orden.map((k) => (
           <div key={k} className={k === tema ? 'on' : ''}>
             <dt>{TEMAS[k].t}</dt>
-            <dd>{TEMAS[k].d}</dd>
+            <dd>{TEMAS[k].d}{TEMAS[k].extra === 'cobro' && <CobroLista />}</dd>
           </div>
         ))}
       </dl>
