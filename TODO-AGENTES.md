@@ -15,7 +15,10 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 ## Datos y lógica (Claude)
 - [ ] Notificaciones dentro de la app cuando alguien responde tu publicación.
 - [ ] Panel de métricas para la validación (OE3): publicaciones, respuestas, conexiones y asistencias por día.
-- [ ] Recuperar el carnet en otro dispositivo (código de recuperación).
+- [x] Recuperar el carnet en otro dispositivo: hecho con el correo Javeriana (`docs/cuenta/README.md`). Falta que Jhon active el proveedor Azure.
+- [ ] Recordatorio semanal (notificación push) para volver a la app: necesita un servicio aparte.
+- [ ] Probar en teléfono físico (iOS y Android) y con lector de pantalla; el repo solo tiene pruebas en navegador de escritorio emulando celular.
+- [ ] Los pasos del reto ya no se muestran en la tarjeta de Encuentro (siguen en la base, `retos.pasos`): si se quieren de vuelta, usar un desplegable.
 - [ ] Moderación: botón "reportar" en publicaciones.
 - [ ] Imágenes reales: columna `imagen_url` en `publicaciones` (foto de producto) y portada de portafolio en `perfiles`, con almacenamiento y RPC. La auditoría UI (`docs/auditoria-ui/informe.md`, F3) lo pide para que el muro y el directorio dejen de ser solo texto.
 - [ ] Beneficios: revisar cada mes Miro (pausado el 2026-11-04 porque no recibe solicitudes) y las convocatorias de Fondo Emprender. Google AI Plus se puede reclamar hasta el 2026-12-31: ese día poner `activo = false`. Ya hay tareas programadas en la sesión de Claude para ambas cosas (revisión el día 5 de cada mes y la pausa de Google AI Plus el 2027-01-01).
@@ -26,5 +29,8 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [ ] Revisar cada mes la tabla `convocatorias` (las tres de Corfecali cierran el 10 de noviembre de 2026).
 
 ## Decisiones de Jhon
-- [ ] Fecha y lugar reales del Encuentro 01 (hoy dice "por confirmar").
+- [ ] Fecha y lugar reales del Encuentro 01 (hoy dice "por confirmar") y si "Noche de marcas" es el formato definitivo.
+- [ ] Logos de Beneficios: en gris (hoy) o a color.
+- [ ] Panal: ¿sale de toda la app? Sigue en Mi carnet, en la pantalla de una publicación propia y en el aviso "se sumó una celda al panal".
+- [ ] Talleres reales: cuando haya uno, agregarlo en `talleres` con `es_ejemplo = false`.
 - [ ] Cuándo quitar los perfiles de ejemplo.

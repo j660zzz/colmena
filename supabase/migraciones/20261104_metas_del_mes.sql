@@ -1,3 +1,5 @@
+-- REEMPLAZADA el mismo día: Jhon descartó la meta del mes y `20261104_talleres.sql` elimina estas tablas.
+-- Se conserva solo como historia; no la vuelvas a aplicar.
 -- metas_del_mes (2026-11-04). El ciclo del mes en Encuentro:
 -- semana 1 escribes tu meta, cada semana cuentas tu avance y en el encuentro lo muestras.
 -- Lectura pública; escritura solo por RPC con la clave del dispositivo.
