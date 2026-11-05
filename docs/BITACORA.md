@@ -11,6 +11,15 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 5 de noviembre de 2026 · Auditoría de ingeniería — Bloque A · Seguridad (OpenCode)
+
+Rama `ingenieria/seguridad` (PR contra `main`, sin fusionar). Primera parte del encargo `docs/ingenieria/ENCARGO.md`. Solo seguridad: **no se aplicó ninguna migración ni se escribió en Supabase**, y cero cambios visuales. Detalle completo en `docs/ingenieria/README.md`.
+- Cabeceras de seguridad en `netlify.toml`: CSP estricta (`script-src 'self'`, `style-src 'self' 'unsafe-inline'` porque React usa 37 `style={{…}}`, `img-src` con los favicons de Google, `connect-src` a Supabase `https` + `wss`), HSTS con `includeSubDomains`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` mínima y `frame-ancestors 'none'`.
+- Auditoría de RPC: solo 5 de las 24 funciones tienen SQL en el repo (`vincular_cuenta`, `recuperar_carnet`, `mi_cuenta`, `_correo_javeriana`, `alternar_interes_taller`); las otras 19 viven en migraciones de Supabase sin copia local. Se entregó `docs/ingenieria/auditoria-rpc.sql` (solo lectura) para extraerlas con `pg_get_functiondef`.
+- Clave: `clave_hash` usa SHA-256 sin sal (aceptable: token de 192 bits, no contraseña); la comparación en tiempo constante de `_perfil_por_clave` no es verificable en el repo.
+- `npm audit`: 7 avisos (1 alta en `vite`/dev server, el resto transitivas de build). `npm audit fix` no cambia nada: el arreglo de `vite` exige salto mayor.
+- **Pendiente de Jhon:** extraer las 19 RPC, decidir sobre actualizar `vite` (mayor) y verificar la CSP en la versión de prueba (login Microsoft, tiempo real, logos, PWA).
+
 ## 5 de noviembre de 2026 · Dominio propio en la vista previa (Claude)
 
 `somoscolmena.app` ya sirve la app (certificado emitido el 4 de noviembre a las 23:59 UTC) pero WhatsApp no mostraba vista previa: probablemente se guardó en caché antes de que el dominio estuviera listo, y las etiquetas apuntaban a `colmena-dcv.netlify.app`. Ahora `og:url`, `canonical` y la imagen usan `somoscolmena.app` (imagen con `?v=2` para forzar una lectura nueva). **Pendiente de Jhon:** agregar `https://somoscolmena.app` en Supabase → Authentication → URL Configuration (Site URL y Redirect URLs) para que "Guardar con correo Javeriana" funcione también desde el dominio nuevo; ver `docs/cuenta/README.md`.

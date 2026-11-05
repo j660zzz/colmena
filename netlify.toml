@@ -10,6 +10,20 @@
   to = "/index.html"
   status = 200
 
+# Cabeceras de seguridad (Bloque A). El diseño no cambia: solo se añaden cabeceras HTTP.
+# La CSP permite: Supabase (REST + tiempo real wss), los favicons de Google (logos de Beneficios)
+# y estilos inline (React usa atributos style= para animaciones y variables CSS).
+# Verificación en la versión de prueba: curl -I https://deploy-preview-N--colmena-dcv.netlify.app
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://www.google.com/s2/favicons; font-src 'self'; connect-src 'self' https://gajqknhwlwvgjeionfmo.supabase.co wss://gajqknhwlwvgjeionfmo.supabase.co; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
 [[headers]]
   for = "/sw.js"
   [headers.values]
