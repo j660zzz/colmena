@@ -2,6 +2,16 @@
 
 Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claude.
 
+## Validación OE3 (DeepSeek)
+- [x] Definir las métricas en `docs/validacion/metricas.md` (real vs. ejemplo, semana en hora de Colombia, `menos de 3`, límites).
+- [x] Cálculo puro en `src/lib/metricas.js` con 18 pruebas en `tests/metricas.test.js`.
+- [x] Reporte `.md` y `.csv` con `npm run metricas`; workflow manual y semanal que deja artefacto sin hacer commit.
+- [x] Propuesta de índices, `metricas_semanales()`, `retencion_cohortes()` y eventos anónimos en `supabase/migraciones/20261105_metricas_propuesta.sql`, sin aplicar.
+- [ ] Jhon: aprobar las definiciones del Bloque 1 antes de fusionar el Bloque 2.
+- [ ] Jhon: decidir si aplica `20261105_metricas_propuesta.sql` (índices, funciones y tabla `eventos`).
+- [ ] Jhon: decidir si quiere la pantalla interna de cifras (no construida, no está en la navegación).
+- [ ] Correr el workflow una vez y revisar el artefacto descargable.
+
 ## Home y destacados (Codex)
 - [x] Inicio con destacado, aliados y novedades antes del flujo; eliminar duplicación de Portada/Movimiento.
 - [x] Aliados al inicio de Beneficios, detalle existente y Mostrar mi carnet; mantener Ejemplo y aviso de muestra.
@@ -36,7 +46,7 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 
 ## Datos y lógica (Claude)
 - [ ] Notificaciones dentro de la app cuando alguien responde tu publicación.
-- [ ] Panel de métricas para la validación (OE3): publicaciones, respuestas, conexiones y asistencias por día.
+- [x] Reporte de métricas para la validación (OE3): definido en `docs/validacion/metricas.md` y generado por `scripts/metricas.mjs` (DeepSeek).
 - [x] Recuperar el carnet en otro dispositivo: hecho con el correo Javeriana (`docs/cuenta/README.md`). Falta que Jhon active el proveedor Azure.
 - [ ] Recordatorio semanal (notificación push) para volver a la app: necesita un servicio aparte.
 - [ ] Probar en teléfono físico (iOS y Android) y con lector de pantalla; el repo solo tiene pruebas en navegador de escritorio emulando celular.
