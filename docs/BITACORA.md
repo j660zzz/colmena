@@ -16,7 +16,7 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 Ramas `validacion/metricas` (definiciones) y `validacion/reporte` (reporte, pruebas, workflow y propuesta). **No fusionadas ni publicadas:** Jhon revisa y da el "sube".
 
 - `docs/validacion/metricas.md` define activación, muro, conexión real, comunidad, retención y calidad; usa la semana de lunes a domingo en `America/Bogota`; fija la regla de `menos de 3` y dice qué no se puede medir con los datos actuales.
-- `src/lib/metricas.js` concentra el cálculo puro y `tests/metricas.test.js` lo cubre con 18 pruebas: cero datos, solo ejemplo, mezcla real y ejemplo, publicaciones sin respuesta, confirmación tardía, cambio de semana en hora de Colombia, cohortes y supresión de grupos pequeños.
+- `src/lib/metricas.js` concentra el cálculo puro y `tests/metricas.test.js` lo cubre con 19 pruebas: cero datos, solo ejemplo, mezcla real y ejemplo, publicaciones sin respuesta, confirmación tardía, cambio de semana en hora de Colombia, cohortes y supresión de grupos pequeños.
 - `scripts/metricas.mjs` lee con la llave publicable y no pide nombres, textos de publicaciones ni comentarios de reseñas. Escribe `docs/validacion/reporte-AAAA-MM-DD.md` y `.csv`; se corre con `npm run metricas`.
 - `.github/workflows/metricas.yml` se puede lanzar a mano y corre los lunes a las 7 a. m. de Colombia. Deja el `.md` y el `.csv` como artefacto descargable; no hace commit ni push.
 - Reporte del 5 de noviembre: 0 datos reales, 8 carnets y 10 publicaciones de ejemplo. Lo real y lo de ejemplo van separados; si no hay reales, el reporte lo dice en vez de mostrar ceros que confundan.
