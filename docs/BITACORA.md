@@ -25,6 +25,10 @@ Ramas `validacion/metricas` (definiciones) y `validacion/reporte` (reporte, prue
 - Verificado: `npm run build`, las 33 pruebas del repo, `npm run metricas` y revisión del `.md` y el `.csv` sin UUID, correos ni nombres.
 - **Pendiente de Jhon:** aprobar las definiciones, confirmar el umbral de 3, decidir si aplica la propuesta y si quiere la pantalla interna.
 
+## 5 de noviembre de 2026 · Proyectos en el carnet (Claude)
+
+Por pedido de Jhon (eligió proyectos para todos y portadas de marca). Migración `20261105_proyectos.sql` **aplicada**: tabla `proyectos`, RPC `guardar_proyecto` y `borrar_proyecto` (máximo 4 por miembro), 20 proyectos de ejemplo y bios y habilidades más completas en los 8 perfiles de ejemplo. Carnet con sección "Proyectos" y editor en "Editar carnet". Detalle en `docs/proyectos/README.md`. Pendiente de Jhon: fotos reales subidas (almacenamiento y moderación).
+
 ## 5 de noviembre de 2026 · Dominio propio en la vista previa (Claude)
 
 `somoscolmena.app` ya sirve la app (certificado emitido el 4 de noviembre a las 23:59 UTC) pero WhatsApp no mostraba vista previa: probablemente se guardó en caché antes de que el dominio estuviera listo, y las etiquetas apuntaban a `colmena-dcv.netlify.app`. Ahora `og:url`, `canonical` y la imagen usan `somoscolmena.app` (imagen con `?v=2` para forzar una lectura nueva). **Pendiente de Jhon:** agregar `https://somoscolmena.app` en Supabase → Authentication → URL Configuration (Site URL y Redirect URLs) para que "Guardar con correo Javeriana" funcione también desde el dominio nuevo; ver `docs/cuenta/README.md`.

@@ -36,8 +36,8 @@ const GRUPOS = {
   miembros: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
   encuentro: ['perfiles', 'encuentro', 'asistencias', 'talleres', 'interes', 'convocatorias', 'reto', 'participantes', 'votos'],
   herramientas: ['beneficios'],
-  carnet: ['reto', 'votos', 'perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones'],
-  calc: [], ficha: [], registro: [], listo: ['perfiles'], editar: ['perfiles'],
+  carnet: ['reto', 'votos', 'perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas', 'conexiones', 'proyectos'],
+  calc: [], ficha: [], registro: [], listo: ['perfiles'], editar: ['perfiles', 'proyectos'],
   publicado: ['perfiles', 'publicaciones', 'ayudas', 'participantes', 'asistencias', 'resenas'],
   publicacion: ['perfiles', 'publicaciones', 'ayudas', 'meSirve'],
   mostrar: ['perfiles'], calificar: ['perfiles', 'publicaciones', 'resenas']
@@ -71,6 +71,7 @@ export function ColmenaProvider({ children }) {
   const [beneficios, setBeneficios] = useState([])
   const [convocatorias, setConvocatorias] = useState([])
   const [talleres, setTalleres] = useState([])
+  const [proyectos, setProyectos] = useState([])
   const [interes, setInteres] = useState([])
   const [pendientes, setPendientes] = useState({ confirmar: [], calificar: [] })
   const [cuenta, setCuenta] = useState(null)
@@ -100,6 +101,7 @@ export function ColmenaProvider({ children }) {
     votos: async () => setVotos(await q(supabase.from('reto_votos').select('*'))),
     resenas: async () => setResenas(await q(supabase.rpc('resenas_publicas'))),
     beneficios: async () => setBeneficios(await q(supabase.from('beneficios').select('*').order('tipo').order('orden'))),
+    proyectos: async () => setProyectos(await q(supabase.from('proyectos').select('id,perfil_id,titulo,tipo,cliente,anio,descripcion,link,orden,es_ejemplo,created_at').order('orden').limit(1000))),
     talleres: async () => setTalleres(await q(supabase.from('talleres').select('*').eq('activo', true).order('orden'))),
     interes: async () => setInteres(await q(supabase.from('taller_interes').select('*'))),
     convocatorias: async () => setConvocatorias(await q(supabase.from('convocatorias').select('*').eq('activo', true).order('orden'))),
@@ -378,6 +380,19 @@ export function ColmenaProvider({ children }) {
       setInteres((l) => ya ? l.filter((x) => !(x.taller_id === tallerId && x.perfil_id === yo)) : [...l, { taller_id: tallerId, perfil_id: yo }])
       try { return await rpc('alternar_interes_taller', { p_taller: tallerId }) } catch (e) { cargar.interes(); throw e }
     },
+    // Proyectos del carnet (hasta 4 por miembro). Se guardan uno por uno, aparte de "Guardar cambios".
+    async guardarProyecto(x) {
+      const id = await rpc('guardar_proyecto', {
+        p_proyecto: x.id || null, p_titulo: x.titulo, p_tipo: x.tipo, p_cliente: x.cliente || null,
+        p_anio: x.anio ? Number(x.anio) : null, p_descripcion: x.descripcion || null, p_link: x.link || null
+      })
+      await cargar.proyectos()
+      return id
+    },
+    async borrarProyecto(proyectoId) {
+      setProyectos((l) => l.filter((x) => x.id !== proyectoId))
+      try { await rpc('borrar_proyecto', { p_proyecto: proyectoId }) } finally { cargar.proyectos() }
+    },
     async alternarAsistencia(encId) {
       const ya = asistencias.some((a) => a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)
       setAsistencias((l) => ya ? l.filter((a) => !(a.encuentro_id === encId && a.perfil_id === sesionRef.current.id)) : [...l, { encuentro_id: encId, perfil_id: sesionRef.current.id }])
@@ -386,7 +401,7 @@ export function ColmenaProvider({ children }) {
   }
 
   const valor = {
-    sesion, yo, beneficios, convocatorias, talleres, interes, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
+    sesion, yo, beneficios, convocatorias, talleres, interes, proyectos, perfiles, publicaciones, ayudas, conexiones, asistencias, encuentro,
     meSirve, reto, retos, participantes, votos, resenas, pendientes, cargarPendientes,
     cuenta, avisoCuenta, limpiarAvisoCuenta: () => setAvisoCuenta(null),
     cargando, datos, asegurarDatos, reintentar, errorRed, recargar: cargarTodo, ...acciones,
