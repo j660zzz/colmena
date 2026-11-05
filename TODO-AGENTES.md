@@ -34,6 +34,15 @@ Marca con tu nombre lo que tomes. Lo visual es de diseño; lo de datos, de Claud
 - [x] Beneficios: sumar las categorías nuevas (Claude, con permiso de Jhon) **Apoyo para emprender**, **Aprender** y **Vender** a `CATS_B`, `TITULO` e `ICONO_CAT` en `src/screens/Beneficios.jsx`. Ya hay 7 filas con esas categorías en la tabla `beneficios` (Campus Nova, Ley 1780, Fondo Emprender, Perfil de Negocio, Biblioteca, Cámara de Comercio, HubSpot). Hasta que se agreguen, solo salen en destacados, en la búsqueda y en el filtro Gratis. Títulos sugeridos: "Para empezar tu emprendimiento", "Para aprender gratis" y "Para vender". Detalle en `docs/beneficios/investigacion-2026-11.md`.
 - [x] Beneficios: en `PRIMERO` (`src/screens/Beneficios.jsx`) dar prioridad a Campus Nova, Ley 1780 y Google AI Plus. Spotify sigue destacado, al final del carrusel (decisión de Jhon).
 
+## Ingeniería (OpenCode — auditoría `docs/ingenieria/ENCARGO.md`)
+- [x] Bloque A · Seguridad: cabeceras en `netlify.toml`, auditoría de RPC (5 visibles + consulta de solo lectura para las otras 19), informe en `docs/ingenieria/README.md`. PR contra `main`, sin fusionar.
+- [ ] Jhon: correr `docs/ingenieria/auditoria-rpc.sql` y pegar el resultado para completar la auditoría de las 19 RPC.
+- [ ] Jhon: decidir si actualizar `vite` (salto mayor) para cerrar el aviso del dev server.
+- [ ] Jhon: verificar la CSP en la versión de prueba (`curl -I` + flujos: login Microsoft, tiempo real, logos, PWA).
+- [ ] Bloque B · Velocidad (pendiente).
+- [ ] Bloque C · Infraestructura (pendiente).
+- [ ] Bloque D · Opcional (pendiente).
+
 ## Datos y lógica (Claude)
 - [ ] Notificaciones dentro de la app cuando alguien responde tu publicación.
 - [ ] Panel de métricas para la validación (OE3): publicaciones, respuestas, conexiones y asistencias por día.
