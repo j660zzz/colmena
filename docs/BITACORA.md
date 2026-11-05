@@ -5,11 +5,15 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 ## Dónde está todo
 | Qué | Dónde |
 |---|---|
-| App publicada | https://colmena-dcv.netlify.app (Netlify, proyecto `colmena-dcv`, se publica sola desde `main`) |
+| App publicada | https://somoscolmena.app (dominio propio desde el 5 de noviembre de 2026; también responde https://colmena-dcv.netlify.app). Netlify, proyecto `colmena-dcv`, se publica sola desde `main` |
 | Repositorio | https://github.com/j660zzz/colmena (público) |
 | Base de datos | Supabase, proyecto `colmena` (`gajqknhwlwvgjeionfmo`, São Paulo). **Producción y versiones de prueba comparten la misma base**: cualquier migración queda en vivo al aplicarla |
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
+
+## 5 de noviembre de 2026 · Dominio propio en la vista previa (Claude)
+
+`somoscolmena.app` ya sirve la app (certificado emitido el 4 de noviembre a las 23:59 UTC) pero WhatsApp no mostraba vista previa: probablemente se guardó en caché antes de que el dominio estuviera listo, y las etiquetas apuntaban a `colmena-dcv.netlify.app`. Ahora `og:url`, `canonical` y la imagen usan `somoscolmena.app` (imagen con `?v=2` para forzar una lectura nueva). **Pendiente de Jhon:** agregar `https://somoscolmena.app` en Supabase → Authentication → URL Configuration (Site URL y Redirect URLs) para que "Guardar con correo Javeriana" funcione también desde el dominio nuevo; ver `docs/cuenta/README.md`.
 
 ## 4 de noviembre de 2026 · Vista previa al compartir el link (Claude)
 
