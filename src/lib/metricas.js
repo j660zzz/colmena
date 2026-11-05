@@ -217,7 +217,10 @@ export function metricasDe(d, { desde, hasta, ahora = Date.now() } = {}) {
   const interes = d.interes.filter((x) => en(x.created_at))
   const resenas = d.resenas.filter((x) => en(x.created_at))
 
-  const conRespuesta = publicaciones.filter((p) => (respuestasPorPost.get(p.id)?.length || 0) > 0)
+  const conRespuesta = publicaciones.filter((p) => {
+    const primera = Math.min(...(respuestasPorPost.get(p.id) || [Infinity]))
+    return Number.isFinite(primera) && primera >= Date.parse(p.created_at)
+  })
   const tiempos = conRespuesta
     .map((p) => (Math.min(...respuestasPorPost.get(p.id)) - Date.parse(p.created_at)) / 3600000)
     .filter((h) => Number.isFinite(h) && h >= 0)
@@ -231,6 +234,7 @@ export function metricasDe(d, { desde, hasta, ahora = Date.now() } = {}) {
     const post = postPorId.get(a.publicacion_id)
     if (!post) return
     const { ayuda, recibe } = partesDe(post, a.perfil_id)
+    if (!ayuda || !recibe) return
     dieron.add(ayuda)
     recibieron.add(recibe)
     const previos = historial.get(clavePareja(ayuda, recibe)) || []
