@@ -30,8 +30,8 @@ async function credenciales() {
   if (url && key) return { url: url.replace(/\/$/, ''), key }
 
   const texto = await readFile(path.join(RAIZ, 'src', 'lib', 'supabase.js'), 'utf8')
-  const encontradaUrl = texto.match(/VITE_SUPABASE_URL\s*\|\|\s*'([^']+)'/)
-  const encontradaKey = texto.match(/VITE_SUPABASE_KEY\s*\|\|\s*'([^']+)'/)
+  const encontradaUrl = texto.match(/VITE_SUPABASE_URL\s*\|\|\s*['"]([^'"]+)['"]/)
+  const encontradaKey = texto.match(/VITE_SUPABASE_KEY\s*\|\|\s*['"]([^'"]+)['"]/)
   if (!encontradaUrl || !encontradaKey) {
     throw new Error('No se encontraron la URL y la llave publicable. Define VITE_SUPABASE_URL y VITE_SUPABASE_KEY.')
   }

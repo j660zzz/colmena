@@ -22,7 +22,7 @@ Ramas `validacion/metricas` (definiciones) y `validacion/reporte` (reporte, prue
 - Reporte del 5 de noviembre: 0 datos reales, 8 carnets y 10 publicaciones de ejemplo. Lo real y lo de ejemplo van separados; si no hay reales, el reporte lo dice en vez de mostrar ceros que confundan.
 - Propuesta sin aplicar en `supabase/migraciones/20261105_metricas_propuesta.sql`: índices, `metricas_semanales()`, `retencion_cohortes()`, tabla `eventos` con `registrar_evento()` y `resumen_eventos()`. No se aplicó nada ni se escribió en Supabase.
 - La pantalla interna de cifras no se construyó: queda a decisión de Jhon después de ver el reporte.
-- Verificado: `npm run build`, las 32 pruebas del repo, `npm run metricas` y revisión del `.md` y el `.csv` sin UUID, correos ni nombres.
+- Verificado: `npm run build`, las 33 pruebas del repo, `npm run metricas` y revisión del `.md` y el `.csv` sin UUID, correos ni nombres.
 - **Pendiente de Jhon:** aprobar las definiciones, confirmar el umbral de 3, decidir si aplica la propuesta y si quiere la pantalla interna.
 
 ## 5 de noviembre de 2026 · Dominio propio en la vista previa (Claude)
