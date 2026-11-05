@@ -1,0 +1,47 @@
+# Agente de código OpenCode en la nube (GitHub Actions).
+# Se activa cuando el dueño del repo comenta "/oc ..." o "/opencode ..." en un issue o PR.
+# Solo el dueño puede activarlo: el repo es público y cada ejecución gasta la llave de DeepSeek.
+# Requiere: la app https://github.com/apps/opencode-agent instalada en este repo y el secreto
+# DEEPSEEK_API_KEY en Settings → Secrets and variables → Actions.
+name: opencode
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  opencode:
+    if: |
+      (contains(github.event.comment.body, '/oc') || contains(github.event.comment.body, '/opencode')) &&
+      github.event.comment.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      id-token: write
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Dependencias y navegador para que el agente pueda compilar y correr las pruebas del repo
+      - run: npm ci
+      - run: |
+          npm install -g playwright
+          echo "NODE_PATH=$(npm root -g)" >> "$GITHUB_ENV"
+          echo "COLMENA_CHROMIUM=$(command -v google-chrome || command -v chromium)" >> "$GITHUB_ENV"
+
+      - uses: anomalyco/opencode/github@latest
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        with:
+          model: deepseek/deepseek-v4-pro
