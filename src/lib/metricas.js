@@ -99,7 +99,10 @@ export function dividirDatos(crudo = {}) {
     interes: interes.map((x) => ({ ...x, _ejemplo: perfilEjemplo.has(x.perfil_id) })),
     resenas: resenas.map((x) => ({
       ...x,
-      _ejemplo: perfilEjemplo.has(x.de_id) || perfilEjemplo.has(x.para_id)
+      _ejemplo:
+        perfilEjemplo.has(x.de_id) ||
+        perfilEjemplo.has(x.para_id) ||
+        postEjemplo.has(x.publicacion_id)
     }))
   }
 

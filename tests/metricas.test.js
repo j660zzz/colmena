@@ -81,6 +81,24 @@ test('mezcla: una ayuda con perfil de ejemplo no contamina lo real', () => {
   assert.equal(metricasDe(r, { desde: '2026-10-01', hasta: '2026-10-31' }).publicacionesConRespuesta, 0)
 })
 
+test('mezcla: una reseña sobre una publicación de ejemplo no cuenta como real', () => {
+  const datos = {
+    perfiles: [P('r1', '2026-10-05T15:00:00Z'), P('r2', '2026-10-05T15:00:00Z'), P('e1', '2026-10-05T15:00:00Z', true)],
+    publicaciones: [
+      POST('rp1', 'r1', 'need', '2026-10-06T15:00:00Z'),
+      POST('ep1', 'e1', 'need', '2026-10-06T16:00:00Z', { es_ejemplo: true })
+    ],
+    resenas: [
+      { id: 'x1', de_id: 'r1', para_id: 'r2', publicacion_id: 'ep1', estrellas: 5, created_at: '2026-10-08T15:00:00Z' },
+      { id: 'x2', de_id: 'r1', para_id: 'r2', publicacion_id: 'rp1', estrellas: 4, created_at: '2026-10-09T15:00:00Z' }
+    ]
+  }
+  const { reales: r, ejemplo } = dividirDatos(datos)
+  assert.equal(r.resenas.length, 1)
+  assert.equal(ejemplo.resenas.length, 1)
+  assert.equal(metricasDe(r, { desde: '2026-10-05', hasta: '2026-10-11' }).resenas, 1)
+})
+
 test('publicaciones sin respuesta: 0 % y mediana nula', () => {
   const datos = {
     perfiles: [P('r1', '2026-10-05T15:00:00Z'), P('r2', '2026-10-05T16:00:00Z')],

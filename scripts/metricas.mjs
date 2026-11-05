@@ -76,7 +76,7 @@ async function leerResenas(base, headers) {
   const filas = []
   let offset = 0
   for (;;) {
-    const columnas = 'id,estrellas,created_at,de_id,para_id'
+    const columnas = 'id,estrellas,created_at,de_id,para_id,publicacion_id'
     const url = `${base}/rest/v1/rpc/resenas_publicas?select=${encodeURIComponent(columnas)}&order=${encodeURIComponent('created_at.desc,id.desc')}&limit=${PAGINA}&offset=${offset}`
     const r = await pedir(url, headers, {
       method: 'POST',
