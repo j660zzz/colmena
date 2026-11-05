@@ -331,14 +331,14 @@ as $$
   select
     v.cohorte,
     v.semana_n,
-    count(*) filter (where now() >= v.fin)::bigint as base,
-    count(*) filter (
+    (count(*) filter (where now() >= v.fin))::bigint as base,
+    (count(*) filter (
       where now() >= v.fin
         and exists (
           select 1 from acciones a
           where a.perfil_id = v.id and a.fecha >= v.inicio and a.fecha < v.fin
         )
-    )::bigint as activos
+    ))::bigint as activos
   from ventanas v
   group by v.cohorte, v.semana_n
   order by v.cohorte, v.semana_n;
