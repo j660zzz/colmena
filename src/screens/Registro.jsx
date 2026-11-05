@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useColmena } from '../lib/store'
+import { ProyectosEditor } from '../components/Proyectos'
 import { CATS, SUGERENCIAS } from '../data/contenido'
 import { carnetId } from '../lib/format'
 import { completitud, manosDadas } from '../lib/logic'
@@ -291,8 +292,8 @@ export function Editar({ onBack }) {
   return (
     <>
       <SubHeader title="Editar carnet" onBack={onBack} />
-      <form className="body fade" onSubmit={guardar}>
-        <div className="form">
+      <div className="body fade">
+        <form className="form" onSubmit={guardar}>
           <div className="field"><label htmlFor="e-n">Nombre *</label><div className="inp"><input id="e-n" maxLength={60} value={f.nombre} onChange={set('nombre')} /></div></div>
           <div className="field"><label htmlFor="e-m">Emprendimiento o marca</label><div className="inp"><input id="e-m" maxLength={60} value={f.marca} onChange={set('marca')} placeholder="Opcional" /></div></div>
           <div className="field"><label htmlFor="e-r">¿A qué te dedicas?</label><div className="inp"><input id="e-r" maxLength={60} value={f.rol} onChange={set('rol')} placeholder="Ej: Fotografía de producto" /></div></div>
@@ -336,9 +337,10 @@ export function Editar({ onBack }) {
           </div>
           {err && <p className="err" role="alert">{err}</p>}
           <button type="submit" className="btn primary full big" disabled={!ok || enviando}>{enviando ? 'Guardando…' : 'Guardar cambios'}</button>
-          <div className="center"><button type="button" className="linkbtn danger" onClick={borrar}>Borrar mi perfil y mis datos</button></div>
-        </div>
-      </form>
+        </form>
+        <ProyectosEditor />
+        <div className="center"><button type="button" className="linkbtn danger" onClick={borrar}>Borrar mi perfil y mis datos</button></div>
+      </div>
     </>
   )
 }

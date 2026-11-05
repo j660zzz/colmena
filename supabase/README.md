@@ -20,6 +20,7 @@ Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_mi
 | `asistencias` | Quién se apuntó a qué encuentro. |
 | `beneficios` | Pestaña Beneficios. `tipo` = `digital` (lo que ya tienes por ser estudiante) o `aliado` (negocio en Cali). `oferta`, `detalle`, `como` (pasos), `requisito`, `link`, `fuente`, `verificado_en`, `orden`, `activo`, `es_ejemplo`. |
 | `convocatorias` | Ferias, eventos y convocatorias reales en Cali (pestaña Encuentro). `tipo` = `convocatoria`, `evento` o `feria`; `cierre` (plazo para postularse) y `fecha` (día del evento). La app oculta lo que ya cerró o pasó. Cada fila tiene `fuente` y `verificado_en`. |
+| `proyectos` | Proyectos del carnet (hasta 4 por miembro): `titulo`, `tipo` (una categoría), `cliente`, `anio`, `descripcion` (≤ 140), `link`, `orden`, `es_ejemplo`. Escritura con `guardar_proyecto` y `borrar_proyecto`. Ver `docs/proyectos/README.md`. |
 | `talleres`, `taller_interes` | Talleres prácticos (los de muestra tienen `es_ejemplo`) y quién marcó "Me interesa". Ver `docs/encuentro/README.md`. |
 | `cuentas` | Une un carnet con una cuenta Microsoft `@javerianacali.edu.co` para recuperarlo en otro dispositivo. Sin lectura desde el cliente. Ver `docs/cuenta/README.md`. |
 | `solicitudes_beneficio` | Propuestas de negocios que quieren ser aliados. Sin lectura pública: se revisan en el Table Editor. |
@@ -40,6 +41,7 @@ Todas reciben `p_id` y `p_clave` (los entrega `crear_perfil` y se guardan en el 
 - `unirse_reto(p_id, p_clave, p_reto, p_link)`, `salir_reto`, `alternar_voto_reto(p_id, p_clave, p_reto, p_participante)`
 - `proponer_beneficio(p_negocio, p_contacto, p_propuesta, p_id?, p_clave?)` — no exige carnet; máximo 20 propuestas por hora en total. También recibe las ferias y convocatorias que sugieren los miembros (el nombre empieza por `[Convocatoria]`).
 - `alternar_interes_taller(p_id, p_clave, p_taller)`
+- `guardar_proyecto(p_id, p_clave, p_proyecto?, p_titulo, p_tipo, p_cliente, p_anio, p_descripcion, p_link)` → id · `borrar_proyecto(p_id, p_clave, p_proyecto)` — solo los propios, máximo 4.
 - `vincular_cuenta(p_id, p_clave)` · `recuperar_carnet()` · `mi_cuenta(p_id, p_clave)` — requieren sesión de Supabase Auth con un correo `@javerianacali.edu.co`.
 
 Tiempo real activado en `publicaciones`, `ayudas`, `me_sirve`, `reto_participantes`, `reto_votos`, `asistencias` y `taller_interes`.

@@ -8,6 +8,7 @@ import { Icon, Hex, Ejemplo, SubHeader, Empty, Stars, useToast } from '../compon
 import { CarnetCard } from './Registro'
 import { NivelChip } from '../components/Nivel'
 import { COBRO, CobroInsignia } from '../components/Cobro'
+import { ProyectosSeccion } from '../components/Proyectos'
 
 export function statsDe(c, id) {
   const p = c.perfil(id)
@@ -176,6 +177,8 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
           </section>
         )}
 
+        <ProyectosSeccion m={m} propio={propio} nav={nav} />
+
         {(m.habilidades.length > 0 || m.categorias.length > 0) && (
           <section className="perfil-sec">
             <h3>{propio ? 'Te pueden pedir ayuda con' : `Pídele ayuda con`}</h3>
@@ -218,7 +221,7 @@ export default function Carnet({ id, onBack, nav, pedirPerfil }) {
                 <Icon n="ext" s={16} />
               </a>
             )}
-            {m.es_ejemplo && !m.portafolio && !m.instagram && (
+            {m.es_ejemplo && !m.portafolio && !m.instagram && !c.proyectos.some((x) => x.perfil_id === m.id) && (
               <p className="soft">En un perfil real, aquí aparecen sus links de Behance, Instagram o Google Drive.</p>
             )}
           </section>
