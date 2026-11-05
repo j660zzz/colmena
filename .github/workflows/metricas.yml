@@ -1,0 +1,42 @@
+# Reporte de métricas de validación (OE3).
+# Se puede lanzar a mano desde la pestaña Actions o solo, cada lunes.
+# No hace commit ni push: deja el .md y el .csv como artefacto descargable.
+name: Reporte de métricas
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Lunes 7:00 a. m. en Colombia (UTC-5).
+    - cron: '0 12 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  reporte:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Traer el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar el reporte
+        run: npm run metricas
+
+      - name: Subir el reporte como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-validacion
+          path: |
+            docs/validacion/reporte-*.md
+            docs/validacion/reporte-*.csv
+          if-no-files-found: error
