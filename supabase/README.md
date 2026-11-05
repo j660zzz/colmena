@@ -3,6 +3,8 @@
 Las migraciones viven en el proyecto de Supabase (`supabase_migrations.schema_migrations`):
 `esquema_inicial`, `proteger_clave_y_semilla`, `borrar_perfil`, `solo_lectura_directa`, `v0_manos_whatsapp_retos`, `v0_confirmar_mano_directa`, `carnet_perfil_ampliado`, `beneficios`, `publicacion_resuelta`, `beneficios_investigacion_2026_11`, `beneficios_spotify_no_destacado`, `beneficios_spotify_destacado_otra_vez`, `textos_muro_pulido`, `cuentas_javeriana`, `convocatorias`, `metas_del_mes` y `talleres` (este último retira las tablas de metas; copia en `supabase/migraciones/`).
 
+**Propuesta sin aplicar:** `supabase/migraciones/20261105_metricas_propuesta.sql` (índices, `metricas_semanales()`, `retencion_cohortes()`, tabla `eventos` con `registrar_evento()` y `resumen_eventos()`). No se ha aplicado. Falta la decisión de Jhon.
+
 ## Tablas (lectura pública, sin escritura directa)
 | Tabla | Para qué |
 |---|---|

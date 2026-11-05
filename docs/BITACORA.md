@@ -11,6 +11,20 @@ Registro de lo que se decidió y se construyó, para que cualquier persona o age
 | Versiones de prueba | Netlify solo genera `deploy-preview-N--colmena-dcv.netlify.app` para PR cuya base es `main`. El enlace permanente de cada versión es `<id-del-deploy>--colmena-dcv.netlify.app` |
 | Marca | `docs/marca/colmena-brand-spec.md` (manda sobre todo lo demás) |
 
+## 5 de noviembre de 2026 · Métricas de validación del OE3 (DeepSeek)
+
+Ramas `validacion/metricas` (definiciones) y `validacion/reporte` (reporte, pruebas, workflow y propuesta). **No fusionadas ni publicadas:** Jhon revisa y da el "sube".
+
+- `docs/validacion/metricas.md` define activación, muro, conexión real, comunidad, retención y calidad; usa la semana de lunes a domingo en `America/Bogota`; fija la regla de `menos de 3` y dice qué no se puede medir con los datos actuales.
+- `src/lib/metricas.js` concentra el cálculo puro y `tests/metricas.test.js` lo cubre con 19 pruebas: cero datos, solo ejemplo, mezcla real y ejemplo, publicaciones sin respuesta, confirmación tardía, cambio de semana en hora de Colombia, cohortes y supresión de grupos pequeños.
+- `scripts/metricas.mjs` lee con la llave publicable y no pide nombres, textos de publicaciones ni comentarios de reseñas. Escribe `docs/validacion/reporte-AAAA-MM-DD.md` y `.csv`; se corre con `npm run metricas`.
+- `.github/workflows/metricas.yml` se puede lanzar a mano y corre los lunes a las 7 a. m. de Colombia. Deja el `.md` y el `.csv` como artefacto descargable; no hace commit ni push.
+- Reporte del 5 de noviembre: 0 datos reales, 8 carnets y 10 publicaciones de ejemplo. Lo real y lo de ejemplo van separados; si no hay reales, el reporte lo dice en vez de mostrar ceros que confundan.
+- Propuesta sin aplicar en `supabase/migraciones/20261105_metricas_propuesta.sql`: índices, `metricas_semanales()`, `retencion_cohortes()`, tabla `eventos` con `registrar_evento()` y `resumen_eventos()`. No se aplicó nada ni se escribió en Supabase.
+- La pantalla interna de cifras no se construyó: queda a decisión de Jhon después de ver el reporte.
+- Verificado: `npm run build`, las 33 pruebas del repo, `npm run metricas` y revisión del `.md` y el `.csv` sin UUID, correos ni nombres.
+- **Pendiente de Jhon:** aprobar las definiciones, confirmar el umbral de 3, decidir si aplica la propuesta y si quiere la pantalla interna.
+
 ## 5 de noviembre de 2026 · Dominio propio en la vista previa (Claude)
 
 `somoscolmena.app` ya sirve la app (certificado emitido el 4 de noviembre a las 23:59 UTC) pero WhatsApp no mostraba vista previa: probablemente se guardó en caché antes de que el dominio estuviera listo, y las etiquetas apuntaban a `colmena-dcv.netlify.app`. Ahora `og:url`, `canonical` y la imagen usan `somoscolmena.app` (imagen con `?v=2` para forzar una lectura nueva). **Pendiente de Jhon:** agregar `https://somoscolmena.app` en Supabase → Authentication → URL Configuration (Site URL y Redirect URLs) para que "Guardar con correo Javeriana" funcione también desde el dominio nuevo; ver `docs/cuenta/README.md`.
